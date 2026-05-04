@@ -2,9 +2,8 @@ import Link from "next/link";
 import { Card, Eyebrow, Tag } from "@/components/ui";
 import { projects } from "@/projects/registry";
 
-// Note for josh: this is intentionally written in a friendly first-person voice.
-// All copy below is editable — search for `// COPY:` markers to find the bits I
-// drafted as placeholders.
+// Note for josh: friendly first-person voice, no em-dashes per CLAUDE.md.
+// Search for `// COPY:` markers to find the bits drafted as placeholders.
 
 export default function HomePage() {
   return (
@@ -17,8 +16,8 @@ export default function HomePage() {
         </h1>
         <p className="mt-5 max-w-xl text-lg text-ink-2">
           {/* COPY: hero lead */}
-          Welcome to my corner of the internet — a working ground for ideas, small tools,
-          and the things I've made or stumbled on.
+          Welcome to my corner of the internet. A working ground for ideas, small tools,
+          and the things I&apos;ve made or stumbled on.
         </p>
       </section>
 
@@ -26,15 +25,16 @@ export default function HomePage() {
       <Section id="about" eyebrow="// 01 · JOSH" heading="About me.">
         <p>
           {/* COPY: about paragraph 1 */}
-          I'm a creative who builds things — visual design, software, music, the occasional
-          photograph. By day I run <ExternalLink href="https://exhale.studio">Exhale Studios</ExternalLink>,
+          I&apos;m a creative who builds things. Visual design, software, music, the
+          occasional photograph. By day I run{" "}
+          <ExternalLink href="https://exhale.studio">Exhale Studios</ExternalLink>,
           a creative practice for studios, artists, and teams.
         </p>
         <p>
           {/* COPY: about paragraph 2 */}
-          This site is the personal side of that — a place for the stuff that doesn't fit
-          neatly into the studio brand. Half-finished tools, things I'm learning, work I want
-          to share.
+          This site is the personal side of that. A place for the stuff that
+          doesn&apos;t fit neatly into the studio brand. Half-finished tools, things
+          I&apos;m learning, work I want to share.
         </p>
       </Section>
 
@@ -42,15 +42,15 @@ export default function HomePage() {
       <Section id="thisapp" eyebrow="// 02 · THIS APP" heading="What this is.">
         <p>
           {/* COPY: this app intro */}
-          A drawing board, an open notebook, and a small library of useful things. Everything
-          you see here is open — when I build something on the drawing board, the prompt I
-          used lives next to it. You can copy it into Claude and rip your own version in an
-          afternoon.
+          A drawing board, an open notebook, and a small library of useful things.
+          Everything you see here is open. When I build something on the drawing
+          board, the prompt I used lives next to it. You can copy it into Claude and
+          rip your own version in an afternoon.
         </p>
         <ul className="mt-4 space-y-2 font-mono text-sm text-ink-2">
-          <li><span className="text-accent">/</span> drawing board — projects in flight</li>
-          <li><span className="text-accent">/</span> rip — every project ships with a Claude prompt you can copy</li>
-          <li><span className="text-accent">/</span> thoughts, found, creative — the rest of what I share</li>
+          <li><span className="text-accent">/</span> drawing board. Projects in flight.</li>
+          <li><span className="text-accent">/</span> rip. Every project ships with a Claude prompt you can copy.</li>
+          <li><span className="text-accent">/</span> thoughts, found, creative. The rest of what I share.</li>
         </ul>
       </Section>
 
@@ -67,7 +67,8 @@ export default function HomePage() {
         </div>
         <h2 className="mt-2 font-display text-4xl font-black tracking-tight">In flight.</h2>
         <p className="mt-3 max-w-xl text-ink-2">
-          Active projects, half-built tools, ideas I'm chewing on. Each one is rip-able.
+          Active projects, half-built tools, ideas I&apos;m chewing on. Each one is
+          rip-able.
         </p>
         <ul className="mt-6 grid gap-3 sm:grid-cols-2">
           {projects.slice(0, 4).map((p) => (
@@ -93,9 +94,9 @@ export default function HomePage() {
       <Section id="exhale" eyebrow="// 04 · EXHALE" heading="The studio.">
         <p>
           {/* COPY: exhale paragraph */}
-          For studio work — shoots, brand projects, commercial photography — head to{" "}
-          <ExternalLink href="https://exhale.studio">exhale.studio</ExternalLink>. ExhaleJR is
-          the sibling brand: same sensibilities, more personal.
+          For studio work (shoots, brand projects, commercial photography), head to{" "}
+          <ExternalLink href="https://exhale.studio">exhale.studio</ExternalLink>.
+          ExhaleJR is the sibling brand. Same sensibilities, more personal.
         </p>
       </Section>
 
@@ -117,7 +118,7 @@ export default function HomePage() {
   );
 }
 
-/* ───────────────── helpers (kept inline; only used here) ───────────────── */
+/* Helpers, kept inline. Only used here. */
 
 function Section({
   id,

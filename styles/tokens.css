@@ -4,6 +4,10 @@
  */
 
 :root {
+  /* Tells the browser the page is dark. Used by system UI on Android PWA
+   * (system nav bar tint), iOS form controls, scrollbars, etc. */
+  color-scheme: dark;
+
   /* === COLOUR === */
   --bg:        #0a0a0a;
   --bg-2:      #0d0d0d;

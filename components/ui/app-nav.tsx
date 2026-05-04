@@ -14,7 +14,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useDisclosure } from "@/hooks/use-disclosure";
 import { projects } from "@/projects/registry";
-import { AccountMenuCell, ActionMenuCell } from "./menu-cell";
+import { AccountMenuCell, AccountSubCta, ActionMenuCell } from "./menu-cell";
 import { FloatNav } from "./float-nav";
 import { MenuListCell, MenuListItem } from "./menu-list";
 import { MenuPopover, PopoverBackdrop } from "./menu-popover";
@@ -52,48 +52,61 @@ export function AppNav() {
       <MenuPopover
         open={menu.open}
         onClose={menu.onClose}
-        className="fixed inset-x-3.5 bottom-[78px] z-50 mx-auto max-w-md"
+        className="fixed inset-x-3.5 bottom-[calc(78px+env(safe-area-inset-bottom))] z-50 mx-auto max-w-md"
         grid={
           <>
-            <AccountMenuCell initials="JR" name="Josh Roxby" email="josh@exhale.studio" />
+            <AccountMenuCell initials="JR" name="Josh Roxby" email="josh@exhale.studio">
+              <AccountSubCta
+                label="About Josh"
+                icon={icons.question}
+                onClick={() => goAnchor("about")}
+              />
+              <AccountSubCta
+                label="Instagram @josh_roxby"
+                icon={icons.instagram}
+                href="https://instagram.com/josh_roxby"
+                external
+                onClick={menu.onClose}
+              />
+              <AccountSubCta
+                label="Email josh@exhale.studio"
+                icon={icons.mail}
+                href="mailto:josh@exhale.studio"
+                onClick={menu.onClose}
+              />
+            </AccountMenuCell>
             <ActionMenuCell
-              eyebrow="// 03"
+              eyebrow="// 02"
               icon={icons.flask}
               label="Drawing board"
               onClick={() => go("/drawingboard")}
             />
             <ActionMenuCell
-              eyebrow="// 04"
-              icon={icons.compass}
-              label="Design"
-              onClick={() => go("/designsystem")}
+              eyebrow="// 03"
+              icon={icons.gallery}
+              label="Gallery"
+              onClick={() => go("/gallery")}
             />
             <ActionMenuCell
-              eyebrow="// 05"
+              eyebrow="// 04"
               icon={icons.notes}
               label="Thinking"
               onClick={() => go("/thinking")}
             />
             <ActionMenuCell
+              eyebrow="// 05"
+              icon={icons.mail}
+              label="Contact"
+              onClick={() => go("/contact")}
+            />
+            <ActionMenuCell
               eyebrow="// 06"
-              icon={icons.search}
-              label="Search"
+              icon={icons.signout}
+              label="Sign out"
               onClick={menu.onClose}
             />
             <ActionMenuCell
               eyebrow="// 07"
-              icon={icons.mail}
-              label="Contact"
-              onClick={menu.onClose}
-            />
-            <ActionMenuCell
-              eyebrow="// 08"
-              icon={icons.theme}
-              label="Theme"
-              onClick={menu.onClose}
-            />
-            <ActionMenuCell
-              eyebrow="// 09"
               icon={icons.help}
               label="Help"
               onClick={menu.onClose}
@@ -114,7 +127,7 @@ export function AppNav() {
         }
       />
 
-      <div className="pointer-events-none fixed bottom-[18px] left-1/2 z-40 -translate-x-1/2">
+      <div className="pointer-events-none fixed bottom-[calc(18px+env(safe-area-inset-bottom))] left-1/2 z-40 -translate-x-1/2">
         <FloatNav className="pointer-events-auto">
           {/* Primary */}
           <NavItem
@@ -177,10 +190,11 @@ const icons = {
       <path d="M9 3h6" />
     </svg>
   ),
-  compass: (
+  gallery: (
     <svg {...swSm}>
-      <circle cx="12" cy="12" r="10" />
-      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <polyline points="21,15 16,10 5,21" />
     </svg>
   ),
   notes: (
@@ -189,22 +203,28 @@ const icons = {
       <path d="M14 2v6h6M16 13H8M16 17H8" />
     </svg>
   ),
-  search: (
-    <svg {...swSm}>
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
-  ),
   mail: (
     <svg {...swSm}>
       <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
       <polyline points="22,6 12,13 2,6" />
     </svg>
   ),
-  theme: (
+  signout: (
     <svg {...swSm}>
-      <circle cx="12" cy="12" r="5" />
-      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+      <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+    </svg>
+  ),
+  question: (
+    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01" />
+    </svg>
+  ),
+  instagram: (
+    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="2" y="2" width="20" height="20" rx="5" />
+      <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
     </svg>
   ),
   help: (

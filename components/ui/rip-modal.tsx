@@ -46,7 +46,8 @@ export function RipModal({
         Adjust to your stack as needed.
       </p>
 
-      <div className="mt-4 overflow-hidden rounded-sq border border-line-2 bg-bg-2">
+      <div className="mt-4 overflow-hidden rounded-sq border border-line-2 bg-bg-2"
+      >
         <div className="flex items-center justify-between border-b border-line bg-surface px-3 py-2">
           <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-mute-2">
             // PROMPT
@@ -71,25 +72,25 @@ export function RipModal({
           // HOW DO I USE THIS
         </div>
         <p className="text-sm text-ink-2">
-          You'll need a basic familiarity with these tools — read the docs as you go.
-          This isn't a tutorial; every project is different.
+          You&apos;ll need a basic familiarity with these tools. Read the docs as you go.
+          This isn&apos;t a tutorial. Every project is different.
         </p>
         <ul className="space-y-1.5 text-sm text-ink-2 [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-white">
           <li>
-            <strong className="text-ink">GitHub</strong> — somewhere to host your repo.{" "}
+            <strong className="text-ink">GitHub.</strong> Somewhere to host your repo.{" "}
             <a href="https://docs.github.com" target="_blank" rel="noreferrer">docs</a>
           </li>
           <li>
-            <strong className="text-ink">Claude / Claude Code</strong> — the assistant that
+            <strong className="text-ink">Claude / Claude Code.</strong> The assistant that
             builds it.{" "}
             <a href="https://docs.anthropic.com" target="_blank" rel="noreferrer">docs</a>
           </li>
           <li>
-            <strong className="text-ink">Vercel</strong> — to deploy it.{" "}
+            <strong className="text-ink">Vercel.</strong> To deploy it.{" "}
             <a href="https://vercel.com/docs" target="_blank" rel="noreferrer">docs</a>
           </li>
           <li>
-            <strong className="text-ink">Supabase</strong> — only if the project uses a
+            <strong className="text-ink">Supabase.</strong> Only if the project uses a
             database.{" "}
             <a href="https://supabase.com/docs" target="_blank" rel="noreferrer">docs</a>
           </li>
@@ -97,11 +98,11 @@ export function RipModal({
         <ol className="space-y-1.5 pt-2 text-sm text-ink-2">
           <li><span className="mr-1 font-mono text-accent">01</span>Open Claude or Claude Code in a fresh project.</li>
           <li><span className="mr-1 font-mono text-accent">02</span>Paste the prompt above.</li>
-          <li><span className="mr-1 font-mono text-accent">03</span>Follow Claude's instructions; tweak to your stack.</li>
+          <li><span className="mr-1 font-mono text-accent">03</span>Follow Claude&apos;s instructions. Tweak to your stack.</li>
           <li><span className="mr-1 font-mono text-accent">04</span>Push to GitHub, deploy to Vercel.</li>
         </ol>
         <p className="pt-2 text-xs text-mute-2">
-          Beyond these basics, do your own research — every project is different.
+          Beyond these basics, do your own research. Every project is different.
         </p>
       </div>
     </Modal>

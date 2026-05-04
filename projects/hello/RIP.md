@@ -29,14 +29,14 @@ projects/hello/
 
 1. **Isolation rule.** Every component, lib, hook, style, and type used only
    by this project lives inside `/projects/hello/`. Do not promote anything to
-   `/components`, `/lib`, etc. unless ≥ 2 projects share it.
+   `/components`, `/lib`, etc. unless 2 or more projects share it.
 
 2. **Public API.** `index.ts` exports `Page` and `meta` only.
 
 3. **Meta fields.** `meta.ts` defines:
    - `slug: "hello"`
    - `name: "Hello"`
-   - `description` — one short sentence
+   - `description`. One short sentence.
    - `wip: true` (every project starts WIP)
    - `version: undefined` (no version published while WIP)
    - `tags: ["reference", "scaffold"]`

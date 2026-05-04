@@ -8,13 +8,19 @@
 
 html,
 body {
-  background: var(--bg);
+  background-color: var(--bg);
   color: var(--ink);
   font-family: var(--f-body);
   font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Ensure html itself fills the viewport so PWA system bars on Android tint
+ * to the body bg, not white. */
+html {
+  min-height: 100%;
 }
 
 body {

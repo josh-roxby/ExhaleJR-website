@@ -49,8 +49,12 @@ export type { NavItemProps } from "./nav-item";
 export { FloatNav } from "./float-nav";
 export type { FloatNavProps } from "./float-nav";
 
-export { ActionMenuCell, AccountMenuCell } from "./menu-cell";
-export type { ActionMenuCellProps, AccountMenuCellProps } from "./menu-cell";
+export { ActionMenuCell, AccountMenuCell, AccountSubCta } from "./menu-cell";
+export type {
+  ActionMenuCellProps,
+  AccountMenuCellProps,
+  AccountSubCtaProps,
+} from "./menu-cell";
 
 export { MenuListCell, MenuListItem } from "./menu-list";
 export type { MenuListCellProps, MenuListItemProps } from "./menu-list";

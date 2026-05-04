@@ -5,6 +5,7 @@ import { useDisclosure } from "@/hooks/use-disclosure";
 import { cn } from "@/lib/cn";
 import {
   AccountMenuCell,
+  AccountSubCta,
   ActionMenuCell,
   Badge,
   Button,
@@ -172,10 +173,10 @@ function FoundationsSection() {
         <div className="space-y-3">
           <div className="font-display text-5xl font-black leading-none tracking-tight">Display 5xl / black</div>
           <div className="font-display text-3xl font-bold tracking-tight">Display 3xl / bold</div>
-          <div className="text-base">Body — DM Sans 400</div>
-          <div className="text-base font-semibold">Body — DM Sans 600</div>
+          <div className="text-base">Body. DM Sans 400</div>
+          <div className="text-base font-semibold">Body. DM Sans 600</div>
           <div className="font-mono text-xs uppercase tracking-[0.18em] text-mute">// MONO CAPS · 0.18em</div>
-          <div className="font-mono text-xs">JetBrains Mono — code, IDs, metadata</div>
+          <div className="font-mono text-xs">JetBrains Mono. Code, IDs, metadata.</div>
         </div>
       </Row>
 
@@ -194,22 +195,22 @@ function FoundationsSection() {
 function ButtonsSection() {
   return (
     <Section id="buttons" title="Buttons" code="4.1 (A)" description="Square (5px radius). Five variants.">
-      <Row label="// A1 — PRIMARY">
+      <Row label="// A1 · PRIMARY">
         <Button>Primary</Button>
         <Button trailingIcon={<Chevron />}>With trailing</Button>
         <Button leadingIcon={<Plus />}>With leading</Button>
         <Button disabled>Disabled</Button>
       </Row>
-      <Row label="// A2 — SECONDARY">
+      <Row label="// A2 · SECONDARY">
         <Button variant="secondary">Secondary</Button>
         <Button variant="secondary" trailingIcon={<Chevron />}>Trailing</Button>
         <Button variant="secondary-accent">Secondary accent</Button>
       </Row>
-      <Row label="// A3 — GHOST">
+      <Row label="// A3 · GHOST">
         <Button variant="ghost">Ghost</Button>
         <Button variant="ghost" leadingIcon={<Plus />}>With icon</Button>
       </Row>
-      <Row label="// A5 — DESTRUCTIVE">
+      <Row label="// A5 · DESTRUCTIVE">
         <Button variant="destructive">Delete</Button>
       </Row>
     </Section>
@@ -219,7 +220,7 @@ function ButtonsSection() {
 function IconButtonsSection() {
   return (
     <Section id="icon-buttons" title="Icon buttons" code="4.1 (A4)" description="Square default; round as exception.">
-      <Row label="// A4 — VARIANTS">
+      <Row label="// A4 · VARIANTS">
         <IconButton aria-label="Search"><Search /></IconButton>
         <IconButton aria-label="Notifications" notification><Bell /></IconButton>
         <IconButton aria-label="Add" round><Plus /></IconButton>
@@ -246,12 +247,12 @@ function EyebrowSection() {
 function ChipsTagsSection() {
   return (
     <Section id="chips-tags" title="Chips & Tags" code="4.2–4.3 (B)" description="Round chips for state/identity. Square tags for metadata.">
-      <Row label="// B1 — CHIPS (round)">
+      <Row label="// B1 · CHIPS (round)">
         <Chip>Default</Chip>
         <Chip variant="accent">Accent</Chip>
         <Chip variant="mono">// MONO</Chip>
       </Row>
-      <Row label="// B2 — TAGS (square)">
+      <Row label="// B2 · TAGS (square)">
         <Tag>Default</Tag>
         <Tag variant="accent">Accent</Tag>
         <Tag variant="ok">LIVE</Tag>
@@ -265,11 +266,11 @@ function ChipsTagsSection() {
 function PillsBadgesSection() {
   return (
     <Section id="pills-badges" title="Pills & Badges" code="4.4 (C)">
-      <Row label="// C1 — PILLS">
+      <Row label="// C1 · PILLS">
         <Pill>Pill label</Pill>
         <Pill>1.4k tokens</Pill>
       </Row>
-      <Row label="// C2 — BADGES">
+      <Row label="// C2 · BADGES">
         <Badge>3</Badge>
         <Badge>42</Badge>
         <Badge dot />
@@ -349,7 +350,7 @@ function StatCardsSection() {
         <StatCard label="// Open issues" num="23" cap="7 in review" />
         <StatCard label="// Throughput" num="98" spark={sampleSpark} />
       </div>
-      <Row label="// SPARKLINE — STANDALONE">
+      <Row label="// SPARKLINE · STANDALONE">
         <div className="w-40">
           <Sparkline values={sampleSpark} />
         </div>
@@ -431,7 +432,11 @@ function PopoverSection() {
           className="absolute inset-x-3.5 bottom-[78px] z-50"
           grid={
             <>
-              <AccountMenuCell initials="JR" name="Josh Roxby" email="josh@exhale.studio" />
+              <AccountMenuCell initials="JR" name="Josh Roxby" email="josh@exhale.studio">
+                <AccountSubCta label="About" icon={<Help />} />
+                <AccountSubCta label="Instagram" icon={<Instagram />} />
+                <AccountSubCta label="Email" icon={<Mail />} />
+              </AccountMenuCell>
               <ActionMenuCell eyebrow="// 03" icon={<SettingsIcon />} label="Settings" />
               <ActionMenuCell eyebrow="// 04" icon={<Search />} label="Search" />
               <ActionMenuCell eyebrow="// 05" icon={<Plus />} label="New note" />
@@ -474,7 +479,7 @@ function ModalSection() {
       id="modal"
       title="Modal"
       code="3.5"
-      description="Generic modal — opaque-ish surface (rgba(17,17,17,.98)) with blur(24px), dim+blur backdrop. Esc and backdrop close."
+      description="Generic modal. Opaque surface (rgba(17,17,17,.98)) with blur(24px), dim+blur backdrop. Esc and backdrop close."
     >
       <Row label="// TRIGGER">
         <Button onClick={m.onOpen}>Open modal</Button>
@@ -485,7 +490,7 @@ function ModalSection() {
           title="A modal."
         >
           <p className="text-sm text-ink-2">
-            Modals are for focused, transient actions — confirmations, single-task forms,
+            Modals are for focused, transient actions. Confirmations, single-task forms,
             content that benefits from focus.
           </p>
           <p className="mt-3 text-sm text-mute">
@@ -497,7 +502,7 @@ function ModalSection() {
   );
 }
 
-const sampleRipPrompt = `# Demo — rip prompt
+const sampleRipPrompt = `# Demo. Rip prompt
 
 Paste this into Claude to scaffold a similar small project.
 
@@ -511,7 +516,7 @@ TypeScript + Tailwind monorepo, following these conventions:
 2. Public exports are Page and meta.
 3. meta starts wip: true with no version.
 4. Register the project in /projects/registry.ts.
-5. Use existing primitives from @/components/ui — no rebuild.
+5. Use existing primitives from @/components/ui (no rebuild).
 
 Generate the files now.`;
 
@@ -536,7 +541,7 @@ function RipSection() {
           promptContent={sampleRipPrompt}
         />
       </Row>
-      <Row label="// EMPTY (NO PROMPT — RENDERS NOTHING)">
+      <Row label="// EMPTY (NO PROMPT, RENDERS NOTHING)">
         <RipButton
           projectName="Demo"
           projectSlug="demo"
@@ -567,6 +572,7 @@ function Mail() { return <svg {...sw}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.
 function SignOut() { return <svg {...sw}><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>; }
 function Theme() { return <svg {...sw}><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>; }
 function Help() { return <svg {...sw}><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01" /></svg>; }
+function Instagram() { return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><rect x="2" y="2" width="20" height="20" rx="5" /><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>; }
 function SettingsIcon() {
   return (
     <svg {...sw}>

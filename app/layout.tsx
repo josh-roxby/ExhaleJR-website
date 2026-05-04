@@ -30,7 +30,7 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: {
     default: "ExhaleJR",
-    template: "%s — ExhaleJR",
+    template: "%s · ExhaleJR",
   },
   description: "Portfolio, thinking, and a lab of in-progress projects.",
   applicationName: "ExhaleJR",
@@ -43,6 +43,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#0a0a0a",
+  colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -58,7 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="px-4">
             <InstallPrompt />
           </div>
-          <div className="pb-32">{children}</div>
+          <div className="pb-[calc(8rem+env(safe-area-inset-bottom))]">{children}</div>
           <AppNav />
         </NavProvider>
       </body>
