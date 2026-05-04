@@ -28,16 +28,42 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://exhalejr.com",
+  ),
   title: {
     default: "ExhaleJR",
     template: "%s · ExhaleJR",
   },
-  description: "Portfolio, thinking, and a lab of in-progress projects.",
+  description: "Personal site, drawing board, and rip-able projects by Josh Roxby.",
   applicationName: "ExhaleJR",
   appleWebApp: {
     capable: true,
     title: "ExhaleJR",
     statusBarStyle: "black-translucent",
+  },
+  // All brand assets live under /public/logo. Replacing files there cascades
+  // through favicon, apple-touch-icon, OG image, and the React <Logo>.
+  icons: {
+    icon: [
+      { url: "/logo/logo.svg", type: "image/svg+xml" },
+      { url: "/logo/logo-256.png", sizes: "256x256", type: "image/png" },
+      { url: "/logo/logo-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/logo/logo-180.png", sizes: "180x180", type: "image/png" }],
+  },
+  openGraph: {
+    type: "website",
+    siteName: "ExhaleJR",
+    title: "ExhaleJR",
+    description: "Personal site, drawing board, and rip-able projects by Josh Roxby.",
+    images: [{ url: "/logo/og.png", width: 1200, height: 630, alt: "ExhaleJR" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ExhaleJR",
+    description: "Personal site, drawing board, and rip-able projects by Josh Roxby.",
+    images: ["/logo/og.png"],
   },
 };
 

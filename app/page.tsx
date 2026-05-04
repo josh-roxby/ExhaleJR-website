@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Card, Eyebrow, Tag } from "@/components/ui";
+import { Card, Eyebrow, Logo, Tag } from "@/components/ui";
 import { projects } from "@/projects/registry";
 
 // Note for josh: friendly first-person voice, no em-dashes per CLAUDE.md.
@@ -10,6 +10,7 @@ export default function HomePage() {
     <main className="relative z-10">
       {/* HERO */}
       <section className="mx-auto max-w-3xl px-6 pt-24 pb-16 sm:pt-32">
+        <Logo size={48} className="mb-5" />
         <Eyebrow tone="accent" withPulseDot>// EXHALEJR · v0.1</Eyebrow>
         <h1 className="mt-3 font-display text-6xl font-black leading-[0.92] tracking-tight sm:text-7xl">
           Hey, I'm <span className="text-accent">Josh</span>.

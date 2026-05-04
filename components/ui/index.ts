@@ -31,6 +31,9 @@ export type { ModalProps } from "./modal";
 export { CopyButton } from "./copy-button";
 export type { CopyButtonProps } from "./copy-button";
 
+export { Logo } from "./logo";
+export type { LogoProps } from "./logo";
+
 export { RipButton } from "./rip-button";
 export type { RipButtonProps } from "./rip-button";
 

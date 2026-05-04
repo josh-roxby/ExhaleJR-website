@@ -97,6 +97,14 @@ Tests/lint intentionally not configured yet — add when needed.
 - **Version bumps live in the project's `TODO.md`** under `## Versions` (newest first). Public-facing surfaces read `meta.version` only.
 - **Public vs private docs.** `TODO.md` is the project's private worklog (versions, in-flight tasks). `RIP.md` is the public copy-into-Claude prompt that gets shipped alongside the project.
 
+## Brand assets
+
+`/public/logo/` is the single source of truth for the brand mark. Every surface that needs the logo reads from there: `app/manifest.ts` icons, `metadata.icons` and `metadata.openGraph.images` in `app/layout.tsx`, and the React `<Logo>` component in `components/ui/logo.tsx` (which uses `currentColor` so callers tint via Tailwind).
+
+To replace the placeholders with real branding, drop new files into `/public/logo/` keeping the same filenames (`logo.svg`, `mark.svg`, `logo-{192,256,512,180}.png`, `logo-maskable.png`, `og.png`). All wiring already references those paths.
+
+`scripts/gen-placeholder-icons.py` regenerates the PNG placeholders from a solid colour. Edit `BG` and `FG` constants if you want to recolour the placeholder. Real assets should not be generated from this script; replace files directly.
+
 ## Rip system
 
 Each project ships with a `RIP.md` containing only the **project-specific** content: what the project does, its meta fields, any unique constraints. The shared scaffolding (attribution header, mode preamble, design language, output instructions) lives in `lib/rip-prompt.ts` and gets prepended/appended at runtime when the modal builds the final prompt.

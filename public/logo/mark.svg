@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="7" fill="#0a0a0a"/>
+  <rect x="0.5" y="0.5" width="63" height="63" rx="6.5" stroke="#7c5cff" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="32" y="33" font-family="Big Shoulders Display, sans-serif" font-weight="900" font-size="34" fill="#7c5cff" text-anchor="middle" dominant-baseline="central" letter-spacing="-0.04em">JR</text>
+</svg>
