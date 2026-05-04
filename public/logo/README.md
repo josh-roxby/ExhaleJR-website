@@ -1,45 +1,43 @@
 # /public/logo
 
-Single source of truth for the ExhaleJR brand mark. Everything that references
-the logo (favicon, PWA icons, Apple touch icon, Open Graph image, the React
+Single source of truth for the ExhaleJR brand mark. `logo.png` is the master.
+Everything else (PWA icons, favicon, Apple touch icon, OG image, the React
 `<Logo>` component) reads from this folder.
 
 ## Files
 
 | File | Used by | Notes |
 |---|---|---|
-| `logo.svg` | Reference, downloads, future external use | 512×512 master vector. |
-| `mark.svg` | Same | 64×64 mark for tight spaces. |
-| `logo-192.png` | PWA manifest (`app/manifest.ts`) | 192×192 raster icon. |
-| `logo-512.png` | PWA manifest | 512×512 raster icon. |
-| `logo-maskable.png` | PWA manifest | 512×512 maskable. Content stays inside the safe zone. |
-| `logo-180.png` | Apple touch icon (`metadata.icons.apple`) | 180×180. |
-| `logo-256.png` | Favicon (`metadata.icons.icon`) | 256×256. |
-| `og.png` | Open Graph image (`metadata.openGraph.images`) | 1200×630. |
+| `logo.png` | `<Logo>` component, master | Source artwork (640×640 here, any size works). |
+| `logo-192.png` | PWA manifest (`app/manifest.ts`) | 192×192 raster icon. Generated from `logo.png`. |
+| `logo-512.png` | PWA manifest | 512×512 raster icon. Generated. |
+| `logo-maskable.png` | PWA manifest | 512×512 maskable. Logo stays inside the safe zone. Generated. |
+| `logo-180.png` | Apple touch icon (`metadata.icons.apple`) | 180×180. Generated. |
+| `logo-256.png` | Favicon (`metadata.icons.icon`) | 256×256. Generated. |
+| `og.png` | Open Graph (`metadata.openGraph.images`) | 1200×630. Generated. |
 
-## Inline usage
+The generated variants render the master centered on a dark `--bg` (#0a0a0a)
+canvas so the white mark stays visible on light surfaces (browser tabs in
+light mode, social-card previews on light backgrounds, etc).
 
-For React, import the `<Logo>` component from `@/components/ui`. It renders the
-SVG inline with `currentColor`, so you can tint it via Tailwind text classes:
+## Replacing the master
+
+1. Drop new artwork at `/public/logo/logo.png`. Square aspect works best.
+2. Regenerate the variants:
+
+   ```bash
+   pip3 install -r scripts/requirements.txt   # first time only
+   python3 scripts/gen-logo-variants.py
+   ```
+
+3. Commit and push.
+
+## Inline usage in React
 
 ```tsx
 import { Logo } from "@/components/ui";
 
-<span className="text-accent">
-  <Logo size={48} />
-</span>
+<Logo size={48} priority />
 ```
 
-## How to replace these placeholders
-
-Drop in real SVG and PNG files at the paths above. Keep the filenames identical
-so all the references already in the codebase pick up the new files.
-
-If you want to regenerate the placeholder PNGs from a single colour (during
-early development), run:
-
-```bash
-python3 scripts/gen-placeholder-icons.py
-```
-
-Edit the `BG` and `FG` constants in the script first to change colours.
+`priority` skips lazy-loading — use it for above-the-fold placement (hero).

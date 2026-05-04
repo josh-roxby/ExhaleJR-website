@@ -46,7 +46,6 @@ export const metadata: Metadata = {
   // through favicon, apple-touch-icon, OG image, and the React <Logo>.
   icons: {
     icon: [
-      { url: "/logo/logo.svg", type: "image/svg+xml" },
       { url: "/logo/logo-256.png", sizes: "256x256", type: "image/png" },
       { url: "/logo/logo-192.png", sizes: "192x192", type: "image/png" },
     ],

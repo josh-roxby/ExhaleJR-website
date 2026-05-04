@@ -10,7 +10,7 @@ export default function HomePage() {
     <main className="relative z-10">
       {/* HERO */}
       <section className="mx-auto max-w-3xl px-6 pt-24 pb-16 sm:pt-32">
-        <Logo size={48} className="mb-5" />
+        <Logo size={56} priority className="mb-5" />
         <Eyebrow tone="accent" withPulseDot>// EXHALEJR · v0.1</Eyebrow>
         <h1 className="mt-3 font-display text-6xl font-black leading-[0.92] tracking-tight sm:text-7xl">
           Hey, I'm <span className="text-accent">Josh</span>.

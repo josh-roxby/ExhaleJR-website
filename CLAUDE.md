@@ -99,11 +99,11 @@ Tests/lint intentionally not configured yet — add when needed.
 
 ## Brand assets
 
-`/public/logo/` is the single source of truth for the brand mark. Every surface that needs the logo reads from there: `app/manifest.ts` icons, `metadata.icons` and `metadata.openGraph.images` in `app/layout.tsx`, and the React `<Logo>` component in `components/ui/logo.tsx` (which uses `currentColor` so callers tint via Tailwind).
+`/public/logo/` is the single source of truth for the brand mark. `logo.png` is the master. Every surface that needs the logo reads from there: `app/manifest.ts` icons, `metadata.icons` and `metadata.openGraph.images` in `app/layout.tsx`, and the React `<Logo>` component in `components/ui/logo.tsx` (which renders the master via `next/image`).
 
-To replace the placeholders with real branding, drop new files into `/public/logo/` keeping the same filenames (`logo.svg`, `mark.svg`, `logo-{192,256,512,180}.png`, `logo-maskable.png`, `og.png`). All wiring already references those paths.
+To replace the brand, drop new artwork into `/public/logo/logo.png` then run `python3 scripts/gen-logo-variants.py` to regenerate the sized variants. The script reads `logo.png`, centers it on a dark `--bg` canvas, and writes `logo-{180,192,256,512}.png`, `logo-maskable.png`, and `og.png`. All wiring already references those paths.
 
-`scripts/gen-placeholder-icons.py` regenerates the PNG placeholders from a solid colour. Edit `BG` and `FG` constants if you want to recolour the placeholder. Real assets should not be generated from this script; replace files directly.
+`scripts/requirements.txt` lists `Pillow>=10` (the only dep). First time only: `pip3 install -r scripts/requirements.txt`.
 
 ## Rip system
 
