@@ -3,14 +3,17 @@ import { InstallPrompt } from "@/components/pwa/install-prompt";
 
 export default function LabLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-dvh">
-      <header className="sticky top-0 z-10 border-b border-fg/10 bg-bg/80 backdrop-blur">
+    <div className="relative z-10 min-h-dvh">
+      <header className="sticky top-0 z-20 border-b border-line bg-bg-2/95 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <Link href="/lab" className="font-mono text-sm">
+          <Link
+            href="/lab"
+            className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-ink"
+          >
             /lab
           </Link>
-          <nav className="flex items-center gap-4 text-sm text-muted">
-            <Link href="/" className="hover:text-fg">
+          <nav className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.18em] text-mute">
+            <Link href="/" className="transition hover:text-ink">
               Portfolio
             </Link>
           </nav>

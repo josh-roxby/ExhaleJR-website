@@ -34,8 +34,8 @@ def make_png(width: int, height: int, pixel) -> bytes:
     )
 
 
-BG = (10, 10, 10, 255)        # near-black
-FG = (129, 140, 248, 255)     # indigo (matches accent token)
+BG = (10, 10, 10, 255)        # --bg #0a0a0a
+FG = (124, 92, 255, 255)      # --accent Iris #7c5cff
 
 
 def render(path: str, size: int, circle_radius_pct: float):

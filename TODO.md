@@ -5,15 +5,16 @@ This is the master todo. Sub-project todos live next to their code and are linke
 ## Repo / shared infra
 
 ### Now
-- [ ] Receive style guide from chat-mode work and apply tokens to `styles/globals.css` (`--color-*`, `--font-*`).
-- [ ] Replace placeholder PWA icons in `/public/icons` (`icon-192.png`, `icon-512.png`, `maskable-512.png`).
-- [ ] Run `npm install` and verify `npm run dev` and `npm run build`.
+- [x] ~~Apply design system tokens (`styles/DESIGN-SYSTEM.md` v0.1) to globals.~~ Done — tokens, fonts, body atmosphere live; existing pages refactored onto the token set.
+- [ ] Build out the component library against `DESIGN-SYSTEM.md` §4–§5. Awaiting full reference HTML files (`jr-round-1-v4.html`, `jr-round-2-v2.html`, `jr-mobile-home-concept-v3.html`).
+- [ ] Replace placeholder PWA icons in `/public/icons` and `/app/{icon,apple-icon}.png` with real branding.
 
 ### Next
 - [ ] Flesh out `/about` and `/thinking` pages with real content.
 - [ ] Decide on a content source for `/thinking` (MDX in repo? CMS? local markdown?).
 - [ ] Add a real install prompt fallback for iOS (no `beforeinstallprompt` event) — show "Add to Home Screen" instructions instead.
 - [ ] Add an offline page and basic SW caching strategy once routes stabilize.
+- [ ] Implement floating bottom nav + bento popover (§5.2, §5.3) for the lab/PWA shell.
 
 ### Later
 - [ ] ESLint + Prettier config when contribution patterns settle.

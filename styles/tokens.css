@@ -1,0 +1,54 @@
+/* EXHALEJR Design System v0.1 — Section 2 Tokens
+ * Source of truth: styles/DESIGN-SYSTEM.md
+ * Do not redefine these in component CSS. Reference via var(--…).
+ */
+
+:root {
+  /* === COLOUR === */
+  --bg:        #0a0a0a;
+  --bg-2:      #0d0d0d;
+  --surface:   #111111;
+  --surface-2: #161616;
+  --surface-3: #1c1c1c;
+
+  --line:   #1f1f1f;
+  --line-2: #2a2a2a;
+  --line-3: #3a3a3a;
+
+  --mute-3: #5a5a5a;
+  --mute-2: #7a7a7a;
+  --mute:   #a8a8a8;
+  --ink-2:  #cfcfcf;
+  --ink:    #fafafa;
+
+  --accent:           #7c5cff;
+  --accent-on:        #ffffff;
+  --accent-glow:      rgba(124, 92, 255, 0.22);
+
+  --accent-dim:       #a78bfa;
+  --accent-glow-soft: rgba(167, 139, 250, 0.16);
+
+  --warn: #ff5b3d;
+  --ok:   #4ade80;
+
+  /* === RADII === */
+  --r-square-xs:  3px;
+  --r-square:     5px;
+  --r-square-md:  6px;
+  --r-square-lg:  10px;
+  --r-square-xl:  14px;
+  --r-square-xxl: 20px;
+  --r-round:      999px;
+
+  /* === MOTION === */
+  --t:          240ms;
+  --ease:       cubic-bezier(.2, .6, .2, 1);
+  --ease-press: cubic-bezier(.4, 0, .6, 1);
+
+  /* === TYPOGRAPHY === */
+  /* Variables are populated by next/font in app/layout.tsx and fall back
+   * to system stacks below if the font assignment hasn't loaded. */
+  --f-display: var(--font-display, 'Big Shoulders Display', sans-serif);
+  --f-body:    var(--font-body, 'DM Sans', sans-serif);
+  --f-mono:    var(--font-mono, 'JetBrains Mono', ui-monospace, monospace);
+}
