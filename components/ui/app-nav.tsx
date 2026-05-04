@@ -109,7 +109,7 @@ export function AppNav() {
               eyebrow="// 07"
               icon={icons.help}
               label="Help"
-              onClick={menu.onClose}
+              onClick={() => go("/help")}
             />
           </>
         }

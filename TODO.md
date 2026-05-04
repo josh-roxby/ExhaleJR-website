@@ -17,13 +17,7 @@ Sprint focus, in suggested order. See chat for the spec behind each item.
 4. ~~**/about as a separate route.**~~ Done. `app/about/page.tsx` with hero plus five sections (About me, Background, What I like, Why I build, Addicted to learning). Redirect removed from `next.config.ts`. Both About nav slots route to `/about`.
 5. ~~**/contact route.**~~ Done. Two cards, IG opens in new tab, email opens mail client, plus a `CopyButton` for the address. Side note about studio enquiries pointing to exhale.studio.
 6. ~~**/gallery real content.**~~ Done. Tile grid pulling from `content/gallery.ts` (single TS array, easy to append). Aspect 4:5 tiles, placeholder gradient when no image, lazy-loaded `<img>`, tags rendered as Tag chips, sorted newest first, EmptyState for zero items. Workflow doc in `content/README.md`. The thoughts/found surfaces will follow the same `content/<surface>.ts` pattern when built.
-7. **Help cell content.** When **Help** is tapped from the bento popover, route or modal showing:
-   - How do I use the drawing board.
-   - Setting up a GitHub account (basics).
-   - Getting a Claude subscription / Claude Code.
-   - Setting up Vercel.
-   - How to use Claude Code with GitHub and Vercel to launch personal test apps.
-   Tone: friendly, non-technical first, hyperlinks to official docs for depth.
+7. ~~**Help cell content.**~~ Done. `/help` route with hero, TOC, and five sections (Drawing board, GitHub, Claude, Vercel, Putting it together). Friendly non-technical voice, doc links per section. Help cell in popover routes here.
 8. **Rip feature revision.** This is the big one.
    - More breathing room in the modal layout. Less dense, friendlier for non-technical readers.
    - Auto-prefix every rip prompt with an attribution header that prints into the user's generated code:
