@@ -97,6 +97,18 @@ Tests/lint intentionally not configured yet — add when needed.
 - **Version bumps live in the project's `TODO.md`** under `## Versions` (newest first). Public-facing surfaces read `meta.version` only.
 - **Public vs private docs.** `TODO.md` is the project's private worklog (versions, in-flight tasks). `RIP.md` is the public copy-into-Claude prompt that gets shipped alongside the project.
 
+## Rip system
+
+Each project ships with a `RIP.md` — a copy-into-Claude prompt that lets a reader scaffold their own version of the project. Server reads via `lib/rip.ts` (`getRipContent(slug)` and `getAllRipContents()`); content is passed to client components as a serializable string.
+
+UI surfaces:
+
+- **Drawing-board tiles** (`app/drawingboard/_drawing-board-client.tsx`) — circular rip button positioned absolutely top-right of each tile, sibling to the link so it doesn't trigger navigation.
+- **Project pages** (`app/drawingboard/[project]/_project-shell.tsx`) — the `<ProjectShell>` wraps every `Page` and renders WIP / version Tags + a rip button in the top-right action cluster. Project pages don't manage their own meta chrome.
+- **`<RipButton>`** is hidden when `promptContent` is null — projects without a `RIP.md` simply don't expose the affordance.
+
+The "How do I use this" guide inside `<RipModal>` is generic — same content for every project. It assumes basics of GitHub, Claude / Claude Code, Vercel, and Supabase, and points readers to do their own research from there.
+
 ## Working preferences
 
 - Edit existing files over creating new ones.

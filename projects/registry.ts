@@ -21,6 +21,9 @@ export interface ProjectEntry {
   tags: string[];
 }
 
+/** Serializable subset for crossing the server → client boundary. */
+export type ProjectSummary = Omit<ProjectEntry, "Page">;
+
 export const projects: ProjectEntry[] = [
   {
     slug: "hello",

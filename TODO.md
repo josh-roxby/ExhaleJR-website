@@ -15,7 +15,7 @@ This is the master todo. Sub-project todos live next to their code and are linke
 - [x] ~~Rename `/lab` → `/drawingboard`.~~ Done — old paths redirect via `next.config.ts`.
 - [ ] Real copy on the home page (replace `// COPY:` placeholders).
 - [x] ~~Drawing-board search + tag filter on `/drawingboard`.~~ Done — text search across name/description/slug, ANY-match tag filter chips, empty state with clear-all.
-- [ ] Rip system: `RIP.md` per project + modal with copy-to-clipboard + "How to use this" guide.
+- [x] ~~Rip system: `RIP.md` per project + modal with copy-to-clipboard + "How to use this" guide.~~ Done — circular rip button on drawing-board tiles and project pages, modal with prompt + generic guide. `projects/hello/RIP.md` is the reference.
 - [ ] Decide content source for `/thoughts`, `/found`, `/creative` (markdown entries committed, or admin UI).
 - [ ] iOS install-prompt fallback (no `beforeinstallprompt`) — "Add to Home Screen" instructions.
 - [ ] Offline page + SW caching once routes stabilize.

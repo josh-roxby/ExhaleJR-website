@@ -25,6 +25,15 @@ export type { BadgeProps } from "./badge";
 export { TextInput, FieldLabel } from "./text-input";
 export type { TextInputProps, FieldLabelProps } from "./text-input";
 
+export { Modal } from "./modal";
+export type { ModalProps } from "./modal";
+
+export { RipButton } from "./rip-button";
+export type { RipButtonProps } from "./rip-button";
+
+export { RipModal } from "./rip-modal";
+export type { RipModalProps } from "./rip-modal";
+
 export { Card } from "./card";
 export type { CardHover } from "./card";
 

@@ -17,10 +17,12 @@ import {
   MenuListCell,
   MenuListItem,
   MenuPopover,
+  Modal,
   NavItem,
   NavSecondary,
   Pill,
   PopoverBackdrop,
+  RipButton,
   Sparkline,
   StatCard,
   Tag,
@@ -75,6 +77,8 @@ export default function DesignSystemPage() {
         <StatCardsSection />
         <FloatNavSection />
         <PopoverSection />
+        <ModalSection />
+        <RipSection />
       </div>
     </div>
   );
@@ -459,6 +463,87 @@ function PopoverSection() {
           </FloatNav>
         </div>
       </PhoneFrame>
+    </Section>
+  );
+}
+
+function ModalSection() {
+  const m = useDisclosure();
+  return (
+    <Section
+      id="modal"
+      title="Modal"
+      code="3.5"
+      description="Generic modal — opaque-ish surface (rgba(17,17,17,.98)) with blur(24px), dim+blur backdrop. Esc and backdrop close."
+    >
+      <Row label="// TRIGGER">
+        <Button onClick={m.onOpen}>Open modal</Button>
+        <Modal
+          open={m.open}
+          onClose={m.onClose}
+          eyebrow="// MODAL · DEMO"
+          title="A modal."
+        >
+          <p className="text-sm text-ink-2">
+            Modals are for focused, transient actions — confirmations, single-task forms,
+            content that benefits from focus.
+          </p>
+          <p className="mt-3 text-sm text-mute">
+            Press Esc, click the backdrop, or hit the close button to dismiss.
+          </p>
+        </Modal>
+      </Row>
+    </Section>
+  );
+}
+
+const sampleRipPrompt = `# Demo — rip prompt
+
+Paste this into Claude to scaffold a similar small project.
+
+---
+
+I'd like to scaffold a small example inside an existing Next.js (App Router) +
+TypeScript + Tailwind monorepo, following these conventions:
+
+1. Project lives under /projects/<slug>/ with index.ts, meta.ts, page.tsx,
+   TODO.md, README.md, and RIP.md.
+2. Public exports are Page and meta.
+3. meta starts wip: true with no version.
+4. Register the project in /projects/registry.ts.
+5. Use existing primitives from @/components/ui — no rebuild.
+
+Generate the files now.`;
+
+function RipSection() {
+  return (
+    <Section
+      id="rip"
+      title="Rip button + modal"
+      description="Circular rip button opens a project's Claude prompt with a copy-to-clipboard, plus a generic 'How do I use this' guide."
+    >
+      <Row label="// SIZES">
+        <RipButton
+          size="sm"
+          projectName="Demo"
+          projectSlug="demo"
+          promptContent={sampleRipPrompt}
+        />
+        <RipButton
+          size="md"
+          projectName="Demo"
+          projectSlug="demo"
+          promptContent={sampleRipPrompt}
+        />
+      </Row>
+      <Row label="// EMPTY (NO PROMPT — RENDERS NOTHING)">
+        <RipButton
+          projectName="Demo"
+          projectSlug="demo"
+          promptContent={null}
+        />
+        <span className="font-mono text-[10px] text-mute-3">// hidden when promptContent is null</span>
+      </Row>
     </Section>
   );
 }

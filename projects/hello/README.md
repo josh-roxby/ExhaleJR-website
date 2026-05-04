@@ -16,8 +16,9 @@ projects/hello/
   styles/             # CSS modules or scoped styles
   types/              # TypeScript types
   server/             # Route handlers / server actions
-  TODO.md             # Project-specific todos
-  README.md
+  TODO.md             # Project-specific todos (private worklog)
+  README.md           # this file
+  RIP.md              # public copy-into-Claude prompt
 ```
 
 ## Rules
