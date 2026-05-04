@@ -1,100 +1,67 @@
-"""Generate placeholder logo PNGs into /public/logo (no external deps).
+"""Generate sized logo variants from /public/logo/logo.png.
 
-The SVG masters (logo.svg, mark.svg) live alongside these and are the real
-source. The PNGs here exist for surfaces that need a raster file (PWA
-manifest, Apple touch icon, Open Graph image, favicon fallback).
+Reads `logo.png` (the master) and writes the sized variants used by the PWA
+manifest, favicon, Apple touch icon, and Open Graph image. Each variant is
+rendered as the master centered on a dark `--bg` (#0a0a0a) canvas so the
+white mark stays visible on light surfaces (browser tabs in light mode,
+Apple home screens, OG previews on light social cards).
 
-Replace the PNGs with real renders when branding lands. The metadata in
-app/layout.tsx and the manifest at app/manifest.ts both reference paths in
-this folder, so swapping files keeps the wiring intact.
+Run after replacing logo.png with new artwork:
+
+    pip3 install -r scripts/requirements.txt
+    python3 scripts/gen-logo-variants.py
+
+Sizes: see the calls at the bottom of the file.
 """
 import os
-import struct
-import zlib
+import sys
 
-OUT = os.path.join(os.path.dirname(__file__), "..", "public", "logo")
-os.makedirs(OUT, exist_ok=True)
+try:
+    from PIL import Image
+except ImportError:  # pragma: no cover
+    sys.exit("Pillow is required. Run: pip3 install -r scripts/requirements.txt")
 
+ROOT = os.path.join(os.path.dirname(__file__), "..")
+LOGO_DIR = os.path.join(ROOT, "public", "logo")
+SRC_PATH = os.path.join(LOGO_DIR, "logo.png")
 
-def png_chunk(tag: bytes, data: bytes) -> bytes:
-    return (
-        struct.pack(">I", len(data))
-        + tag
-        + data
-        + struct.pack(">I", zlib.crc32(tag + data))
-    )
+if not os.path.exists(SRC_PATH):
+    sys.exit(f"Source not found: {SRC_PATH}. Drop logo.png into /public/logo first.")
 
-
-def make_png(width: int, height: int, pixel) -> bytes:
-    raw = bytearray()
-    for y in range(height):
-        raw.append(0)  # PNG filter type: None
-        for x in range(width):
-            r, g, b, a = pixel(x, y)
-            raw += bytes((r, g, b, a))
-
-    sig = b"\x89PNG\r\n\x1a\n"
-    ihdr = struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0)  # RGBA, 8-bit
-    return (
-        sig
-        + png_chunk(b"IHDR", ihdr)
-        + png_chunk(b"IDAT", zlib.compress(bytes(raw), 9))
-        + png_chunk(b"IEND", b"")
-    )
+SRC = Image.open(SRC_PATH).convert("RGBA")
+BG = (10, 10, 10, 255)  # --bg #0a0a0a
 
 
-BG = (10, 10, 10, 255)        # --bg #0a0a0a
-FG = (124, 92, 255, 255)      # --accent Iris #7c5cff
+def render(out_name: str, width: int, height: int, logo_scale: float) -> None:
+    """Centered source logo on dark bg.
+
+    logo_scale is the fraction of min(width, height) that the logo occupies.
+    """
+    canvas = Image.new("RGBA", (width, height), BG)
+    target = int(min(width, height) * logo_scale)
+    aspect = SRC.width / SRC.height
+    if aspect >= 1:
+        lw, lh = target, int(target / aspect)
+    else:
+        lw, lh = int(target * aspect), target
+    logo = SRC.resize((lw, lh), Image.LANCZOS)
+    canvas.alpha_composite(logo, ((width - lw) // 2, (height - lh) // 2))
+    out_path = os.path.join(LOGO_DIR, out_name)
+    canvas.save(out_path, "PNG", optimize=True)
+    print(f"wrote {out_path}")
 
 
-def render_square(path: str, size: int, circle_radius_pct: float):
-    """Iris circle on near-black square. Used for icon-shaped surfaces."""
-    cx = cy = size / 2
+# PWA manifest icons. Logo at ~72% of canvas leaves a comfortable margin.
+render("logo-192.png", 192, 192, 0.72)
+render("logo-512.png", 512, 512, 0.72)
 
-    def pixel(x, y):
-        dx = (x - cx) / (size / 2)
-        dy = (y - cy) / (size / 2)
-        d = (dx * dx + dy * dy) ** 0.5
-        if d < circle_radius_pct:
-            return FG
-        return BG
+# Maskable: Android crops to a circle/squircle. Content must stay inside the
+# safe zone (~80% inscribed circle), so the logo scales smaller.
+render("logo-maskable.png", 512, 512, 0.55)
 
-    data = make_png(size, size, pixel)
-    with open(path, "wb") as f:
-        f.write(data)
-    print(f"wrote {path} ({len(data)} bytes)")
+# Apple touch icon and favicon raster fallback.
+render("logo-180.png", 180, 180, 0.72)
+render("logo-256.png", 256, 256, 0.72)
 
-
-def render_og(path: str, width: int, height: int):
-    """Open Graph banner. Iris circle centered on a wider near-black canvas."""
-    cx = width / 2
-    cy = height / 2
-    radius = min(width, height) * 0.18
-
-    def pixel(x, y):
-        dx = x - cx
-        dy = y - cy
-        d = (dx * dx + dy * dy) ** 0.5
-        if d < radius:
-            return FG
-        return BG
-
-    data = make_png(width, height, pixel)
-    with open(path, "wb") as f:
-        f.write(data)
-    print(f"wrote {path} ({len(data)} bytes)")
-
-
-# PWA manifest icons. Circle ~55% of canvas.
-render_square(os.path.join(OUT, "logo-192.png"), 192, 0.55)
-render_square(os.path.join(OUT, "logo-512.png"), 512, 0.55)
-
-# Maskable: content inside ~80% safe zone, so radius ≤ 0.40.
-render_square(os.path.join(OUT, "logo-maskable.png"), 512, 0.40)
-
-# Apple touch icon, favicon, and any other "tile" surfaces.
-render_square(os.path.join(OUT, "logo-180.png"), 180, 0.55)
-render_square(os.path.join(OUT, "logo-256.png"), 256, 0.55)
-
-# Open Graph image. 1200x630 is the spec for og:image and twitter:image.
-render_og(os.path.join(OUT, "og.png"), 1200, 630)
+# Open Graph banner. Smaller scale because the canvas is much wider than tall.
+render("og.png", 1200, 630, 0.40)
