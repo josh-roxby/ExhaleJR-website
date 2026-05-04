@@ -109,10 +109,22 @@ UI surfaces:
 
 The "How do I use this" guide inside `<RipModal>` is generic — same content for every project. It assumes basics of GitHub, Claude / Claude Code, Vercel, and Supabase, and points readers to do their own research from there.
 
+## Writing style
+
+User-facing copy (pages, modals, buttons, alt text) and Claude's chat responses both follow these rules:
+
+- **No em-dashes (—).** Use a comma, period, or parens instead. The em-dash is an AI tell.
+- **No AI-tell phrasing.** Avoid: "Let's dive in", "I'd be happy to", "absolutely", "It's worth noting", "comprehensive", "moreover", "furthermore", chunky semicolons used as separators.
+- **Prefer sentences over bullet lists** when prose works. Bullets are for genuinely parallel items, not for looking thorough.
+- **Cut filler.** Drop "in order to", "really", "very", "just", "actually" unless they carry weight.
+- **Plain words.** Talk like a normal person. Avoid jargon unless the reader is technical.
+
+When editing existing files, clean em-dashes you encounter as you go. A full sweep of the codebase is its own task in TODO.md.
+
 ## Working preferences
 
 - Edit existing files over creating new ones.
 - Don't add features, abstractions, or error handling beyond what the task requires.
 - Default to no comments. Only add a comment when the WHY is non-obvious.
 - For UI changes, run `npm run dev` and verify in a browser before reporting done.
-- Match the scope of changes to what was asked — no surrounding cleanup unless requested.
+- Match the scope of changes to what was asked. No surrounding cleanup unless requested.
