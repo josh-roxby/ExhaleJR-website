@@ -39,19 +39,21 @@ export function InstallPrompt() {
   };
 
   return (
-    <div className="mx-auto mt-3 flex max-w-5xl items-center justify-between gap-3 rounded-lg border border-fg/10 bg-bg px-4 py-2 text-sm">
-      <span className="text-muted">Install the lab as an app for quicker access.</span>
+    <div className="ds-interactive mx-auto mt-3 flex max-w-5xl items-center justify-between gap-3 rounded-sq-md border border-line bg-surface px-4 py-2 text-sm">
+      <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-mute-2">
+        // Install for quicker access
+      </span>
       <div className="flex gap-2">
         <button
           onClick={dismiss}
-          className="rounded px-2 py-1 text-muted hover:text-fg"
+          className="rounded-sq-xs px-2 py-1 text-mute hover:text-ink"
           type="button"
         >
           Not now
         </button>
         <button
           onClick={install}
-          className="rounded bg-fg px-3 py-1 text-bg hover:opacity-90"
+          className="rounded-sq-xs bg-accent px-3 py-1 font-bold text-accent-on hover:bg-white hover:text-black hover:shadow-glow"
           type="button"
         >
           Install

@@ -7,8 +7,20 @@ Guidance for Claude Code working in this repo.
 Next.js (App Router) + TypeScript (strict) + Tailwind. Three visible surfaces:
 
 - **Portfolio** — default for web visitors. Routes: `/`, `/about`, `/thinking`.
-- **Lab** — `/lab` and `/lab/[project]`. Default landing for installed PWA sessions; navigable on web. The lab layout (`app/lab/layout.tsx`, client component) wraps every lab page in the floating-nav + bento-popover chrome (DESIGN-SYSTEM §5.2 + §5.3). The popover's lab list is wired to `projects/registry.ts`.
-- **Design system** — `/designsystem`. Showcase route under the root layout (no lab chrome). Demos every primitive in `/components/ui` with §6 IDs. Use this surface when iterating on components.
+- **Lab** — `/lab` and `/lab/[project]`. Default landing for installed PWA sessions; navigable on web.
+- **Design system** — `/designsystem`. Showcase route demoing every primitive in `/components/ui` with §6 IDs.
+
+## Persistent app chrome
+
+The floating bottom nav (DESIGN-SYSTEM §5.2) and bento popover (§5.3) are **global** — mounted once at the root layout (`app/layout.tsx` → `<AppNav>`) and visible on every page. The `<AppNav>` floats over content with `fixed` positioning; the root wraps `children` in `pb-32` so content has clearance.
+
+The nav has three sections, divided by subtle pipes:
+
+1. **Primary** (left, persistent) — Home, About.
+2. **Secondary** (center, per-page) — pages inject items via `<NavSecondary>{...NavItems}</NavSecondary>`. The portal teleports children into the slot. Pipes around the slot only render when at least one `<NavSecondary>` is mounted (tracked via `NavProvider` ref count).
+3. **Menu** (right, persistent) — toggles the bento popover. The popover's action cells link to Lab, Design, Thinking, etc.; the lab list cell renders every entry in `projects/registry.ts`.
+
+When adding page-specific nav items, render `<NavSecondary>` inside a client component. See `app/designsystem/page.tsx` for an example (scroll-to-top / scroll-to-bottom).
 
 PWA detection is cookie-based:
 

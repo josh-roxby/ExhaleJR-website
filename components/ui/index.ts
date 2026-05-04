@@ -45,3 +45,7 @@ export type { MenuListCellProps, MenuListItemProps } from "./menu-list";
 
 export { MenuPopover, PopoverBackdrop } from "./menu-popover";
 export type { MenuPopoverProps } from "./menu-popover";
+
+export { AppNav } from "./app-nav";
+export { NavProvider, useNavSlot } from "./nav-context";
+export { NavSecondary } from "./nav-secondary";

@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Big_Shoulders, DM_Sans, JetBrains_Mono } from "next/font/google";
 import "@/styles/globals.css";
 import { DisplayModeProbe } from "@/components/pwa/display-mode-probe";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
+import { AppNav, NavProvider } from "@/components/ui";
 
 const display = Big_Shoulders({
   subsets: ["latin"],
@@ -52,7 +54,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-dvh font-body antialiased">
         <DisplayModeProbe />
         <ServiceWorkerRegister />
-        {children}
+        <NavProvider>
+          <div className="px-4">
+            <InstallPrompt />
+          </div>
+          <div className="pb-32">{children}</div>
+          <AppNav />
+        </NavProvider>
       </body>
     </html>
   );

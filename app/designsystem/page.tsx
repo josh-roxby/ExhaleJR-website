@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { useDisclosure } from "@/hooks/use-disclosure";
 import { cn } from "@/lib/cn";
@@ -18,6 +17,7 @@ import {
   MenuListItem,
   MenuPopover,
   NavItem,
+  NavSecondary,
   Pill,
   PopoverBackdrop,
   Sparkline,
@@ -28,6 +28,26 @@ import {
 export default function DesignSystemPage() {
   return (
     <div className="relative z-10 min-h-dvh">
+      {/* Demo: page registers its own items into the nav's secondary slot. */}
+      <NavSecondary>
+        <NavItem
+          aria-label="Scroll to top"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M18 15l-6-6-6 6" />
+          </svg>
+        </NavItem>
+        <NavItem
+          aria-label="Scroll to bottom"
+          onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" })}
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </NavItem>
+      </NavSecondary>
+
       <header className="border-b border-line bg-bg-2 px-6 py-10">
         <div className="mx-auto max-w-5xl">
           <Eyebrow tone="mute" size="xs">// EXHALEJR · Design System v0.1</Eyebrow>
@@ -38,11 +58,6 @@ export default function DesignSystemPage() {
             Working surface for every primitive in <code className="font-mono text-ink-2">/components/ui</code>. IDs reference{" "}
             <code className="font-mono text-ink-2">styles/DESIGN-SYSTEM.md</code> §6.
           </p>
-          <div className="mt-4 flex flex-wrap gap-2 text-[10px]">
-            <Link href="/lab" className="font-mono uppercase tracking-[0.18em] text-mute hover:text-ink">
-              ← Back to lab
-            </Link>
-          </div>
         </div>
       </header>
 
