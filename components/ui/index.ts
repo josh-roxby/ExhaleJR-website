@@ -28,6 +28,9 @@ export type { TextInputProps, FieldLabelProps } from "./text-input";
 export { Modal } from "./modal";
 export type { ModalProps } from "./modal";
 
+export { CopyButton } from "./copy-button";
+export type { CopyButtonProps } from "./copy-button";
+
 export { RipButton } from "./rip-button";
 export type { RipButtonProps } from "./rip-button";
 

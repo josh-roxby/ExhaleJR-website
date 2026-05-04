@@ -15,9 +15,7 @@ Sprint focus, in suggested order. See chat for the spec behind each item.
    - Replace the **Design** cell with **Gallery** (route `/gallery`).
    - Make the Josh **Account** card "long" (taller, more breathing space) with three square sub-CTA icon buttons inside it: `?` linking to `/about`, an Instagram icon linking to `https://instagram.com/josh_roxby`, an email icon linking to `mailto:josh@exhale.studio`.
 4. ~~**/about as a separate route.**~~ Done. `app/about/page.tsx` with hero plus five sections (About me, Background, What I like, Why I build, Addicted to learning). Redirect removed from `next.config.ts`. Both About nav slots route to `/about`.
-5. **/contact route** (`app/contact/page.tsx`). Clean layout with:
-   - Instagram: `@josh_roxby` (link out).
-   - Email: `josh@exhale.studio` (mailto, with copy-to-clipboard affordance).
+5. ~~**/contact route.**~~ Done. Two cards, IG opens in new tab, email opens mail client, plus a `CopyButton` for the address. Side note about studio enquiries pointing to exhale.studio.
 6. **/gallery route stub.** New surface for photography and creative work. Tile grid matching the drawing-board language. Content source TBD (defer with the thoughts/found decision below).
 7. **Help cell content.** When **Help** is tapped from the bento popover, route or modal showing:
    - How do I use the drawing board.
