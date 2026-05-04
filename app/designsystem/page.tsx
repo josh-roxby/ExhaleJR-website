@@ -11,6 +11,7 @@ import {
   Card,
   Chip,
   Eyebrow,
+  FieldLabel,
   FloatNav,
   IconButton,
   MenuListCell,
@@ -23,6 +24,7 @@ import {
   Sparkline,
   StatCard,
   Tag,
+  TextInput,
 } from "@/components/ui";
 
 export default function DesignSystemPage() {
@@ -68,6 +70,7 @@ export default function DesignSystemPage() {
         <EyebrowSection />
         <ChipsTagsSection />
         <PillsBadgesSection />
+        <FormFieldsSection />
         <CardsSection />
         <StatCardsSection />
         <FloatNavSection />
@@ -266,6 +269,38 @@ function PillsBadgesSection() {
         <Badge>3</Badge>
         <Badge>42</Badge>
         <Badge dot />
+      </Row>
+    </Section>
+  );
+}
+
+function FormFieldsSection() {
+  return (
+    <Section id="fields" title="Form fields" code="4.5 (D)" description="Square. Iris focus glow. Optional leading icon and trailing slot.">
+      <Row label="// DEFAULT">
+        <div className="w-full max-w-sm">
+          <TextInput placeholder="Default input" />
+        </div>
+      </Row>
+      <Row label="// WITH LEADING ICON">
+        <div className="w-full max-w-sm">
+          <TextInput
+            placeholder="Search…"
+            leadingIcon={<Search />}
+          />
+        </div>
+      </Row>
+      <Row label="// LABEL + INPUT">
+        <div className="w-full max-w-sm space-y-2">
+          <FieldLabel htmlFor="ds-name">// YOUR NAME</FieldLabel>
+          <TextInput id="ds-name" placeholder="Josh Roxby" />
+        </div>
+      </Row>
+      <Row label="// INVALID / DISABLED">
+        <div className="grid w-full max-w-sm gap-2">
+          <TextInput placeholder="Has error" invalid defaultValue="not@valid" />
+          <TextInput placeholder="Disabled" disabled />
+        </div>
       </Row>
     </Section>
   );

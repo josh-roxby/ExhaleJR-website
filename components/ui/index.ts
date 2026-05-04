@@ -22,6 +22,9 @@ export type { PillProps } from "./pill";
 export { Badge } from "./badge";
 export type { BadgeProps } from "./badge";
 
+export { TextInput, FieldLabel } from "./text-input";
+export type { TextInputProps, FieldLabelProps } from "./text-input";
+
 export { Card } from "./card";
 export type { CardHover } from "./card";
 

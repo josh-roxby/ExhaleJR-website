@@ -14,7 +14,7 @@ This is the master todo. Sub-project todos live next to their code and are linke
 - [x] ~~Unify home + about into a single `/` surface used by both web and PWA.~~ Done — placeholder copy is editable, marked with `// COPY:` in `app/page.tsx`.
 - [x] ~~Rename `/lab` → `/drawingboard`.~~ Done — old paths redirect via `next.config.ts`.
 - [ ] Real copy on the home page (replace `// COPY:` placeholders).
-- [ ] Drawing-board search + tag filter on `/drawingboard`.
+- [x] ~~Drawing-board search + tag filter on `/drawingboard`.~~ Done — text search across name/description/slug, ANY-match tag filter chips, empty state with clear-all.
 - [ ] Rip system: `RIP.md` per project + modal with copy-to-clipboard + "How to use this" guide.
 - [ ] Decide content source for `/thoughts`, `/found`, `/creative` (markdown entries committed, or admin UI).
 - [ ] iOS install-prompt fallback (no `beforeinstallprompt`) — "Add to Home Screen" instructions.
