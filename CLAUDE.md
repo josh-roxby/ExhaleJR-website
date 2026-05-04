@@ -6,8 +6,8 @@ Guidance for Claude Code working in this repo.
 
 Next.js (App Router) + TypeScript (strict) + Tailwind. Three visible surfaces:
 
-- **Portfolio** — default for web visitors. Routes: `/`, `/about`, `/thinking`.
-- **Lab** — `/lab` and `/lab/[project]`. Default landing for installed PWA sessions; navigable on web.
+- **Home** (`/`) — unified welcome surface. Sections: hero, about (anchor `#about`), this app, drawing-board preview, exhale, thoughts/found/creative stubs. Same canonical home for both web and installed-PWA visits — no routing rewrite. `/about` redirects to `/#about` via `next.config.ts`.
+- **Drawing board** — `/drawingboard` (index, tile grid) and `/drawingboard/[project]` (project page). Was `/lab` — old paths redirect.
 - **Design system** — `/designsystem`. Showcase route demoing every primitive in `/components/ui` with §6 IDs.
 
 ## Persistent app chrome
@@ -24,14 +24,13 @@ When adding page-specific nav items, render `<NavSecondary>` inside a client com
 
 PWA detection is cookie-based:
 
-- `components/pwa/display-mode-probe.tsx` writes the `x-display-mode` cookie on the client based on `(display-mode: standalone)`.
-- `proxy.ts` (Next 16's renamed middleware) reads the cookie. If standalone and visiting `/`, it rewrites to `/lab`.
+- `components/pwa/display-mode-probe.tsx` writes the `x-display-mode` cookie on the client based on `(display-mode: standalone)`. The cookie is currently informational only — both web and PWA land on `/`.
 
 ## Directory layout
 
 ```
 /app                          # Routes only — thin wrappers
-  /lab/[project]/page.tsx     # Imports project Page from /projects/registry
+  /drawingboard/[project]/page.tsx  # Imports Page from /projects/registry
 /components                   # Shared UI primitives only (incl. /pwa)
 /lib                          # Shared utilities
 /hooks                        # Truly shared hooks
@@ -39,20 +38,20 @@ PWA detection is cookie-based:
 /projects
   /<slug>                     # Self-contained project
     index.ts                  # Public exports: Page, meta
-    meta.ts                   # slug, name, description
+    meta.ts                   # slug, name, description, wip, version, tags
     page.tsx                  # Page component
     components/ features/ lib/ hooks/ styles/ types/ server/
-    TODO.md  README.md
+    TODO.md  README.md  RIP.md (public copy-into-Claude prompt)
   registry.ts                 # Lists all projects
 /public                       # Static assets, sw.js, icons
-proxy.ts                      # PWA cookie routing (Next 16 convention)
+next.config.ts                # Includes /lab → /drawingboard redirects
 ```
 
 ## Project isolation rules
 
 1. **Project-only code stays in `/projects/<slug>`.** Components, libs, hooks, styles, types — all scoped. Do not promote anything to `/components`, `/lib`, etc. unless ≥ 2 projects share it. Three near-duplicates beat a premature abstraction.
 2. **Every project exports `Page` and `meta` from `index.ts`.** The lab route renders whatever `Page` you export.
-3. **Register new projects in `projects/registry.ts`.** Add an `import * as <slug>` and an entry to `labProjects`.
+3. **Register new projects in `projects/registry.ts`.** Add an `import * as <slug>` and an entry to `projects`.
 4. **Each project owns a `TODO.md`.** Linked from the master `/TODO.md`.
 5. **Imports inside a project** may use `@/projects/<slug>/...` or relative paths. Avoid cross-project imports — if you reach for one, that code probably belongs in shared roots.
 
@@ -90,6 +89,13 @@ npm run typecheck  # tsc --noEmit
 ```
 
 Tests/lint intentionally not configured yet — add when needed.
+
+## Project lifecycle: WIP and versioning
+
+- **Every new project starts `wip: true`.** While WIP, the drawing board renders a `WIP` Tag on its tile and the project page. No `version` is published.
+- **Clearing WIP requires explicit confirmation.** When a project feels ready to leave WIP, ask the user in chat before flipping `wip: false`. Once confirmed, set `wip: false` and add `version: "v0.0.1"` to `meta.ts`.
+- **Version bumps live in the project's `TODO.md`** under `## Versions` (newest first). Public-facing surfaces read `meta.version` only.
+- **Public vs private docs.** `TODO.md` is the project's private worklog (versions, in-flight tasks). `RIP.md` is the public copy-into-Claude prompt that gets shipped alongside the project.
 
 ## Working preferences
 

@@ -1,17 +1,17 @@
 import { notFound } from "next/navigation";
-import { getLabProject, labProjects } from "@/projects/registry";
+import { getProject, projects } from "@/projects/registry";
 
 export function generateStaticParams() {
-  return labProjects.map((p) => ({ project: p.slug }));
+  return projects.map((p) => ({ project: p.slug }));
 }
 
-export default async function LabProjectPage({
+export default async function ProjectPage({
   params,
 }: {
   params: Promise<{ project: string }>;
 }) {
   const { project } = await params;
-  const entry = getLabProject(project);
+  const entry = getProject(project);
   if (!entry) notFound();
   const { Page } = entry;
   return <Page />;

@@ -14,6 +14,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // Legacy paths from the pre-rename IA.
+      { source: "/lab", destination: "/drawingboard", permanent: true },
+      { source: "/lab/:slug*", destination: "/drawingboard/:slug*", permanent: true },
+      // /about is consolidated into the home page.
+      { source: "/about", destination: "/#about", permanent: false },
+    ];
+  },
 };
 
 export default nextConfig;

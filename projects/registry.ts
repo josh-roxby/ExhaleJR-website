@@ -1,29 +1,38 @@
 /**
- * Lab project registry.
- * Add an entry here for each project under /projects/<slug>. The lab index
- * uses this list to render cards; the route at /app/lab/[project] reads the
- * matching entry to render the project's `Page` export.
+ * Project registry.
+ * Add an entry here for each project under /projects/<slug>. The drawing
+ * board uses this list to render tiles; the route at /app/drawingboard/[project]
+ * reads the matching entry to render the project's `Page` export.
  */
 import type { ComponentType } from "react";
 
 import * as hello from "./hello";
 
-export type LabProject = {
+export interface ProjectEntry {
   slug: string;
   name: string;
   description: string;
   Page: ComponentType;
-};
+  /** True until I explicitly clear it — no version is published while WIP. */
+  wip: boolean;
+  /** Only meaningful once `wip` is false. Tracked in the project's TODO.md. */
+  version?: string;
+  /** Used by the drawing-board filter chips. */
+  tags: string[];
+}
 
-export const labProjects: LabProject[] = [
+export const projects: ProjectEntry[] = [
   {
     slug: "hello",
     name: hello.meta.name,
     description: hello.meta.description,
     Page: hello.Page,
+    wip: hello.meta.wip,
+    version: hello.meta.version,
+    tags: [...hello.meta.tags],
   },
 ];
 
-export function getLabProject(slug: string): LabProject | undefined {
-  return labProjects.find((p) => p.slug === slug);
+export function getProject(slug: string): ProjectEntry | undefined {
+  return projects.find((p) => p.slug === slug);
 }

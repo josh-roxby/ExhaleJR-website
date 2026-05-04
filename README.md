@@ -1,11 +1,12 @@
 # ExhaleJR
 
-Personal portfolio + project lab. Next.js (App Router) + TypeScript + Tailwind, with a PWA shell for the lab.
+Personal site + drawing board for projects. Next.js (App Router) + TypeScript + Tailwind, with a PWA shell.
 
 ## Surfaces
 
-- **Portfolio** — `/`, `/about`, `/thinking`
-- **Lab** — `/lab` index, `/lab/<slug>` per project. Default landing when installed as a PWA.
+- **Home** (`/`) — unified welcome: about, this app, drawing-board preview, exhale, more. Same canonical home for both web and installed PWA.
+- **Drawing board** — `/drawingboard` (tile grid) and `/drawingboard/<slug>` (project page).
+- **Design system** — `/designsystem`. Component showcase tied to `styles/DESIGN-SYSTEM.md`.
 
 ## Quick start
 
@@ -14,12 +15,12 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000 (portfolio) or http://localhost:3000/lab.
+Open http://localhost:3000.
 
 ## Adding a project
 
-1. Create `/projects/<slug>/` with `index.ts`, `meta.ts`, `page.tsx`, `TODO.md`.
+1. Create `/projects/<slug>/` with `index.ts`, `meta.ts`, `page.tsx`, `TODO.md`, and (when ready) `RIP.md`.
 2. Register it in `projects/registry.ts`.
 3. Link its TODO from the root `TODO.md`.
 
-See `CLAUDE.md` for the full convention and `projects/hello/` as a reference.
+Every project starts `wip: true`. See `CLAUDE.md` for the WIP / version lifecycle and `projects/hello/` for the reference layout.

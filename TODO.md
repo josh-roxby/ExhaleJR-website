@@ -6,16 +6,19 @@ This is the master todo. Sub-project todos live next to their code and are linke
 
 ### Now
 - [x] ~~Apply design system tokens (`styles/DESIGN-SYSTEM.md` v0.1) to globals.~~ Done.
-- [x] ~~Phase 1 component library against `DESIGN-SYSTEM.md` §4–§5.~~ Done — 16 primitives in `components/ui`, wired into `/lab` chrome and `/designsystem` showcase.
+- [x] ~~Phase 1 component library against `DESIGN-SYSTEM.md` §4–§5.~~ Done — 16 primitives in `components/ui`, wired into `/drawingboard` chrome and `/designsystem` showcase.
 - [ ] Phase 2 (when needed) — fill in remaining atomic components from §4: selects (E), checkboxes/radios (Fc), toggles (G), sliders (H), tabs (I3), carousel (L). Add to `/designsystem` as built.
 - [ ] Replace placeholder PWA icons in `/public/icons` and `/app/{icon,apple-icon}.png` with real branding.
 
 ### Next
-- [ ] Flesh out `/about` and `/thinking` pages with real content.
-- [ ] Decide on a content source for `/thinking` (MDX in repo? CMS? local markdown?).
-- [ ] Add a real install prompt fallback for iOS (no `beforeinstallprompt` event) — show "Add to Home Screen" instructions instead.
-- [ ] Add an offline page and basic SW caching strategy once routes stabilize.
-- [x] ~~Implement floating bottom nav + bento popover (§5.2, §5.3) for the lab/PWA shell.~~ Done — wired in `app/lab/layout.tsx` with live link to `/designsystem` and project registry.
+- [x] ~~Unify home + about into a single `/` surface used by both web and PWA.~~ Done — placeholder copy is editable, marked with `// COPY:` in `app/page.tsx`.
+- [x] ~~Rename `/lab` → `/drawingboard`.~~ Done — old paths redirect via `next.config.ts`.
+- [ ] Real copy on the home page (replace `// COPY:` placeholders).
+- [ ] Drawing-board search + tag filter on `/drawingboard`.
+- [ ] Rip system: `RIP.md` per project + modal with copy-to-clipboard + "How to use this" guide.
+- [ ] Decide content source for `/thoughts`, `/found`, `/creative` (markdown entries committed, or admin UI).
+- [ ] iOS install-prompt fallback (no `beforeinstallprompt`) — "Add to Home Screen" instructions.
+- [ ] Offline page + SW caching once routes stabilize.
 
 ### Later
 - [ ] ESLint + Prettier config when contribution patterns settle.

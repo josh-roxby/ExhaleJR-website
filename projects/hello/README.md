@@ -8,7 +8,7 @@ Reference project demonstrating the isolation pattern.
 projects/hello/
   index.ts            # Public exports: Page, meta
   meta.ts             # Slug, name, description
-  page.tsx            # Project's Page component (rendered by /lab/hello)
+  page.tsx            # Project's Page component (rendered by /drawingboard/hello)
   components/         # Components used only by this project
   features/           # Feature folders if/when needed
   lib/                # Utilities scoped to this project

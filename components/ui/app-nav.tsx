@@ -3,17 +3,17 @@
 // Persistent global app chrome: floating bottom nav (I6) + bento popover (§5.3).
 //
 // Three nav sections, divided by subtle pipes:
-//   1. Primary  — Home, About (always visible)
+//   1. Primary  — Home, About (always visible). About is an anchor on /;
+//                 from any other page it routes to /#about.
 //   2. Secondary — page-injected via <NavSecondary> portal (optional)
 //   3. Menu    — bento popover toggle (always visible)
 //
 // Mounted once at the root layout. Pages opt into the secondary slot by
 // rendering <NavSecondary>{...NavItems}</NavSecondary>.
 
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useDisclosure } from "@/hooks/use-disclosure";
-import { labProjects } from "@/projects/registry";
+import { projects } from "@/projects/registry";
 import { AccountMenuCell, ActionMenuCell } from "./menu-cell";
 import { FloatNav } from "./float-nav";
 import { MenuListCell, MenuListItem } from "./menu-list";
@@ -30,6 +30,16 @@ export function AppNav() {
   const go = (href: string) => {
     menu.onClose();
     router.push(href);
+  };
+
+  // Smooth-scroll to a home-page anchor; fall back to navigation.
+  const goAnchor = (id: string) => {
+    menu.onClose();
+    if (pathname === "/") {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      router.push(`/#${id}`);
+    }
   };
 
   return (
@@ -49,8 +59,8 @@ export function AppNav() {
             <ActionMenuCell
               eyebrow="// 03"
               icon={icons.flask}
-              label="Lab"
-              onClick={() => go("/lab")}
+              label="Drawing board"
+              onClick={() => go("/drawingboard")}
             />
             <ActionMenuCell
               eyebrow="// 04"
@@ -91,13 +101,13 @@ export function AppNav() {
           </>
         }
         list={
-          <MenuListCell title="// LAB · ALL PROJECTS" count={labProjects.length}>
-            {labProjects.map((p) => (
+          <MenuListCell title="// DRAWING BOARD · ALL PROJECTS" count={projects.length}>
+            {projects.map((p) => (
               <MenuListItem
                 key={p.slug}
                 label={p.name}
                 meta={p.slug}
-                onClick={() => go(`/lab/${p.slug}`)}
+                onClick={() => go(`/drawingboard/${p.slug}`)}
               />
             ))}
           </MenuListCell>
@@ -116,8 +126,7 @@ export function AppNav() {
           </NavItem>
           <NavItem
             aria-label="About"
-            active={pathname === "/about"}
-            onClick={() => go("/about")}
+            onClick={() => goAnchor("about")}
           >
             {icons.user}
           </NavItem>

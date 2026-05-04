@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "ExhaleJR",
     short_name: "ExhaleJR",
     description: "Personal portfolio and project lab.",
-    start_url: "/lab",
+    start_url: "/",
     scope: "/",
     display: "standalone",
     orientation: "portrait",
