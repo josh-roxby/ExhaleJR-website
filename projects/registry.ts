@@ -6,6 +6,7 @@
  */
 import type { ComponentType } from "react";
 
+import * as cooking from "./cooking";
 import * as hello from "./hello";
 
 export interface ProjectEntry {
@@ -33,6 +34,15 @@ export const projects: ProjectEntry[] = [
     wip: hello.meta.wip,
     version: hello.meta.version,
     tags: [...hello.meta.tags],
+  },
+  {
+    slug: "cooking",
+    name: cooking.meta.name,
+    description: cooking.meta.description,
+    Page: cooking.Page,
+    wip: cooking.meta.wip,
+    version: cooking.meta.version,
+    tags: [...cooking.meta.tags],
   },
 ];
 

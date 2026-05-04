@@ -45,6 +45,7 @@ Sprint focus, in suggested order. See chat for the spec behind each item.
 Each project links to its own TODO. Add new projects under `/projects/<slug>` and register them in `projects/registry.ts`.
 
 - [`hello`](./projects/hello/TODO.md). Reference project demonstrating the isolation pattern.
+- [`cooking`](./projects/cooking/TODO.md). Recipe player with step-by-step timers and an audio ding.
 
 <!--
 When adding a new project:
