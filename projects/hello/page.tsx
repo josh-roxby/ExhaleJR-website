@@ -2,7 +2,7 @@ import { Greeter } from "./components/greeter";
 
 export function Page() {
   return (
-    <section className="space-y-4">
+    <section className="mx-auto max-w-2xl space-y-4">
       <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-mute-2">
         Project · hello
       </p>

@@ -21,12 +21,12 @@ export function NavItem({
     <button
       {...rest}
       className={cn(
-        "ds-interactive relative grid h-10 w-10 place-items-center rounded-sq-lg outline-none active:scale-[0.88]",
+        "ds-interactive relative grid h-10 w-10 place-items-center rounded-sq-lg outline-none active:scale-[0.88] disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100",
         active
           ? "bg-accent text-accent-on shadow-[0_0_16px_var(--accent-glow)] hover:bg-accent hover:text-accent-on"
           : menuToggle && open
             ? "bg-surface-3 text-accent"
-            : "text-mute hover:bg-white/[0.04] hover:text-ink-2",
+            : "text-mute hover:bg-white/[0.04] hover:text-ink-2 disabled:hover:bg-transparent disabled:hover:text-mute",
         className,
       )}
     >

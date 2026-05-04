@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
-import { Button, Eyebrow } from "@/components/ui";
+import { Button, Eyebrow, NavItem, NavSecondary } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { alarmDing } from "../lib/beep";
 import type { Recipe } from "../data/recipes";
@@ -24,9 +23,81 @@ export function CookStepCard({
 }: CookStepCardProps) {
   const step = recipe.steps[stepIndex];
   const isLast = stepIndex === recipe.steps.length - 1;
+  const hasTimer = step.timer !== undefined;
+
+  // Timer state lifted to this level so the in-card UI, the secondary nav
+  // timer button, and the floating counter all share the same state.
+  // Keyed by recipe slug + step index via React's useState reset on
+  // initialSeconds change inside useTimer.
+  const timer = useTimer(step.timer ?? 0, alarmDing);
+
+  const toggleTimer = () => {
+    if (!hasTimer) return;
+    if (timer.state === "idle" || timer.state === "paused") timer.start();
+    else if (timer.state === "running") timer.pause();
+    else if (timer.state === "done") timer.reset();
+  };
+
+  const showCounter = hasTimer && (timer.state === "running" || timer.state === "paused");
 
   return (
-    <main className="space-y-8">
+    <main className="mx-auto max-w-5xl space-y-8">
+      {/* Secondary nav slot: prev / timer / next while in step view. */}
+      <NavSecondary>
+        <NavItem
+          aria-label="Previous step"
+          onClick={onPrev}
+          disabled={stepIndex === 0}
+        >
+          <ChevronLeftIcon />
+        </NavItem>
+        <NavItem
+          aria-label={
+            !hasTimer
+              ? "No timer for this step"
+              : timer.state === "running"
+                ? "Pause timer"
+                : timer.state === "paused"
+                  ? "Resume timer"
+                  : timer.state === "done"
+                    ? "Reset timer"
+                    : "Start timer"
+          }
+          onClick={toggleTimer}
+          disabled={!hasTimer}
+          active={hasTimer && timer.state === "running"}
+          className={cn(
+            hasTimer && timer.state === "done" &&
+              "animate-[ds-pulse_1.6s_ease-in-out_infinite]",
+          )}
+        >
+          <ClockIcon />
+        </NavItem>
+        <NavItem
+          aria-label={isLast ? "Finish" : "Next step"}
+          onClick={onNext}
+        >
+          <ChevronRightIcon />
+        </NavItem>
+      </NavSecondary>
+
+      {/* Floating mm:ss counter above the bottom nav while a timer runs. */}
+      {showCounter && (
+        <div
+          className={cn(
+            "pointer-events-none fixed bottom-[calc(82px+env(safe-area-inset-bottom))] left-1/2 z-[41] -translate-x-1/2 rounded-round border bg-bg-2/95 px-3.5 py-1.5 backdrop-blur",
+            timer.state === "paused"
+              ? "border-line-3 text-mute"
+              : "border-accent text-accent shadow-[0_0_16px_var(--accent-glow)]",
+          )}
+        >
+          <span className="font-mono text-sm font-bold tabular-nums">
+            {formatDuration(timer.seconds)}
+          </span>
+        </div>
+      )}
+
+      {/* Header row */}
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -50,14 +121,56 @@ export function CookStepCard({
         />
       </div>
 
-      {/* The big card */}
+      {/* The big card. Solid surface so the radial body gradient doesn't
+          interfere with reading the step text. */}
       <article className="rounded-sq-xl border border-line-2 bg-surface p-6 sm:p-10">
         <p className="font-display text-3xl font-black leading-tight tracking-tight text-ink sm:text-4xl">
           {step.text}
         </p>
 
-        {step.timer !== undefined && (
-          <TimerBlock key={`${recipe.slug}-${stepIndex}`} seconds={step.timer} />
+        {hasTimer && (
+          <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
+            <div
+              className={cn(
+                "rounded-sq-md border px-5 py-3 font-display text-5xl font-black leading-none tabular-nums tracking-tight",
+                timer.state === "done"
+                  ? "border-accent bg-accent/[0.08] text-accent shadow-glow animate-[ds-pulse_1.6s_ease-in-out_infinite]"
+                  : timer.state === "running"
+                    ? "border-accent bg-accent/[0.04] text-ink shadow-glow"
+                    : "border-line-2 bg-surface-2 text-ink",
+              )}
+            >
+              {formatDuration(timer.seconds)}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {timer.state === "idle" && (
+                <Button variant="primary" onClick={timer.start}>
+                  Start timer
+                </Button>
+              )}
+              {timer.state === "running" && (
+                <Button variant="secondary" onClick={timer.pause}>
+                  Pause
+                </Button>
+              )}
+              {timer.state === "paused" && (
+                <>
+                  <Button variant="primary" onClick={timer.start}>
+                    Resume
+                  </Button>
+                  <Button variant="ghost" onClick={timer.reset}>
+                    Reset
+                  </Button>
+                </>
+              )}
+              {timer.state === "done" && (
+                <span className="font-mono text-sm font-semibold uppercase tracking-[0.18em] text-accent">
+                  // DONE. TAP NEXT WHEN READY
+                </span>
+              )}
+            </div>
+          </div>
         )}
       </article>
 
@@ -73,63 +186,38 @@ export function CookStepCard({
   );
 }
 
-interface TimerBlockProps {
-  seconds: number;
+/* ───────────── icons ───────────── */
+
+const sw = {
+  width: 17,
+  height: 17,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+} as const;
+
+function ChevronLeftIcon() {
+  return (
+    <svg {...sw}>
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+  );
 }
 
-function TimerBlock({ seconds }: TimerBlockProps) {
-  const timer = useTimer(seconds, alarmDing);
-
-  // Reset the alarmDing fired-once guard isn't needed here because useTimer
-  // only calls onDone exactly when the timer transitions to "done".
-
-  // Subtle pulse on the timer when running.
-  useEffect(() => {
-    // no-op; visual is via class below
-  }, [timer.state]);
-
+function ChevronRightIcon() {
   return (
-    <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
-      <div
-        className={cn(
-          "rounded-sq-md border px-5 py-3 font-display text-5xl font-black leading-none tabular-nums tracking-tight",
-          timer.state === "done"
-            ? "border-accent bg-accent/[0.08] text-accent shadow-glow animate-[ds-pulse_1.6s_ease-in-out_infinite]"
-            : timer.state === "running"
-              ? "border-accent bg-accent/[0.04] text-ink shadow-glow"
-              : "border-line-2 bg-surface-2 text-ink",
-        )}
-      >
-        {formatDuration(timer.seconds)}
-      </div>
+    <svg {...sw}>
+      <path d="M9 18l6-6-6-6" />
+    </svg>
+  );
+}
 
-      <div className="flex flex-wrap gap-2">
-        {timer.state === "idle" && (
-          <Button variant="primary" onClick={timer.start}>
-            Start timer
-          </Button>
-        )}
-        {timer.state === "running" && (
-          <Button variant="secondary" onClick={timer.pause}>
-            Pause
-          </Button>
-        )}
-        {timer.state === "paused" && (
-          <>
-            <Button variant="primary" onClick={timer.start}>
-              Resume
-            </Button>
-            <Button variant="ghost" onClick={timer.reset}>
-              Reset
-            </Button>
-          </>
-        )}
-        {timer.state === "done" && (
-          <span className="font-mono text-sm font-semibold uppercase tracking-[0.18em] text-accent">
-            // DONE — TAP NEXT WHEN READY
-          </span>
-        )}
-      </div>
-    </div>
+function ClockIcon() {
+  return (
+    <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
+      <circle cx="12" cy="12" r="9" />
+      <polyline points="12 7 12 12 16 14" />
+    </svg>
   );
 }

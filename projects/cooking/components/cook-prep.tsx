@@ -26,7 +26,7 @@ export function CookPrep({ recipe, onStart, onBack }: CookPrepProps) {
   const allChecked = checked.size === recipe.ingredients.length;
 
   return (
-    <main className="space-y-10">
+    <main className="mx-auto max-w-4xl space-y-10">
       <button
         type="button"
         onClick={onBack}

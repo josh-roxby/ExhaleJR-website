@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Eyebrow, Tag } from "@/components/ui";
+import { Button, Card, Eyebrow, Tag } from "@/components/ui";
 import type { Recipe } from "../data/recipes";
 import { formatDuration } from "../hooks/use-timer";
 
@@ -12,7 +12,7 @@ interface RecipeDetailProps {
 
 export function RecipeDetail({ recipe, onCook, onBack }: RecipeDetailProps) {
   return (
-    <main className="space-y-10">
+    <main className="mx-auto max-w-4xl space-y-10">
       <button
         type="button"
         onClick={onBack}
@@ -39,37 +39,44 @@ export function RecipeDetail({ recipe, onCook, onBack }: RecipeDetailProps) {
 
       <section>
         <Eyebrow tone="mute" size="sm">// INGREDIENTS</Eyebrow>
-        <ul className="mt-3 space-y-2">
-          {recipe.ingredients.map((i, idx) => (
-            <li key={idx} className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <span className="min-w-[5.5rem] font-mono text-sm font-semibold text-accent">
-                {i.qty}
-              </span>
-              <span className="font-display text-base font-semibold uppercase tracking-tight text-ink">
-                {i.item}
-              </span>
-              {i.notes && <span className="text-sm text-mute">{i.notes}</span>}
-            </li>
-          ))}
-        </ul>
+        <Card hover="none" className="mt-3 p-5">
+          <ul className="space-y-2.5">
+            {recipe.ingredients.map((i, idx) => (
+              <li
+                key={idx}
+                className="flex flex-wrap items-baseline gap-x-3 gap-y-1"
+              >
+                <span className="min-w-[5.5rem] font-mono text-sm font-semibold text-accent">
+                  {i.qty}
+                </span>
+                <span className="font-display text-base font-semibold uppercase tracking-tight text-ink">
+                  {i.item}
+                </span>
+                {i.notes && <span className="text-sm text-mute">{i.notes}</span>}
+              </li>
+            ))}
+          </ul>
+        </Card>
       </section>
 
       <section>
         <Eyebrow tone="mute" size="sm">// STEPS</Eyebrow>
-        <ol className="mt-3 space-y-3">
+        <ol className="mt-3 space-y-2">
           {recipe.steps.map((s, idx) => (
-            <li key={idx} className="flex gap-3 text-ink-2">
-              <span className="font-mono text-accent">
-                {(idx + 1).toString().padStart(2, "0")}
-              </span>
-              <span className="flex-1">
-                {s.text}
-                {s.timer && (
-                  <Tag variant="accent" className="ml-2">
-                    timer {formatDuration(s.timer)}
-                  </Tag>
-                )}
-              </span>
+            <li key={idx}>
+              <Card hover="none" className="flex gap-4 p-4">
+                <span className="font-mono text-base font-bold text-accent shrink-0">
+                  {(idx + 1).toString().padStart(2, "0")}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-ink-2">{s.text}</p>
+                  {s.timer !== undefined && (
+                    <Tag variant="accent" className="mt-2">
+                      timer {formatDuration(s.timer)}
+                    </Tag>
+                  )}
+                </div>
+              </Card>
             </li>
           ))}
         </ol>

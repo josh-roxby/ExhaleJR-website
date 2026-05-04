@@ -11,7 +11,7 @@ interface RecipeListProps {
 export function RecipeList({ recipes, onPick }: RecipeListProps) {
   return (
     <main className="space-y-8">
-      <header>
+      <header className="mx-auto max-w-3xl">
         <Eyebrow tone="accent" withPulseDot>// COOKING · v0.0</Eyebrow>
         <h1 className="mt-2 font-display text-5xl font-black leading-[0.95] tracking-tight">
           What are we <span className="text-accent">making</span>?
@@ -22,7 +22,7 @@ export function RecipeList({ recipes, onPick }: RecipeListProps) {
         </p>
       </header>
 
-      <ul className="grid gap-3 sm:grid-cols-2">
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {recipes.map((r) => (
           <li key={r.slug}>
             <Card

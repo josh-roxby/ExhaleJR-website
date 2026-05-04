@@ -56,7 +56,7 @@ export function DrawingBoardClient({ projects, ripContents }: DrawingBoardClient
   const hasFilters = query.trim() !== "" || activeTags.length > 0;
 
   return (
-    <main className="space-y-8">
+    <main className="mx-auto max-w-5xl space-y-8">
       <header>
         <Eyebrow tone="accent" withPulseDot>// DRAWING BOARD · v0.1</Eyebrow>
         <h1 className="mt-2 font-display text-5xl font-black leading-[0.95] tracking-tight">
