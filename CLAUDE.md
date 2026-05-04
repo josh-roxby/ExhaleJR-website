@@ -4,10 +4,11 @@ Guidance for Claude Code working in this repo.
 
 ## Project shape
 
-Next.js (App Router) + TypeScript (strict) + Tailwind. Two visible surfaces:
+Next.js (App Router) + TypeScript (strict) + Tailwind. Three visible surfaces:
 
-- **Portfolio** — default for web visitors. Routes: `/`, `/about`, `/thinking`, etc.
-- **Lab** — `/lab` and `/lab/[project]`. Default landing for installed PWA sessions; navigable on web. On web, an install prompt is shown so users can pin it to their home screen.
+- **Portfolio** — default for web visitors. Routes: `/`, `/about`, `/thinking`.
+- **Lab** — `/lab` and `/lab/[project]`. Default landing for installed PWA sessions; navigable on web. The lab layout (`app/lab/layout.tsx`, client component) wraps every lab page in the floating-nav + bento-popover chrome (DESIGN-SYSTEM §5.2 + §5.3). The popover's lab list is wired to `projects/registry.ts`.
+- **Design system** — `/designsystem`. Showcase route under the root layout (no lab chrome). Demos every primitive in `/components/ui` with §6 IDs. Use this surface when iterating on components.
 
 PWA detection is cookie-based:
 

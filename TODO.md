@@ -5,8 +5,9 @@ This is the master todo. Sub-project todos live next to their code and are linke
 ## Repo / shared infra
 
 ### Now
-- [x] ~~Apply design system tokens (`styles/DESIGN-SYSTEM.md` v0.1) to globals.~~ Done — tokens, fonts, body atmosphere live; existing pages refactored onto the token set.
-- [ ] Build out the component library against `DESIGN-SYSTEM.md` §4–§5. Awaiting full reference HTML files (`jr-round-1-v4.html`, `jr-round-2-v2.html`, `jr-mobile-home-concept-v3.html`).
+- [x] ~~Apply design system tokens (`styles/DESIGN-SYSTEM.md` v0.1) to globals.~~ Done.
+- [x] ~~Phase 1 component library against `DESIGN-SYSTEM.md` §4–§5.~~ Done — 16 primitives in `components/ui`, wired into `/lab` chrome and `/designsystem` showcase.
+- [ ] Phase 2 (when needed) — fill in remaining atomic components from §4: selects (E), checkboxes/radios (Fc), toggles (G), sliders (H), tabs (I3), carousel (L). Add to `/designsystem` as built.
 - [ ] Replace placeholder PWA icons in `/public/icons` and `/app/{icon,apple-icon}.png` with real branding.
 
 ### Next
@@ -14,7 +15,7 @@ This is the master todo. Sub-project todos live next to their code and are linke
 - [ ] Decide on a content source for `/thinking` (MDX in repo? CMS? local markdown?).
 - [ ] Add a real install prompt fallback for iOS (no `beforeinstallprompt` event) — show "Add to Home Screen" instructions instead.
 - [ ] Add an offline page and basic SW caching strategy once routes stabilize.
-- [ ] Implement floating bottom nav + bento popover (§5.2, §5.3) for the lab/PWA shell.
+- [x] ~~Implement floating bottom nav + bento popover (§5.2, §5.3) for the lab/PWA shell.~~ Done — wired in `app/lab/layout.tsx` with live link to `/designsystem` and project registry.
 
 ### Later
 - [ ] ESLint + Prettier config when contribution patterns settle.
