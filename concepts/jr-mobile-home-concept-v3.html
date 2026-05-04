@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXHALEJR / Home / Concept v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;700;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0a;--bg-2:#0d0d0d;--surface:#111;--surface-2:#161616;--surface-3:#1c1c1c;
+  --line:#1f1f1f;--line-2:#2a2a2a;--line-3:#3a3a3a;
+  --mute-3:#5a5a5a;--mute-2:#7a7a7a;--mute:#a8a8a8;--ink-2:#cfcfcf;--ink:#fafafa;
+  --accent:#7c5cff;--accent-dim:#a78bfa;
+  --accent-glow:rgba(124,92,255,.22);--accent-glow-soft:rgba(167,139,250,.16);
+  --accent-on:#fff;--warn:#ff5b3d;--ok:#4ade80;
+  --r-square-xs:3px;--r-square:5px;--r-square-md:6px;--r-square-lg:10px;--r-square-xl:14px;--r-square-xxl:20px;
+  --r-round:999px;
+  --t:240ms;
+  --ease:cubic-bezier(.2,.6,.2,1);--ease-press:cubic-bezier(.4,0,.6,1);
+  --f-display:'Big Shoulders Display',sans-serif;--f-body:'DM Sans',sans-serif;--f-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--f-body);-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.5;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+button,.nav-item,.menu-cell,.menu-list-item,.stat-card,.project-row,.quick-link,.icon-btn,.menu-close,.menu-toggle{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+p,h1,h2,h3,.stat-num{-webkit-user-select:text;user-select:text}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
+::selection{background:var(--accent);color:var(--accent-on)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+body{background:radial-gradient(900px 600px at 80% 5%,var(--accent-glow) 0%,transparent 55%),radial-gradient(700px 500px at 0% 70%,var(--accent-glow-soft) 0%,transparent 60%),var(--bg)}
+
+.frame-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;position:relative;z-index:2;gap:14px}
+.preview-meta{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:380px;font-family:var(--f-mono);font-size:9px;color:var(--mute-2);letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+.preview-meta .badge-live{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:rgba(124,92,255,.1);border:1px solid rgba(124,92,255,.3);border-radius:var(--r-round);color:var(--accent)}
+.preview-meta .dot{width:5px;height:5px;border-radius:var(--r-round);background:var(--accent);box-shadow:0 0 6px var(--accent-glow);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+.phone{width:100%;max-width:380px;height:780px;background:var(--bg);border:1px solid var(--line-2);border-radius:32px;position:relative;isolation:isolate;overflow:hidden;box-shadow:0 24px 48px rgba(0,0,0,.5),0 0 0 4px #050505;display:flex;flex-direction:column}
+
+.statusbar{height:28px;flex-shrink:0;background:#000;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-family:var(--f-mono);font-size:10px;color:#fff;letter-spacing:.05em;font-weight:500;position:relative;z-index:1}
+.statusbar .right{display:flex;gap:5px;align-items:center}
+.statusbar .signal{display:flex;gap:1px;align-items:flex-end}
+.statusbar .signal span{width:2px;background:#fff}
+.statusbar .signal span:nth-child(1){height:3px}
+.statusbar .signal span:nth-child(2){height:5px}
+.statusbar .signal span:nth-child(3){height:7px}
+.statusbar .signal span:nth-child(4){height:9px}
+.statusbar .battery{width:18px;height:9px;border:1px solid #fff;border-radius:2px;position:relative;padding:1px}
+.statusbar .battery::after{content:'';display:block;width:80%;height:100%;background:#fff;border-radius:1px}
+.statusbar .battery::before{content:'';position:absolute;right:-3px;top:2px;width:1px;height:5px;background:#fff;border-radius:0 1px 1px 0}
+
+.viewport{flex:1;overflow-y:auto;position:relative;z-index:1;padding:0 0 130px;scrollbar-width:none}
+.viewport::-webkit-scrollbar{display:none}
+
+.app-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;position:sticky;top:0;z-index:2;background:linear-gradient(180deg,var(--bg) 0%,var(--bg) 70%,transparent 100%)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:32px;height:32px;background:#fff;border-radius:var(--r-square-md);display:grid;place-items:center;font-family:var(--f-display);font-weight:900;color:#000;font-size:13px;letter-spacing:.04em;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.brand-name{font-family:var(--f-display);font-weight:900;font-size:14px;letter-spacing:.06em}
+.brand-sub{font-family:var(--f-mono);font-size:8px;color:var(--mute-2);letter-spacing:.22em;text-transform:uppercase;margin-top:1px}
+.head-actions{display:flex;gap:6px}
+.icon-btn{width:34px;height:34px;border-radius:var(--r-square);background:var(--surface-2);border:1px solid var(--line-2);display:grid;place-items:center;color:var(--mute);cursor:pointer;transition:all var(--t) var(--ease),transform var(--t) var(--ease-press);position:relative}
+.icon-btn:hover{color:var(--ink);border-color:var(--line-3)}
+.icon-btn:active{transform:scale(.92)}
+.icon-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8}
+.icon-btn .notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;background:var(--accent);border-radius:var(--r-round);box-shadow:0 0 0 2px var(--surface-2)}
+
+.hero{padding:8px 20px 28px}
+.eyebrow{font-family:var(--f-mono);font-size:9px;color:var(--accent);letter-spacing:.22em;text-transform:uppercase;font-weight:700;margin-bottom:14px;display:inline-flex;align-items:center;gap:8px}
+.eyebrow .dot{width:5px;height:5px;border-radius:var(--r-round);background:var(--accent);box-shadow:0 0 6px var(--accent-glow);animation:pulse 1.6s ease-in-out infinite}
+.h1{font-family:var(--f-display);font-weight:900;font-size:42px;line-height:.95;letter-spacing:-.01em;margin-bottom:14px}
+.h1 .accent{color:var(--accent)}
+.lead{font-size:13px;color:var(--mute);line-height:1.55;max-width:300px}
+
+.section{padding:8px 20px 28px}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+.section-title{font-family:var(--f-mono);font-size:10px;color:var(--mute-2);letter-spacing:.2em;text-transform:uppercase;font-weight:700}
+.section-title b{color:var(--ink);font-weight:700}
+.section-link{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.18em;text-transform:uppercase;font-weight:600;display:inline-flex;align-items:center;gap:4px;cursor:pointer;transition:color var(--t) var(--ease)}
+.section-link:hover{color:var(--accent)}
+.section-link svg{width:9px;height:9px;fill:none;stroke:currentColor;stroke-width:2}
+
+.bento-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-square-md);padding:14px;display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:all var(--t) var(--ease),transform var(--t) var(--ease-press);position:relative;overflow:hidden}
+.stat-card:hover{border-color:var(--line-2)}
+.stat-card:active{transform:scale(.98)}
+.stat-card.feat{background:linear-gradient(135deg,var(--accent) 0%,#6048d4 100%);border-color:var(--accent);grid-column:1/3}
+.stat-card.feat:hover{box-shadow:0 0 32px var(--accent-glow)}
+.stat-card.feat .stat-label,.stat-card.feat .stat-cap{color:rgba(255,255,255,.7)}
+.stat-card.feat .stat-num{color:#fff}
+.stat-label{font-family:var(--f-mono);font-size:8px;color:var(--mute);letter-spacing:.22em;text-transform:uppercase;font-weight:700}
+.stat-num{font-family:var(--f-display);font-weight:900;font-size:30px;line-height:1;letter-spacing:-.01em;color:var(--ink)}
+.stat-card.feat .stat-num{font-size:38px}
+.stat-cap{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.06em;line-height:1.4;margin-top:2px}
+.stat-delta{display:inline-flex;align-items:center;gap:3px;font-family:var(--f-mono);font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:var(--r-square-xs);width:fit-content;margin-top:4px;background:rgba(124,92,255,.12);color:var(--accent);border:1px solid rgba(124,92,255,.25)}
+.stat-card.feat .stat-delta{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.25)}
+.stat-spark{display:flex;align-items:flex-end;gap:2px;height:24px;margin-top:6px}
+.stat-spark span{flex:1;background:var(--mute-3);border-radius:1px;opacity:.35}
+.stat-spark span.now{background:var(--accent);opacity:1;box-shadow:0 0 6px var(--accent-glow)}
+.stat-card.feat .stat-spark span{background:rgba(255,255,255,.3)}
+.stat-card.feat .stat-spark span.now{background:#fff;box-shadow:0 0 6px rgba(255,255,255,.4)}
+
+.project-list{display:flex;flex-direction:column;gap:6px}
+.project-row{display:flex;align-items:center;gap:14px;padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-square-md);cursor:pointer;transition:all var(--t) var(--ease),transform var(--t) var(--ease-press)}
+.project-row:hover{border-color:var(--line-2);background:var(--surface-2)}
+.project-row:active{transform:scale(.99)}
+.project-mark{width:36px;height:36px;background:var(--surface-3);border:1px solid var(--line-2);border-radius:var(--r-square);display:grid;place-items:center;font-family:var(--f-display);font-weight:900;font-size:13px;color:var(--ink);letter-spacing:.04em;flex-shrink:0}
+.project-mark.accent{background:var(--accent);border-color:var(--accent);color:var(--accent-on)}
+.project-info{flex:1;min-width:0}
+.project-name{font-weight:600;font-size:13px;color:var(--ink);letter-spacing:.01em;margin-bottom:2px}
+.project-meta{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.1em;display:flex;gap:8px;align-items:center}
+.project-meta .sep{color:var(--mute-3)}
+.project-status{display:inline-flex;align-items:center;gap:4px;font-family:var(--f-mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:var(--r-square-xs);flex-shrink:0}
+.project-status.live{background:rgba(74,222,128,.1);color:var(--ok);border:1px solid rgba(74,222,128,.25)}
+.project-status.dev{background:rgba(124,92,255,.1);color:var(--accent);border:1px solid rgba(124,92,255,.25)}
+
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quick-link{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-square-md);padding:14px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:all var(--t) var(--ease),transform var(--t) var(--ease-press);position:relative;overflow:hidden}
+.quick-link:hover{border-color:var(--accent-dim);background:rgba(167,139,250,.04)}
+.quick-link:active{transform:scale(.98)}
+.quick-icon{width:28px;height:28px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:var(--r-square);display:grid;place-items:center;color:var(--accent-dim);transition:all var(--t) var(--ease)}
+.quick-link:hover .quick-icon{background:rgba(167,139,250,.1);border-color:var(--accent-dim);color:var(--accent)}
+.quick-icon svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8}
+.quick-name{font-family:var(--f-display);font-weight:700;font-size:14px;letter-spacing:.02em;text-transform:uppercase;line-height:1}
+.quick-cap{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.08em}
+
+.app-foot{padding:24px 20px;border-top:1px solid var(--line);margin-top:8px;display:flex;flex-direction:column;gap:14px}
+.foot-mark{display:flex;align-items:center;gap:10px}
+.foot-mark .brand-mark{width:24px;height:24px;font-size:10px}
+.foot-mark span{font-family:var(--f-mono);font-size:9px;color:var(--mute-2);letter-spacing:.18em;text-transform:uppercase}
+.foot-meta{font-family:var(--f-mono);font-size:9px;color:var(--mute-3);letter-spacing:.16em;text-transform:uppercase;display:flex;justify-content:space-between}
+.foot-meta a{cursor:pointer;transition:color var(--t) var(--ease)}
+.foot-meta a:hover{color:var(--accent)}
+
+/* FLOATING NAV */
+.float-nav{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:2px;padding:5px;background:rgba(13,13,13,.95);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-square-xxl);box-shadow:0 12px 32px rgba(0,0,0,.6),0 4px 12px rgba(0,0,0,.4),0 0 0 1px rgba(0,0,0,.5);transition:transform var(--t) var(--ease),opacity var(--t) var(--ease)}
+.nav-item{width:40px;height:40px;border-radius:var(--r-square-lg);display:grid;place-items:center;color:var(--mute);cursor:pointer;transition:all var(--t) var(--ease),transform var(--t) var(--ease-press);position:relative}
+.nav-item:hover{color:var(--ink-2);background:rgba(255,255,255,.04)}
+.nav-item:active{transform:scale(.88)}
+.nav-item svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8}
+.nav-item.active{background:var(--accent);color:var(--accent-on);box-shadow:0 0 16px var(--accent-glow)}
+.nav-item.active:hover{background:var(--accent);color:var(--accent-on)}
+.nav-item.menu-toggle.open{background:var(--surface-3);color:var(--accent)}
+
+/* BACKDROP */
+.popover-backdrop{position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.55);backdrop-filter:blur(10px) saturate(80%);-webkit-backdrop-filter:blur(10px) saturate(80%);opacity:0;pointer-events:none;transition:opacity var(--t) var(--ease)}
+.popover-backdrop.open{opacity:1;pointer-events:auto}
+
+/* ============================================================
+   POPOVER — fixed height, NO parent scroll
+   Layout: head (fixed) + grid (fixed) + list-cell (flex:1, internal scroll)
+   ============================================================ */
+.popover{
+  position:absolute;left:14px;right:14px;bottom:78px;z-index:50;
+  background:#161616;border:1px solid var(--line-2);border-radius:var(--r-square-xl);
+  box-shadow:0 -16px 48px rgba(0,0,0,.7),0 8px 32px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.5);
+  padding:14px;
+  display:flex;flex-direction:column;gap:10px;
+  /* FIXED height, NO overflow on parent */
+  height:560px;max-height:calc(100% - 110px);
+  overflow:hidden;
+  opacity:0;transform:translateY(20px) scale(.96);pointer-events:none;
+  transition:opacity var(--t) var(--ease),transform var(--t) var(--ease);
+}
+.popover.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+
+.menu-head{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:4px 6px 4px}
+.menu-head-title{font-family:var(--f-mono);font-size:9px;color:var(--mute-2);letter-spacing:.22em;text-transform:uppercase;font-weight:700}
+.menu-close{width:26px;height:26px;border-radius:var(--r-round);display:grid;place-items:center;color:var(--mute);cursor:pointer;transition:all var(--t) var(--ease),transform var(--t) var(--ease-press)}
+.menu-close:hover{color:var(--ink);background:var(--surface-2)}
+.menu-close:active{transform:scale(.85)}
+.menu-close svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2}
+
+/* 3x3 grid — fixed, no scroll */
+.menu-grid{flex-shrink:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+
+.menu-cell{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-square);padding:10px;display:flex;flex-direction:column;justify-content:space-between;min-height:74px;cursor:pointer;transition:all var(--t) var(--ease),transform var(--t) var(--ease-press);position:relative;overflow:hidden}
+.menu-cell:hover{border-color:var(--line-3)}
+.menu-cell:active{transform:scale(.96)}
+
+.menu-cell.account{grid-column:1/3;background:linear-gradient(135deg,var(--accent) 0%,#5d3fe0 100%);border-color:var(--accent);color:#fff;flex-direction:row;align-items:center;gap:10px;min-height:74px}
+.menu-cell.account:hover{box-shadow:0 0 24px var(--accent-glow)}
+.menu-cell.account .acct-avatar{width:32px;height:32px;border-radius:var(--r-round);background:rgba(255,255,255,.18);display:grid;place-items:center;font-family:var(--f-display);font-weight:900;font-size:12px;color:#fff;border:1.5px solid rgba(255,255,255,.4);flex-shrink:0}
+.menu-cell.account .acct-info{flex:1;min-width:0}
+.menu-cell.account .acct-name{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.02em;text-transform:uppercase;line-height:1;margin-bottom:3px}
+.menu-cell.account .acct-email{font-family:var(--f-mono);font-size:8px;color:rgba(255,255,255,.8);letter-spacing:.06em;line-height:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.menu-cell.account .acct-arrow{color:rgba(255,255,255,.7);flex-shrink:0}
+.menu-cell.account .acct-arrow svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2}
+
+.menu-cell.action{background:var(--surface-2)}
+.menu-cell.action:hover{border-color:var(--accent-dim);background:rgba(167,139,250,.06)}
+.cell-eye{font-family:var(--f-mono);font-size:7px;color:var(--mute-3);letter-spacing:.2em;text-transform:uppercase;font-weight:700}
+.cell-icon{color:var(--accent-dim);align-self:flex-start}
+.menu-cell.action:hover .cell-icon{color:var(--accent)}
+.cell-icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
+.cell-label{font-family:var(--f-display);font-weight:700;font-size:12px;letter-spacing:.02em;text-transform:uppercase;color:var(--ink);line-height:1}
+
+/* LAB LIST CELL — flexes to fill remaining height, inner list scrolls */
+.menu-list-cell{
+  flex:1; min-height:0;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-square);
+  padding:0;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.menu-list-head{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px 8px;
+  font-family:var(--f-mono);font-size:8px;color:var(--mute-2);
+  letter-spacing:.22em;text-transform:uppercase;font-weight:700;
+  border-bottom:1px solid var(--line);
+}
+.menu-list-head .count{color:var(--accent);background:rgba(124,92,255,.12);padding:2px 6px;border-radius:var(--r-square-xs)}
+.menu-list{
+  flex:1; min-height:0;
+  overflow-y:auto;
+  padding:4px;
+  /* Custom scrollbar — subtle, on-brand */
+  scrollbar-width:thin;
+  scrollbar-color:var(--line-3) transparent;
+}
+.menu-list::-webkit-scrollbar{width:4px}
+.menu-list::-webkit-scrollbar-track{background:transparent}
+.menu-list::-webkit-scrollbar-thumb{background:var(--line-3);border-radius:var(--r-round)}
+.menu-list::-webkit-scrollbar-thumb:hover{background:var(--mute-3)}
+.menu-list-item{padding:10px 10px;border-radius:var(--r-square-xs);display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;font-size:12px;color:var(--ink-2);transition:all var(--t) var(--ease),transform var(--t) var(--ease-press)}
+.menu-list-item:hover{background:var(--surface-3);color:var(--ink)}
+.menu-list-item:active{transform:scale(.99)}
+.menu-list-item .right{display:flex;align-items:center;gap:8px;color:var(--mute-3);transition:color var(--t) var(--ease)}
+.menu-list-item:hover .right{color:var(--accent)}
+.menu-list-item .meta{font-family:var(--f-mono);font-size:9px;color:var(--mute-2);letter-spacing:.06em}
+.menu-list-item:hover .meta{color:var(--accent-dim)}
+.menu-list-item .right svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;transition:transform var(--t) var(--ease)}
+.menu-list-item:hover .right svg{transform:translateX(2px)}
+
+@media(min-width:560px){.frame-wrap{padding:48px}}
+</style>
+</head>
+<body>
+<div class="frame-wrap">
+  <div class="preview-meta">
+    <div>EXHALEJR // HOME · v3</div>
+    <div class="badge-live"><span class="dot"></span>LIVE</div>
+  </div>
+
+  <div class="phone">
+    <div class="statusbar">
+      <span>9:41</span>
+      <div class="right"><div class="signal"><span></span><span></span><span></span><span></span></div><span style="font-size:9px">5G</span><div class="battery"></div></div>
+    </div>
+
+    <div class="viewport">
+      <header class="app-head">
+        <div class="brand"><div class="brand-mark">JR</div><div><div class="brand-name">EXHALEJR //</div><div class="brand-sub">full-stack creative</div></div></div>
+        <div class="head-actions">
+          <button class="icon-btn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+          <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="notif-dot"></span></button>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="eyebrow"><span class="dot"></span>// THE LAB · v0.1</div>
+        <h1 class="h1">Internal tools<br>that <span class="accent">ship.</span></h1>
+        <p class="lead">An R&D operation building production tooling for studios, artists, and teams who move fast.</p>
+      </section>
+
+      <section class="section">
+        <div class="section-head"><div class="section-title"><b>// THE LAB</b> · this week</div><a class="section-link">All <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></a></div>
+        <div class="bento-grid">
+          <div class="stat-card feat">
+            <div class="stat-label">// Featured · VI</div><div class="stat-num">2.1M</div><div class="stat-cap">tokens processed today</div>
+            <div class="stat-spark"><span style="height:30%"></span><span style="height:55%"></span><span style="height:42%"></span><span style="height:65%"></span><span style="height:50%"></span><span style="height:78%"></span><span class="now" style="height:95%"></span></div>
+          </div>
+          <div class="stat-card"><div class="stat-label">// Sessions</div><div class="stat-num">142</div><div class="stat-delta">▲ 12% wk</div></div>
+          <div class="stat-card"><div class="stat-label">// Open issues</div><div class="stat-num">23</div><div class="stat-cap">7 in review</div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head"><div class="section-title"><b>// PROJECTS</b> · 3 active</div><a class="section-link">All <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></a></div>
+        <div class="project-list">
+          <div class="project-row"><div class="project-mark accent">VI</div><div class="project-info"><div class="project-name">Visual Intelligence</div><div class="project-meta">v0.3<span class="sep">·</span>updated 2h ago</div></div><span class="project-status live">LIVE</span></div>
+          <div class="project-row"><div class="project-mark">AM</div><div class="project-info"><div class="project-name">Artist Model</div><div class="project-meta">draft<span class="sep">·</span>updated 1d</div></div><span class="project-status dev">DEV</span></div>
+          <div class="project-row"><div class="project-mark">EX</div><div class="project-info"><div class="project-name">Extensions</div><div class="project-meta">3 shipped<span class="sep">·</span>2 in queue</div></div><span class="project-status live">LIVE</span></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head"><div class="section-title"><b>// QUICK ACCESS</b></div></div>
+        <div class="quick-grid">
+          <div class="quick-link"><div class="quick-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg></div><div><div class="quick-name">Notes</div><div class="quick-cap">42 entries</div></div></div>
+          <div class="quick-link"><div class="quick-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg></div><div><div class="quick-name">Travel</div><div class="quick-cap">Bardonecchia</div></div></div>
+          <div class="quick-link"><div class="quick-icon"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div><div class="quick-name">Music</div><div class="quick-cap">~40 artists</div></div></div>
+          <div class="quick-link"><div class="quick-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="quick-name">Contact</div><div class="quick-cap">josh@exhale.studio</div></div></div>
+        </div>
+      </section>
+
+      <footer class="app-foot">
+        <div class="foot-mark"><div class="brand-mark">JR</div><span>EXHALEJR // 2026</span></div>
+        <div class="foot-meta"><a>Studio →</a><a>Privacy</a><a>v0.1</a></div>
+      </footer>
+    </div>
+
+    <div class="popover-backdrop" id="backdrop"></div>
+
+    <nav class="float-nav" id="floatNav">
+      <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M3 12L12 3l9 9M5 10v10a1 1 0 001 1h4v-7h4v7h4a1 1 0 001-1V10"/></svg></button>
+      <button class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
+      <button class="nav-item active"><svg viewBox="0 0 24 24"><path d="M9 3v6L3 21h18l-6-12V3"/><path d="M9 3h6"/></svg></button>
+      <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg></button>
+      <button class="nav-item menu-toggle" id="menuToggle"><svg viewBox="0 0 24 24" id="menuIcon"><circle cx="12" cy="6" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="18" r="1.5"/></svg></button>
+    </nav>
+
+    <div class="popover" id="popover">
+      <div class="menu-head">
+        <div class="menu-head-title">// QUICK ACCESS</div>
+        <button class="menu-close" id="menuClose"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></button>
+      </div>
+
+      <div class="menu-grid">
+        <div class="menu-cell account">
+          <div class="acct-avatar">JR</div>
+          <div class="acct-info"><div class="acct-name">Josh Roxby</div><div class="acct-email">josh@exhale.studio</div></div>
+          <div class="acct-arrow"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+        <div class="menu-cell action"><div class="cell-eye">// 03</div><div class="cell-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div><div class="cell-label">Settings</div></div>
+        <div class="menu-cell action"><div class="cell-eye">// 04</div><div class="cell-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div><div class="cell-label">Search</div></div>
+        <div class="menu-cell action"><div class="cell-eye">// 05</div><div class="cell-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div><div class="cell-label">New note</div></div>
+        <div class="menu-cell action"><div class="cell-eye">// 06</div><div class="cell-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div class="cell-label">Contact</div></div>
+        <div class="menu-cell action"><div class="cell-eye">// 07</div><div class="cell-icon"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg></div><div class="cell-label">Sign out</div></div>
+        <div class="menu-cell action"><div class="cell-eye">// 08</div><div class="cell-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div><div class="cell-label">Theme</div></div>
+        <div class="menu-cell action"><div class="cell-eye">// 09</div><div class="cell-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg></div><div class="cell-label">Help</div></div>
+      </div>
+
+      <!-- LAB LIST · flex:1, internal scroll only -->
+      <div class="menu-list-cell">
+        <div class="menu-list-head"><span>// LAB · ALL PAGES</span><span class="count">7</span></div>
+        <div class="menu-list">
+          <a class="menu-list-item"><span>Visual Intelligence</span><span class="right"><span class="meta">v0.3</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span></a>
+          <a class="menu-list-item"><span>Artist Model</span><span class="right"><span class="meta">draft</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span></a>
+          <a class="menu-list-item"><span>Extensions</span><span class="right"><span class="meta">3 live</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span></a>
+          <a class="menu-list-item"><span>Internal docs</span><span class="right"><span class="meta">42</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span></a>
+          <a class="menu-list-item"><span>Roadmap</span><span class="right"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span></a>
+          <a class="menu-list-item"><span>Changelog</span><span class="right"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span></a>
+          <a class="menu-list-item"><span>Archive</span><span class="right"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span></a>
+          <a class="menu-list-item"><span>Sandbox</span><span class="right"><span class="meta">private</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span></a>
+          <a class="menu-list-item"><span>Templates</span><span class="right"><span class="meta">12</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span></a>
+          <a class="menu-list-item"><span>Audit log</span><span class="right"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span></a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="preview-meta" style="margin-top:4px">
+    <div>SCROLL ISOLATED · LAB LIST ONLY</div>
+    <div>POPOVER · FIXED HEIGHT</div>
+  </div>
+</div>
+
+<script>
+const popover=document.getElementById('popover');
+const backdrop=document.getElementById('backdrop');
+const menuToggle=document.getElementById('menuToggle');
+const menuClose=document.getElementById('menuClose');
+const menuIcon=document.getElementById('menuIcon');
+const dotsIcon='<circle cx="12" cy="6" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="18" r="1.5"/>';
+const closeIcon='<line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/>';
+function setMenu(open){popover.classList.toggle('open',open);backdrop.classList.toggle('open',open);menuToggle.classList.toggle('open',open);menuIcon.innerHTML=open?closeIcon:dotsIcon}
+menuToggle.addEventListener('click',e=>{e.stopPropagation();setMenu(!popover.classList.contains('open'))});
+menuClose.addEventListener('click',e=>{e.stopPropagation();setMenu(false)});
+backdrop.addEventListener('click',()=>setMenu(false));
+document.querySelectorAll('.float-nav .nav-item:not(.menu-toggle)').forEach(item=>{item.addEventListener('click',()=>{document.querySelectorAll('.float-nav .nav-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');setMenu(false)})});
+document.querySelectorAll('.menu-list-item, .menu-cell:not(.menu-list-cell)').forEach(item=>{item.addEventListener('click',e=>{e.stopPropagation();setTimeout(()=>setMenu(false),120)})});
+</script>
+</body>
+</html>
