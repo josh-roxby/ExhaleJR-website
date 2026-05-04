@@ -18,19 +18,13 @@ Sprint focus, in suggested order. See chat for the spec behind each item.
 5. ~~**/contact route.**~~ Done. Two cards, IG opens in new tab, email opens mail client, plus a `CopyButton` for the address. Side note about studio enquiries pointing to exhale.studio.
 6. ~~**/gallery real content.**~~ Done. Tile grid pulling from `content/gallery.ts` (single TS array, easy to append). Aspect 4:5 tiles, placeholder gradient when no image, lazy-loaded `<img>`, tags rendered as Tag chips, sorted newest first, EmptyState for zero items. Workflow doc in `content/README.md`. The thoughts/found surfaces will follow the same `content/<surface>.ts` pattern when built.
 7. ~~**Help cell content.**~~ Done. `/help` route with hero, TOC, and five sections (Drawing board, GitHub, Claude, Vercel, Putting it together). Friendly non-technical voice, doc links per section. Help cell in popover routes here.
-8. **Rip feature revision.** This is the big one.
-   - More breathing room in the modal layout. Less dense, friendlier for non-technical readers.
-   - Auto-prefix every rip prompt with an attribution header that prints into the user's generated code:
-     ```
-     # Designed by Josh Roxby
-     # exhalejr.com · josh@exhale.studio
-     ```
-   - Handle two consumer modes the user can toggle in the modal:
-     - **Claude chat (artifact)**: prompt produces a self-contained HTML artifact mirroring the project.
-     - **Claude Code (init repo)**: prompt scaffolds a full repo with the same drawing-board structure and conventions.
-   - Instructions explicit enough to minimise output variance. The deliverable should match this site's pattern.
-   - Update `projects/hello/RIP.md` to the new template. Establish the format other projects copy.
-   - Modal copy aimed at someone who has never used Claude Code before.
+8. ~~**Rip feature revision.**~~ Done.
+   - `lib/rip-prompt.ts` assembles the full prompt at click-time: attribution header, mode preamble (chat vs code), project content from `RIP.md`, shared design-language reference, mode-specific output instructions.
+   - Mode toggle in the modal (two cards: Claude chat / Claude Code). Active card glows accent.
+   - Modal restructured into three numbered steps (Where, Copy, What next). Big copy button. Body copy aimed at non-technical readers.
+   - `projects/hello/RIP.md` slimmed to project-specific content only (~15 lines). Future projects follow this short template.
+   - Attribution baked in: prompts instruct Claude to print "Designed by Josh Roxby. exhalejr.com · josh@exhale.studio" into generated code (HTML comment in chat mode, page.tsx top comment in code mode).
+   - Footer link from modal to `/help` for the full GitHub / Claude / Vercel walkthrough.
 
 ### Standing
 - [ ] Phase 2 atomic components from `DESIGN-SYSTEM.md` §4: selects (E), checkboxes/radios (Fc), toggles (G), sliders (H), tabs (I3), carousel (L). Add to `/designsystem` as built.

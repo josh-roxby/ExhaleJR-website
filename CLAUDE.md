@@ -99,15 +99,26 @@ Tests/lint intentionally not configured yet — add when needed.
 
 ## Rip system
 
-Each project ships with a `RIP.md` — a copy-into-Claude prompt that lets a reader scaffold their own version of the project. Server reads via `lib/rip.ts` (`getRipContent(slug)` and `getAllRipContents()`); content is passed to client components as a serializable string.
+Each project ships with a `RIP.md` containing only the **project-specific** content: what the project does, its meta fields, any unique constraints. The shared scaffolding (attribution header, mode preamble, design language, output instructions) lives in `lib/rip-prompt.ts` and gets prepended/appended at runtime when the modal builds the final prompt.
+
+This means individual `RIP.md` files stay short. Updating the brand attribution, design tokens, or output format only happens in one place.
+
+Two consumer modes, toggled in the modal:
+
+- **Claude chat** — produces a self-contained HTML artifact previewable in the chat. Best for quick experiments.
+- **Claude Code** — scaffolds a full Next.js project folder under `/projects/<slug>/`, matching the drawing-board pattern.
+
+Server-side: `lib/rip.ts` reads the `RIP.md` files (`getRipContent(slug)`, `getAllRipContents()`). Client receives the raw project content as a string and the `RipModal` calls `assembleRipPrompt(content, mode)` to build the full output that gets copied.
 
 UI surfaces:
 
 - **Drawing-board tiles** (`app/drawingboard/_drawing-board-client.tsx`) — circular rip button positioned absolutely top-right of each tile, sibling to the link so it doesn't trigger navigation.
-- **Project pages** (`app/drawingboard/[project]/_project-shell.tsx`) — the `<ProjectShell>` wraps every `Page` and renders WIP / version Tags + a rip button in the top-right action cluster. Project pages don't manage their own meta chrome.
-- **`<RipButton>`** is hidden when `promptContent` is null — projects without a `RIP.md` simply don't expose the affordance.
+- **Project pages** (`app/drawingboard/[project]/_project-shell.tsx`) — `<ProjectShell>` wraps every `Page` and renders WIP / version Tags + a rip button in the top-right action cluster.
+- **`<RipButton>`** is hidden when `promptContent` is null. Projects without a `RIP.md` simply don't expose the affordance.
 
-The "How do I use this" guide inside `<RipModal>` is generic — same content for every project. It assumes basics of GitHub, Claude / Claude Code, Vercel, and Supabase, and points readers to do their own research from there.
+The modal copy is friendly and aimed at non-technical readers. Three numbered steps: pick mode, copy prompt, follow next-steps. A footer link points to `/help` for the full GitHub / Claude / Vercel walkthrough.
+
+The attribution header instructs Claude to bake a credit comment into the generated code (in HTML for chat mode, at the top of `page.tsx` for code mode).
 
 ## Writing style
 
