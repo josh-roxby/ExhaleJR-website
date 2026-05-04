@@ -4,3 +4,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  /* DESIGN-SYSTEM.md §3.3 — every interactive element gets layered transitions:
+   * colors / shadow on --ease, transform on --ease-press for tactile presses.
+   */
+  .ds-interactive {
+    transition:
+      background-color var(--t) var(--ease),
+      border-color var(--t) var(--ease),
+      color var(--t) var(--ease),
+      box-shadow var(--t) var(--ease),
+      transform var(--t) var(--ease-press);
+  }
+}

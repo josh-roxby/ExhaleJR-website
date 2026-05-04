@@ -42,6 +42,12 @@ body::before {
   color: var(--accent-on);
 }
 
+/* Used by the eyebrow pulse-dot and other live-status indicators. */
+@keyframes ds-pulse {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+
 a {
   color: inherit;
   text-decoration: none;
