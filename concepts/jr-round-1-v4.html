@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXHALEJR / Round 1 v4 / Polished</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;700;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0a;--bg-2:#0d0d0d;--surface:#111;--surface-2:#161616;--surface-3:#1c1c1c;
+  --line:#1f1f1f;--line-2:#2a2a2a;--line-3:#3a3a3a;
+  --mute-3:#5a5a5a;--mute-2:#7a7a7a;--mute:#a8a8a8;--ink-2:#cfcfcf;--ink:#fafafa;
+
+  --accent:#7c5cff;
+  --accent-dim:#a78bfa;
+  --accent-glow:rgba(124,92,255,.22);
+  --accent-glow-soft:rgba(167,139,250,.16);
+  --accent-on:#fff;
+
+  --warn:#ff5b3d;--ok:#4ade80;
+  --r-square-xs:3px;--r-square:5px;--r-square-md:6px;
+  --r-round:999px;
+
+  /* Motion locked to medium 240ms — single duration across the system */
+  --t:240ms;
+  --ease:cubic-bezier(.2,.6,.2,1);
+  --ease-press:cubic-bezier(.4,0,.6,1);
+
+  --f-display:'Big Shoulders Display',sans-serif;
+  --f-body:'DM Sans',sans-serif;
+  --f-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  background:var(--bg);color:var(--ink);font-family:var(--f-body);
+  -webkit-font-smoothing:antialiased;font-size:15px;line-height:1.5;
+  -webkit-tap-highlight-color:transparent;
+}
+body{
+  min-height:100vh;
+  background:radial-gradient(1200px 600px at 80% -10%,var(--accent-glow) 0%,transparent 60%),radial-gradient(800px 600px at 0% 100%,var(--accent-glow-soft) 0%,transparent 60%),var(--bg);
+  padding-bottom:140px;
+}
+
+/* INTERACTIVE NO-SELECT — applies to all UI chrome */
+button,
+.no-select,
+.spec, .card-demo,
+.chip, .tag, .pill, .badge,
+.btn, .btn-icon,
+.fav-btn,
+.toggle, .check, .radio, .radio-card,
+.dropdown-btn, .dropdown-item,
+.tab, .tab-pill, .tab-seg,
+.nav-link, .topnav-link, .sidenav-item,
+.stepper-btn,
+.space-cell, .radius-cell, .shadow-cell, .motion-cell, .found-cell,
+.swatch-mini,
+.export-bar,
+.cat-head, .type-head, .type-row,
+.brand-mark, .round-badge,
+input[type="checkbox"], input[type="radio"]{
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Allow selection on actual content */
+.field-input, .field-line, textarea, input[type="text"], input[type="email"],
+.export-output,
+.changelog, .intro p, .cat-desc, .card-body, .field-helper,
+pre, code, .code-inline{
+  -webkit-user-select:text;
+  -moz-user-select:text;
+  -ms-user-select:text;
+  user-select:text;
+}
+
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font:inherit;color:inherit;background:none;border:none;outline:none}
+a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
+::selection{background:var(--accent);color:var(--accent-on)}
+
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+
+/* PRESS INTERACTION — global subtle scale + glow on tap */
+.press{
+  transition:transform var(--t) var(--ease-press), box-shadow var(--t) var(--ease), background-color var(--t) var(--ease), border-color var(--t) var(--ease), color var(--t) var(--ease), opacity var(--t) var(--ease);
+  will-change:transform;
+}
+.press:active:not(:disabled){
+  transform:scale(.97);
+}
+.press-glow:hover:not(:disabled){
+  box-shadow:0 0 0 1px rgba(124,92,255,.2),0 4px 16px var(--accent-glow);
+}
+.press-glow-strong:hover:not(:disabled){
+  box-shadow:0 0 0 1px var(--accent),0 0 24px var(--accent-glow);
+}
+
+/* HEADER */
+header.top{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:rgba(10,10,10,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{width:36px;height:36px;background:#fff;border-radius:var(--r-square-md);display:grid;place-items:center;font-family:var(--f-display);font-weight:900;color:#000;font-size:14px;letter-spacing:.04em}
+.brand-text{font-family:var(--f-display);font-weight:900;font-size:16px;letter-spacing:.04em}
+.brand-sub{font-family:var(--f-mono);font-size:9px;color:var(--mute-2);letter-spacing:.2em;text-transform:uppercase;margin-top:2px}
+.round-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;background:var(--accent);color:var(--accent-on);border-radius:var(--r-round);font-family:var(--f-mono);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+
+.intro{padding:48px 28px 32px;max-width:1200px;border-bottom:1px solid var(--line);position:relative;z-index:2}
+.intro h1{font-family:var(--f-display);font-weight:900;font-size:clamp(36px,6vw,72px);line-height:.95;letter-spacing:-.01em;margin-bottom:18px}
+.intro h1 .slash{color:var(--accent)}
+.intro p{font-size:14px;line-height:1.6;color:var(--mute);max-width:560px}
+.intro .nudge{font-family:var(--f-mono);font-size:10px;color:var(--mute-2);letter-spacing:.2em;text-transform:uppercase;margin-top:24px;display:flex;gap:24px;flex-wrap:wrap}
+.intro .nudge span b{color:var(--ink);font-weight:600}
+.changelog{margin-top:24px;padding:14px 16px;background:rgba(124,92,255,.08);border:1px solid rgba(124,92,255,.25);border-radius:var(--r-square);font-family:var(--f-mono);font-size:11px;color:var(--ink-2);letter-spacing:.04em;line-height:1.7;max-width:620px}
+.changelog b{color:var(--accent);text-transform:uppercase;letter-spacing:.18em;font-size:9px;display:block;margin-bottom:6px}
+
+main{padding:48px 28px 80px;max-width:1200px;position:relative;z-index:2}
+
+.cat{margin-bottom:80px;scroll-margin-top:90px}
+.cat-head{display:flex;align-items:flex-end;gap:20px;margin-bottom:36px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.cat-id{font-family:var(--f-display);font-weight:900;font-size:72px;line-height:.85;color:var(--accent);letter-spacing:-.02em}
+.cat-titles{flex:1;padding-bottom:8px}
+.cat-name{font-family:var(--f-display);font-weight:700;font-size:32px;letter-spacing:.01em;text-transform:uppercase;line-height:1}
+.cat-desc{font-size:13px;color:var(--mute);margin-top:8px;max-width:480px;line-height:1.55}
+.cat-counts{font-family:var(--f-mono);font-size:9px;color:var(--mute-2);letter-spacing:.18em;text-transform:uppercase;text-align:right;padding-bottom:12px;flex-shrink:0}
+.cat-counts b{display:block;color:var(--ink);font-size:20px;font-weight:600;letter-spacing:.04em;margin-bottom:2px}
+
+@media(max-width:680px){
+  header.top{padding:14px 18px;flex-wrap:wrap;gap:10px}
+  .intro,main{padding-left:18px;padding-right:18px}
+  .cat-head{flex-direction:column;align-items:flex-start;gap:6px}
+  .cat-id{font-size:48px}
+  .cat-name{font-size:24px}
+  .cat-counts{text-align:left;padding-bottom:0}
+}
+
+.type-group{margin-bottom:48px}
+.type-head{display:flex;align-items:baseline;gap:14px;margin-bottom:18px}
+.type-id{font-family:var(--f-mono);font-size:11px;color:var(--mute-2);letter-spacing:.14em;font-weight:600}
+.type-name{font-family:var(--f-display);font-weight:700;font-size:18px;letter-spacing:.02em;text-transform:uppercase}
+.type-note{font-size:11px;color:var(--mute);margin-left:auto;font-style:italic}
+
+.specs{display:grid;gap:14px}
+.specs-2{grid-template-columns:1fr 1fr}
+.specs-3{grid-template-columns:repeat(3,1fr)}
+.specs-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:1000px){.specs-3,.specs-4{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.specs-2,.specs-3,.specs-4{grid-template-columns:1fr}}
+
+.spec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-square-md);padding:18px;position:relative;transition:all var(--t) var(--ease);display:flex;flex-direction:column;gap:12px;min-height:130px}
+.spec:hover{border-color:var(--line-2)}
+.spec.fav{border-color:var(--accent)}
+.spec.fav::before{content:'';position:absolute;inset:0;border-radius:var(--r-square-md);box-shadow:0 0 0 1px var(--accent) inset,0 0 24px var(--accent-glow);pointer-events:none}
+.spec-meta{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.spec-id{font-family:var(--f-mono);font-size:10px;color:var(--mute-2);letter-spacing:.14em;font-weight:600}
+.spec.fav .spec-id{color:var(--accent)}
+.fav-btn{width:24px;height:24px;border-radius:var(--r-round);display:grid;place-items:center;color:var(--mute-3);transition:all var(--t) var(--ease), transform var(--t) var(--ease-press);position:relative;z-index:2}
+.fav-btn:hover{color:var(--ink);background:var(--surface-2)}
+.fav-btn:active{transform:scale(.9)}
+.fav-btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.6}
+.spec.fav .fav-btn{color:var(--accent)}
+.spec.fav .fav-btn svg{fill:var(--accent)}
+.spec-body{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 0;min-height:60px;position:relative;z-index:2}
+.spec-body.left{justify-content:flex-start}
+.spec-body.col{flex-direction:column;gap:10px;align-items:stretch;justify-content:flex-start}
+.spec-label{font-family:var(--f-mono);font-size:9px;color:var(--mute-3);letter-spacing:.16em;text-transform:uppercase;position:relative;z-index:2}
+
+/* FOUNDATIONS */
+.found-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.found-cell{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-square-md);padding:16px;position:relative;transition:all var(--t) var(--ease), transform var(--t) var(--ease-press)}
+.found-cell:active{transform:scale(.99)}
+.found-fav{position:absolute;top:8px;right:8px}
+.swatch{height:60px;border-radius:var(--r-square);margin-bottom:12px;border:1px solid rgba(255,255,255,.04)}
+.found-cell-id{font-family:var(--f-mono);font-size:9px;color:var(--mute-2);letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+.found-cell-name{font-family:var(--f-mono);font-size:11px;color:var(--ink);font-weight:600;letter-spacing:.04em}
+.found-cell-val{font-family:var(--f-mono);font-size:10px;color:var(--mute);margin-top:2px}
+.found-cell.fav{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset,0 0 24px var(--accent-glow)}
+.found-cell.fav .found-cell-name{color:var(--accent)}
+.found-cell.dim-cell{border-color:rgba(167,139,250,.3)}
+.found-cell.dim-cell .found-cell-name{color:var(--accent-dim)}
+
+.type-row{padding:14px 0;border-bottom:1px dashed var(--line);display:grid;grid-template-columns:160px 1fr auto;gap:20px;align-items:center;position:relative}
+.type-row:last-child{border-bottom:none}
+.type-info{font-family:var(--f-mono);font-size:9px;color:var(--mute-2);letter-spacing:.14em;text-transform:uppercase}
+.type-info b{display:block;color:var(--ink);font-weight:600;font-size:11px;letter-spacing:.06em;margin-bottom:2px}
+.type-row.fav .type-info b{color:var(--accent)}
+@media(max-width:680px){.type-row{grid-template-columns:1fr;gap:8px}}
+
+.space-row{display:flex;gap:14px;align-items:flex-end;padding:14px 0;flex-wrap:wrap}
+.space-cell{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:8px;border-radius:var(--r-square-xs);transition:all var(--t) var(--ease), transform var(--t) var(--ease-press)}
+.space-cell:hover{background:var(--surface-2)}
+.space-cell:active{transform:scale(.95)}
+.space-cell.fav{background:rgba(124,92,255,.1);box-shadow:0 0 0 1px var(--accent) inset}
+.space-cell.fav .space-bar{background:var(--accent)}
+.space-cell.fav .space-label{color:var(--accent)}
+.space-bar{background:var(--ink);height:20px;border-radius:2px;transition:background var(--t) var(--ease)}
+.space-label{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.1em}
+
+.radius-row{display:flex;gap:14px;flex-wrap:wrap}
+.radius-cell{flex:1;min-width:80px;text-align:center;cursor:pointer;padding:8px;border-radius:var(--r-square-xs);transition:all var(--t) var(--ease), transform var(--t) var(--ease-press);position:relative}
+.radius-cell:hover{background:var(--surface-2)}
+.radius-cell:active{transform:scale(.95)}
+.radius-cell.fav .radius-shape{background:var(--accent);border-color:var(--accent)}
+.radius-cell.fav .radius-label{color:var(--accent)}
+.radius-shape{height:56px;background:var(--surface-3);border:1px solid var(--line-2);margin-bottom:8px;transition:all var(--t) var(--ease)}
+.radius-label{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.1em}
+
+.shadow-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:18px;padding:18px;background:var(--bg-2);border-radius:var(--r-square)}
+.shadow-cell{text-align:center;cursor:pointer;padding:8px;border-radius:var(--r-square-xs);transition:all var(--t) var(--ease), transform var(--t) var(--ease-press);position:relative}
+.shadow-cell:hover{background:var(--surface-2)}
+.shadow-cell:active{transform:scale(.95)}
+.shadow-cell.fav{background:rgba(124,92,255,.1)}
+.shadow-cell.fav .shadow-label{color:var(--accent)}
+.shadow-shape{height:60px;background:var(--surface-2);border-radius:var(--r-square);margin-bottom:10px}
+.shadow-label{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.1em}
+
+.motion-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.motion-cell{background:var(--surface-2);padding:14px;border-radius:var(--r-square);text-align:center;cursor:pointer;border:1px solid var(--line);transition:all var(--t) var(--ease), transform var(--t) var(--ease-press);position:relative}
+.motion-cell:hover .motion-dot{transform:translateX(40px)}
+.motion-cell:active{transform:scale(.97)}
+.motion-cell.fav{border-color:var(--accent)}
+.motion-cell.fav .motion-label{color:var(--accent)}
+.motion-dot{width:12px;height:12px;background:var(--accent);border-radius:var(--r-round);margin:0 auto 10px;transition:transform var(--t) var(--ease)}
+.motion-label{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.1em}
+
+/* BUTTONS — square, with press scale + glow */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 18px;border-radius:var(--r-square);
+  font-family:var(--f-body);font-size:13px;font-weight:600;letter-spacing:.02em;
+  cursor:pointer;white-space:nowrap;
+  transition:background-color var(--t) var(--ease), color var(--t) var(--ease), border-color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t) var(--ease-press);
+}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn svg{width:14px;height:14px}
+
+.btn-prim{background:var(--accent);color:var(--accent-on);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.btn-prim:hover:not(:disabled){background:#fff;color:#000;box-shadow:0 0 24px var(--accent-glow),0 4px 12px rgba(0,0,0,.4)}
+
+.btn-prim-mono{background:var(--ink);color:#000;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.btn-prim-mono:hover:not(:disabled){background:#fff;box-shadow:0 4px 16px rgba(255,255,255,.1)}
+
+.btn-sec{background:transparent;color:var(--ink);border:1px solid var(--line-2)}
+.btn-sec:hover:not(:disabled){border-color:var(--line-3);background:var(--surface-2);box-shadow:0 0 0 1px var(--line-3)}
+
+.btn-sec-accent{background:transparent;color:var(--accent-dim);border:1px solid rgba(167,139,250,.4)}
+.btn-sec-accent:hover:not(:disabled){background:rgba(167,139,250,.1);border-color:var(--accent-dim);color:#fff;box-shadow:0 0 16px var(--accent-glow-soft)}
+
+.btn-ghost{background:transparent;color:var(--mute);padding:8px 12px}
+.btn-ghost:hover:not(:disabled){color:var(--ink);background:var(--surface-2)}
+
+.btn-dest{background:var(--warn);color:#fff;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.btn-dest:hover:not(:disabled){background:#ff7b5e;box-shadow:0 0 24px rgba(255,91,61,.25),0 4px 12px rgba(0,0,0,.4)}
+
+.btn-dest-out{background:transparent;color:var(--warn);border:1px solid var(--warn)}
+.btn-dest-out:hover:not(:disabled){background:rgba(255,91,61,.1);box-shadow:0 0 16px rgba(255,91,61,.18)}
+
+.btn-sm{padding:6px 12px;font-size:11px}
+.btn-icon{
+  width:36px;height:36px;padding:0;border-radius:var(--r-square);display:grid;place-items:center;
+  background:var(--surface-2);color:var(--ink);border:1px solid var(--line);cursor:pointer;
+  transition:background-color var(--t) var(--ease), border-color var(--t) var(--ease), color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t) var(--ease-press);
+}
+.btn-icon:active:not(:disabled){transform:scale(.93)}
+.btn-icon:hover:not(:disabled){border-color:var(--line-2);background:var(--surface-3)}
+.btn-icon-round{border-radius:var(--r-round)}
+.btn-icon-ghost{background:transparent;border-color:transparent;color:var(--mute)}
+.btn-icon-ghost:hover:not(:disabled){background:var(--surface-2);color:var(--ink)}
+.btn-icon-accent{background:var(--accent);color:var(--accent-on);border-color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.btn-icon-accent:hover{background:#fff;color:#000;box-shadow:0 0 24px var(--accent-glow)}
+
+.spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* CHIPS — round, with press */
+.chip{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:var(--r-round);
+  font-family:var(--f-body);font-size:11px;font-weight:500;letter-spacing:.02em;
+  background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line);cursor:pointer;
+  transition:background-color var(--t) var(--ease), color var(--t) var(--ease), border-color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t) var(--ease-press);
+}
+.chip:hover{border-color:var(--line-3)}
+.chip:active{transform:scale(.95)}
+.chip-out{background:transparent}
+.chip-accent{background:var(--accent);color:var(--accent-on);border-color:var(--accent);font-weight:600}
+.chip-accent:hover{box-shadow:0 0 16px var(--accent-glow)}
+.chip-out-accent{background:transparent;color:var(--accent-dim);border-color:rgba(167,139,250,.4)}
+.chip-mono{font-family:var(--f-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;padding:4px 9px}
+.chip-x{cursor:pointer;color:var(--mute);margin-left:2px;font-size:13px;line-height:1;transition:color var(--t) var(--ease)}
+.chip-x:hover{color:var(--ink)}
+.chip-dot{width:6px;height:6px;border-radius:var(--r-round);background:var(--accent)}
+
+/* TAGS — square */
+.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:var(--r-square-xs);font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.tag-accent{background:var(--accent);color:var(--accent-on);border-color:var(--accent)}
+.tag-warn{background:rgba(255,91,61,.12);color:var(--warn);border-color:rgba(255,91,61,.3)}
+.tag-ok{background:rgba(74,222,128,.12);color:var(--ok);border-color:rgba(74,222,128,.3)}
+
+/* PILLS — round, with press */
+.pill{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--r-round);
+  font-family:var(--f-body);font-size:12px;font-weight:600;letter-spacing:.01em;
+  background:var(--surface-2);color:var(--ink);border:1px solid var(--line-2);cursor:pointer;
+  transition:background-color var(--t) var(--ease), color var(--t) var(--ease), border-color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t) var(--ease-press);
+}
+.pill:hover{border-color:var(--line-3)}
+.pill:active{transform:scale(.96)}
+.pill-accent{background:var(--accent);color:var(--accent-on);border-color:var(--accent)}
+.pill-accent:hover{box-shadow:0 0 16px var(--accent-glow)}
+.pill-ghost{background:transparent;border-color:var(--line-2);color:var(--mute)}
+.pill-icon svg{width:11px;height:11px}
+
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:var(--r-round);font-family:var(--f-mono);font-size:9px;font-weight:700;letter-spacing:.04em;background:var(--accent);color:var(--accent-on)}
+.badge-warn{background:var(--warn);color:#fff}
+.badge-mute{background:var(--surface-3);color:var(--ink)}
+.badge-dot{width:8px;height:8px;min-width:0;padding:0;background:var(--accent);box-shadow:0 0 0 2px var(--bg)}
+.badge-host{position:relative;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--surface-2);border-radius:var(--r-square);color:var(--mute)}
+.badge-host .badge{position:absolute;top:-4px;right:-4px}
+
+/* INPUTS — square */
+.field{display:flex;flex-direction:column;gap:6px;width:100%}
+.field-label{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+.field-input{width:100%;padding:11px 14px;border-radius:var(--r-square);background:var(--surface-2);border:1px solid var(--line-2);font-size:13px;color:var(--ink);transition:all var(--t) var(--ease)}
+.field-input::placeholder{color:var(--mute-3)}
+.field-input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px var(--accent-glow)}
+.field-input.error{border-color:var(--warn)}
+.field-input.error:focus{box-shadow:0 0 0 3px rgba(255,91,61,.12)}
+.field-helper{font-family:var(--f-mono);font-size:10px;color:var(--mute-2);letter-spacing:.04em}
+.field-helper.error{color:var(--warn)}
+.field-textarea{min-height:72px;resize:vertical;font-family:var(--f-body);line-height:1.5}
+.field-counter{font-family:var(--f-mono);font-size:9px;color:var(--mute-3);letter-spacing:.1em;text-align:right}
+.field-search{position:relative}
+.field-search > svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--mute);pointer-events:none}
+.field-search .field-input{padding-left:38px}
+.field-line{width:100%;padding:8px 2px;background:transparent;border:none;border-bottom:1px solid var(--line-2);font-size:13px;color:var(--ink);transition:all var(--t) var(--ease)}
+.field-line:focus{border-bottom-color:var(--accent)}
+.field-line::placeholder{color:var(--mute-3)}
+.kbd{position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:2px 6px;background:var(--surface-3);border-radius:var(--r-square-xs);font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.08em;border:1px solid var(--line)}
+
+.stepper{display:flex;align-items:center;background:var(--surface-2);border:1px solid var(--line-2);border-radius:var(--r-square);overflow:hidden;width:fit-content;transition:border-color var(--t) var(--ease)}
+.stepper:hover{border-color:var(--line-3)}
+.stepper-btn{width:32px;height:34px;display:grid;place-items:center;color:var(--mute);transition:all var(--t) var(--ease), transform var(--t) var(--ease-press);cursor:pointer}
+.stepper-btn:hover{background:var(--surface-3);color:var(--ink)}
+.stepper-btn:active{transform:scale(.85)}
+.stepper-val{padding:0 14px;font-family:var(--f-mono);font-size:12px;font-weight:600;min-width:50px;text-align:center;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+
+/* CHECKBOX — square */
+.check{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;transition:transform var(--t) var(--ease-press)}
+.check:active{transform:scale(.97)}
+.check input{display:none}
+.check-box{width:16px;height:16px;border:1px solid var(--line-3);border-radius:var(--r-square-xs);background:var(--surface-2);display:grid;place-items:center;transition:all var(--t) var(--ease);flex-shrink:0}
+.check input:checked + .check-box{background:var(--accent);border-color:var(--accent);box-shadow:0 0 12px var(--accent-glow)}
+.check-box svg{width:10px;height:10px;color:var(--accent-on);opacity:0;stroke-width:3;fill:none;stroke:currentColor;transition:opacity var(--t) var(--ease)}
+.check input:checked + .check-box svg{opacity:1}
+
+/* RADIO */
+.radio{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;transition:transform var(--t) var(--ease-press)}
+.radio:active{transform:scale(.97)}
+.radio input{display:none}
+.radio-dot{width:16px;height:16px;border:1px solid var(--line-3);border-radius:var(--r-round);background:var(--surface-2);display:grid;place-items:center;transition:all var(--t) var(--ease);flex-shrink:0}
+.radio-dot::after{content:'';width:7px;height:7px;background:var(--accent);border-radius:var(--r-round);opacity:0;transition:opacity var(--t) var(--ease)}
+.radio input:checked + .radio-dot{border-color:var(--accent);box-shadow:0 0 12px var(--accent-glow)}
+.radio input:checked + .radio-dot::after{opacity:1}
+
+.radio-card{padding:12px 14px;border:1px solid var(--line-2);border-radius:var(--r-square);cursor:pointer;display:flex;align-items:center;gap:10px;font-size:13px;background:var(--surface-2);transition:background-color var(--t) var(--ease), border-color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t) var(--ease-press)}
+.radio-card:hover{border-color:var(--line-3)}
+.radio-card:active{transform:scale(.99)}
+.radio-card input{display:none}
+.radio-card-indicator{width:16px;height:16px;border:1px solid var(--line-3);border-radius:var(--r-square-xs);background:var(--surface);display:grid;place-items:center;transition:all var(--t) var(--ease);flex-shrink:0}
+.radio-card-indicator svg{width:10px;height:10px;color:var(--accent-on);opacity:0;stroke-width:3;fill:none;stroke:currentColor;transition:opacity var(--t) var(--ease)}
+.radio-card:has(input:checked){border-color:var(--accent);background:rgba(124,92,255,.08);box-shadow:0 0 16px var(--accent-glow)}
+.radio-card:has(input:checked) .radio-card-indicator{background:var(--accent);border-color:var(--accent)}
+.radio-card:has(input:checked) .radio-card-indicator svg{opacity:1}
+
+/* TOGGLE — round only */
+.toggle{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;transition:transform var(--t) var(--ease-press)}
+.toggle:active{transform:scale(.97)}
+.toggle input{display:none}
+.toggle-track{width:32px;height:18px;background:var(--surface-3);border-radius:var(--r-round);position:relative;transition:all var(--t) var(--ease);flex-shrink:0}
+.toggle-track::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;background:var(--mute);border-radius:var(--r-round);transition:all var(--t) var(--ease)}
+.toggle input:checked + .toggle-track{background:var(--accent);box-shadow:0 0 12px var(--accent-glow)}
+.toggle input:checked + .toggle-track::after{left:16px;background:#fff}
+.toggle-lg .toggle-track{width:42px;height:24px}
+.toggle-lg .toggle-track::after{width:20px;height:20px}
+.toggle-lg input:checked + .toggle-track::after{left:20px}
+
+/* SLIDERS */
+.slider{display:flex;flex-direction:column;gap:8px;width:100%}
+.slider-track{height:4px;background:var(--surface-3);border-radius:var(--r-round);position:relative}
+.slider-fill{position:absolute;left:0;top:0;height:100%;background:var(--accent);border-radius:var(--r-round);box-shadow:0 0 8px var(--accent-glow)}
+.slider-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;background:var(--ink);border-radius:var(--r-round);box-shadow:0 1px 2px rgba(0,0,0,.4);cursor:grab;transition:transform var(--t) var(--ease-press)}
+.slider-thumb:active{transform:translate(-50%,-50%) scale(1.2);cursor:grabbing}
+.slider-thumb-accent{background:var(--accent);box-shadow:0 0 12px var(--accent-glow),0 1px 2px rgba(0,0,0,.4)}
+.slider-thumb-square{border-radius:var(--r-square-xs);width:10px;height:18px}
+.slider-vals{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.1em}
+.slider-tick{display:flex;justify-content:space-between;height:6px;align-items:flex-start}
+.slider-tick > div{width:1px;height:6px;background:var(--line-3)}
+
+/* DROPDOWN — fully opaque menu */
+.dropdown{position:relative;display:inline-block;width:100%}
+.dropdown-btn{
+  width:100%;padding:11px 14px;background:var(--surface-2);border:1px solid var(--line-2);
+  border-radius:var(--r-square);display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-size:13px;color:var(--ink);text-align:left;cursor:pointer;
+  transition:border-color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t) var(--ease-press);
+}
+.dropdown-btn:hover{border-color:var(--line-3)}
+.dropdown-btn:active{transform:scale(.99)}
+.dropdown-btn svg{width:12px;height:12px;color:var(--mute);transition:transform var(--t) var(--ease)}
+.dropdown.open .dropdown-btn svg{transform:rotate(180deg)}
+.dropdown.open .dropdown-btn{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+
+/* OPAQUE — solid surface, no transparency for floating menus */
+.dropdown-menu{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:#161616;
+  border:1px solid var(--line-2);
+  border-radius:var(--r-square);
+  box-shadow:0 16px 40px rgba(0,0,0,.7),0 4px 8px rgba(0,0,0,.4);
+  padding:4px;z-index:10;display:none;max-height:200px;overflow-y:auto;
+}
+.dropdown.open .dropdown-menu{display:block;animation:menuIn var(--t) var(--ease)}
+@keyframes menuIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+.dropdown-item{
+  padding:8px 12px;font-size:13px;color:var(--ink-2);border-radius:var(--r-square-xs);
+  cursor:pointer;display:flex;align-items:center;gap:8px;
+  transition:all var(--t) var(--ease), transform var(--t) var(--ease-press);
+}
+.dropdown-item:hover{background:var(--surface-3);color:var(--ink)}
+.dropdown-item:active{transform:scale(.98)}
+.dropdown-item.selected{color:var(--accent)}
+.dropdown-item.selected svg{margin-left:auto;width:11px;height:11px}
+
+/* EXPORT */
+.export-bar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0d0d0d;border:1px solid var(--line-2);border-radius:var(--r-round);padding:8px 8px 8px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 12px 32px rgba(0,0,0,.7);z-index:60;transition:all var(--t) var(--ease);max-width:calc(100vw - 32px)}
+.export-bar.hide{transform:translateX(-50%) translateY(120px);opacity:0;pointer-events:none}
+.export-count{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;color:var(--mute);text-transform:uppercase;white-space:nowrap}
+.export-count b{color:var(--accent);font-size:14px;margin-right:4px}
+.export-bar .btn{padding:8px 14px;font-size:11px;border-radius:var(--r-round)}
+
+/* MODAL — 98% surface + blur for atmospheric large overlays */
+.export-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:200;padding:18px;animation:fadeIn var(--t) var(--ease)}
+.export-modal.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.export-card{background:rgba(17,17,17,.98);backdrop-filter:blur(24px);border:1px solid var(--line-2);border-radius:var(--r-square-md);padding:22px;width:100%;max-width:520px;box-shadow:0 24px 48px rgba(0,0,0,.7);max-height:90vh;display:flex;flex-direction:column;animation:modalIn var(--t) var(--ease)}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.export-card h3{font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:.02em;text-transform:uppercase;margin-bottom:6px}
+.export-card p{font-size:12px;color:var(--mute);margin-bottom:14px;line-height:1.5}
+.export-output{width:100%;flex:1;min-height:200px;background:#050505;border:1px solid var(--line);border-radius:var(--r-square);padding:14px;font-family:var(--f-mono);font-size:11px;line-height:1.6;color:var(--accent-dim);resize:none;-webkit-user-select:text;user-select:text}
+.export-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.toast-msg{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--accent);color:var(--accent-on);padding:10px 18px;border-radius:var(--r-round);font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;z-index:300;opacity:0;transition:all var(--t) var(--ease);pointer-events:none;box-shadow:0 0 24px var(--accent-glow)}
+.toast-msg.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <div class="brand-mark">JR</div>
+    <div>
+      <div class="brand-text">EXHALEJR //</div>
+      <div class="brand-sub">round 1 v4 / polished</div>
+    </div>
+  </div>
+  <div class="round-badge">v4 / final pass</div>
+</header>
+
+<div class="intro">
+  <h1>Round 1 <span class="slash">/</span> v4.</h1>
+  <p>Final pass before lock. Tap anything — feel the press. Star the keepers and we move to Round 2.</p>
+  <div class="changelog">
+    <b>// changelog v4</b>
+    1. Floating menus (dropdowns, popovers) now fully solid #161616 — zero bleed-through<br>
+    2. Modals use rgba(17,17,17,0.98) + 24px backdrop blur for atmospheric depth<br>
+    3. Motion locked to 240ms across the system<br>
+    4. user-select: none + tap-highlight: transparent on all UI chrome<br>
+    5. Press interaction added: scale(0.97) on :active, glow on :hover for accent surfaces
+  </div>
+  <div class="nudge">
+    <span><b>9</b> categories</span>
+    <span><b>~80</b> specimens</span>
+    <span>tap anything to feel it</span>
+  </div>
+</div>
+
+<main>
+
+<!-- F — FOUNDATIONS -->
+<section class="cat" id="sec-F">
+  <div class="cat-head">
+    <div class="cat-id">F.</div>
+    <div class="cat-titles">
+      <div class="cat-name">Foundations</div>
+      <div class="cat-desc">Tokens. Iris primary, Lavender as the explicit dim.</div>
+    </div>
+    <div class="cat-counts"><b>6</b>token sets</div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">F1</span><span class="type-name">Colour palette</span></div>
+    <div class="found-grid">
+      <div class="found-cell" data-fav="F1.1"><button class="fav-btn found-fav"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button><div class="swatch" style="background:#0a0a0a;border-color:#222"></div><div class="found-cell-id">F1.1</div><div class="found-cell-name">--bg</div><div class="found-cell-val">#0a0a0a</div></div>
+      <div class="found-cell" data-fav="F1.2"><button class="fav-btn found-fav"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button><div class="swatch" style="background:#111"></div><div class="found-cell-id">F1.2</div><div class="found-cell-name">--surface</div><div class="found-cell-val">#111111</div></div>
+      <div class="found-cell" data-fav="F1.3"><button class="fav-btn found-fav"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button><div class="swatch" style="background:#1f1f1f"></div><div class="found-cell-id">F1.3</div><div class="found-cell-name">--line</div><div class="found-cell-val">#1f1f1f</div></div>
+      <div class="found-cell" data-fav="F1.4"><button class="fav-btn found-fav"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button><div class="swatch" style="background:#a8a8a8"></div><div class="found-cell-id">F1.4</div><div class="found-cell-name">--mute</div><div class="found-cell-val">#a8a8a8</div></div>
+      <div class="found-cell" data-fav="F1.5"><button class="fav-btn found-fav"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button><div class="swatch" style="background:#fafafa"></div><div class="found-cell-id">F1.5</div><div class="found-cell-name">--ink</div><div class="found-cell-val">#fafafa</div></div>
+      <div class="found-cell" data-fav="F1.6"><button class="fav-btn found-fav"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button><div class="swatch" style="background:#7c5cff"></div><div class="found-cell-id">F1.6</div><div class="found-cell-name">--accent</div><div class="found-cell-val">#7c5cff · iris</div></div>
+      <div class="found-cell dim-cell" data-fav="F1.7"><button class="fav-btn found-fav"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button><div class="swatch" style="background:#a78bfa"></div><div class="found-cell-id">F1.7</div><div class="found-cell-name">--accent-dim</div><div class="found-cell-val">#a78bfa · lavender</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">F2</span><span class="type-name">Typography</span></div>
+    <div class="type-row" data-fav="F2.1"><div class="type-info"><b>F2.1 Display</b>Big Shoulders · 900</div><div style="font-family:var(--f-display);font-weight:900;font-size:42px;letter-spacing:.01em;line-height:1">EXHALE THE NOISE</div><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div>
+    <div class="type-row" data-fav="F2.2"><div class="type-info"><b>F2.2 Heading</b>Big Shoulders · 700</div><div style="font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:.02em;text-transform:uppercase">A clear thought rendered well</div><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div>
+    <div class="type-row" data-fav="F2.3"><div class="type-info"><b>F2.3 Body</b>DM Sans · 400</div><div style="font-size:14px;line-height:1.6;color:var(--ink-2);max-width:420px">Body type set in DM Sans for legibility on screen. Loose tracking, comfortable line height.</div><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div>
+    <div class="type-row" data-fav="F2.4"><div class="type-info"><b>F2.4 Mono</b>JetBrains · 500</div><div style="font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;color:var(--accent-dim)">// metadata · IDs · captions · timestamps</div><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div>
+    <div class="type-row" data-fav="F2.5"><div class="type-info"><b>F2.5 Mono caps</b>JetBrains · 600</div><div style="font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;color:var(--mute);text-transform:uppercase;font-weight:600">SECTION HEADER · INDEX · LABEL</div><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">F3</span><span class="type-name">Spacing</span></div>
+    <div class="space-row">
+      <div class="space-cell" data-fav="F3.1"><div class="space-bar" style="width:4px"></div><div class="space-label">4</div></div>
+      <div class="space-cell" data-fav="F3.2"><div class="space-bar" style="width:8px"></div><div class="space-label">8</div></div>
+      <div class="space-cell" data-fav="F3.3"><div class="space-bar" style="width:12px"></div><div class="space-label">12</div></div>
+      <div class="space-cell" data-fav="F3.4"><div class="space-bar" style="width:16px"></div><div class="space-label">16</div></div>
+      <div class="space-cell" data-fav="F3.5"><div class="space-bar" style="width:24px"></div><div class="space-label">24</div></div>
+      <div class="space-cell" data-fav="F3.6"><div class="space-bar" style="width:32px"></div><div class="space-label">32</div></div>
+      <div class="space-cell" data-fav="F3.7"><div class="space-bar" style="width:48px"></div><div class="space-label">48</div></div>
+      <div class="space-cell" data-fav="F3.8"><div class="space-bar" style="width:64px"></div><div class="space-label">64</div></div>
+      <div class="space-cell" data-fav="F3.9"><div class="space-bar" style="width:80px"></div><div class="space-label">80</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">F4</span><span class="type-name">Border radii</span></div>
+    <div class="radius-row">
+      <div class="radius-cell" data-fav="F4.1"><div class="radius-shape" style="border-radius:0"></div><div class="radius-label">none · 0</div></div>
+      <div class="radius-cell" data-fav="F4.2"><div class="radius-shape" style="border-radius:3px"></div><div class="radius-label">xs · 3</div></div>
+      <div class="radius-cell" data-fav="F4.3"><div class="radius-shape" style="border-radius:5px"></div><div class="radius-label">sm · 5</div></div>
+      <div class="radius-cell" data-fav="F4.4"><div class="radius-shape" style="border-radius:8px"></div><div class="radius-label">md · 8</div></div>
+      <div class="radius-cell" data-fav="F4.5"><div class="radius-shape" style="border-radius:12px"></div><div class="radius-label">lg · 12</div></div>
+      <div class="radius-cell" data-fav="F4.6"><div class="radius-shape" style="border-radius:999px"></div><div class="radius-label">full</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">F5</span><span class="type-name">Elevation</span></div>
+    <div class="shadow-row">
+      <div class="shadow-cell" data-fav="F5.1"><div class="shadow-shape" style="box-shadow:none"></div><div class="shadow-label">none</div></div>
+      <div class="shadow-cell" data-fav="F5.2"><div class="shadow-shape" style="box-shadow:0 1px 2px rgba(0,0,0,.4)"></div><div class="shadow-label">sm</div></div>
+      <div class="shadow-cell" data-fav="F5.3"><div class="shadow-shape" style="box-shadow:0 4px 12px rgba(0,0,0,.5)"></div><div class="shadow-label">md</div></div>
+      <div class="shadow-cell" data-fav="F5.4"><div class="shadow-shape" style="box-shadow:0 12px 32px rgba(0,0,0,.6)"></div><div class="shadow-label">lg</div></div>
+      <div class="shadow-cell" data-fav="F5.5"><div class="shadow-shape" style="box-shadow:0 0 24px rgba(124,92,255,.22);border:1px solid rgba(167,139,250,.4)"></div><div class="shadow-label">glow</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">F6</span><span class="type-name">Motion</span><span class="type-note">240ms locked across all</span></div>
+    <div class="motion-row">
+      <div class="motion-cell" data-fav="F6.1"><div class="motion-dot"></div><div class="motion-label">240ms · all</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- A — BUTTONS -->
+<section class="cat" id="sec-A">
+  <div class="cat-head">
+    <div class="cat-id">A.</div>
+    <div class="cat-titles">
+      <div class="cat-name">Buttons</div>
+      <div class="cat-desc">Tap anything. Glow on hover, scale on press.</div>
+    </div>
+    <div class="cat-counts"><b>5</b>types · <b>17</b>variants</div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">A1</span><span class="type-name">Primary</span></div>
+    <div class="specs specs-4">
+      <div class="spec" data-fav="A1.1"><div class="spec-meta"><span class="spec-id">A1.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-prim">Send proposal</button></div><div class="spec-label">Default · iris fill</div></div>
+      <div class="spec" data-fav="A1.2"><div class="spec-meta"><span class="spec-id">A1.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-prim">Continue<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div><div class="spec-label">Trailing icon</div></div>
+      <div class="spec" data-fav="A1.3"><div class="spec-meta"><span class="spec-id">A1.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-prim"><div class="spinner"></div>Saving</button></div><div class="spec-label">Loading state</div></div>
+      <div class="spec" data-fav="A1.4"><div class="spec-meta"><span class="spec-id">A1.4</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-prim-mono">Mono primary</button></div><div class="spec-label">Inverted · ink fill</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">A2</span><span class="type-name">Secondary</span></div>
+    <div class="specs specs-4">
+      <div class="spec" data-fav="A2.1"><div class="spec-meta"><span class="spec-id">A2.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-sec">View archive</button></div><div class="spec-label">Outline · default</div></div>
+      <div class="spec" data-fav="A2.2"><div class="spec-meta"><span class="spec-id">A2.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-sec-accent">Connect Linear</button></div><div class="spec-label">Lavender outline</div></div>
+      <div class="spec" data-fav="A2.3"><div class="spec-meta"><span class="spec-id">A2.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-sec" disabled>Disabled</button></div><div class="spec-label">Disabled state</div></div>
+      <div class="spec" data-fav="A2.4"><div class="spec-meta"><span class="spec-id">A2.4</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-sec btn-sm">Small action</button></div><div class="spec-label">Compact size</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">A3</span><span class="type-name">Ghost</span></div>
+    <div class="specs specs-3">
+      <div class="spec" data-fav="A3.1"><div class="spec-meta"><span class="spec-id">A3.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-ghost">Cancel</button></div><div class="spec-label">Default ghost</div></div>
+      <div class="spec" data-fav="A3.2"><div class="spec-meta"><span class="spec-id">A3.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</button></div><div class="spec-label">Leading icon</div></div>
+      <div class="spec" data-fav="A3.3"><div class="spec-meta"><span class="spec-id">A3.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-ghost" style="font-family:var(--f-mono);letter-spacing:.14em;text-transform:uppercase;font-size:10px">View all →</button></div><div class="spec-label">Mono link-style</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">A4</span><span class="type-name">Icon-only</span></div>
+    <div class="specs specs-4">
+      <div class="spec" data-fav="A4.1"><div class="spec-meta"><span class="spec-id">A4.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div><div class="spec-label">Square · default</div></div>
+      <div class="spec" data-fav="A4.2"><div class="spec-meta"><span class="spec-id">A4.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn-icon btn-icon-round"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div><div class="spec-label">Round · exception</div></div>
+      <div class="spec" data-fav="A4.3"><div class="spec-meta"><span class="spec-id">A4.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn-icon btn-icon-ghost"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></div><div class="spec-label">Ghost icon</div></div>
+      <div class="spec" data-fav="A4.4"><div class="spec-meta"><span class="spec-id">A4.4</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn-icon btn-icon-accent btn-icon-round"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div><div class="spec-label">Accent FAB</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">A5</span><span class="type-name">Destructive</span></div>
+    <div class="specs specs-3">
+      <div class="spec" data-fav="A5.1"><div class="spec-meta"><span class="spec-id">A5.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-dest">Delete project</button></div><div class="spec-label">Filled · default</div></div>
+      <div class="spec" data-fav="A5.2"><div class="spec-meta"><span class="spec-id">A5.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-dest-out">Remove access</button></div><div class="spec-label">Outline</div></div>
+      <div class="spec" data-fav="A5.3"><div class="spec-meta"><span class="spec-id">A5.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><button class="btn btn-ghost" style="color:var(--warn)">Discard</button></div><div class="spec-label">Ghost destructive</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- B — CHIPS & TAGS -->
+<section class="cat" id="sec-B">
+  <div class="cat-head">
+    <div class="cat-id">B.</div>
+    <div class="cat-titles">
+      <div class="cat-name">Chips & Tags</div>
+      <div class="cat-desc">Chips round, press-scale on tap. Tags square, static metadata.</div>
+    </div>
+    <div class="cat-counts"><b>2</b>types · <b>9</b>variants</div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">B1</span><span class="type-name">Chips · round</span></div>
+    <div class="specs specs-3">
+      <div class="spec" data-fav="B1.1"><div class="spec-meta"><span class="spec-id">B1.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="chip">Visual Intelligence</span></div><div class="spec-label">Default filled</div></div>
+      <div class="spec" data-fav="B1.2"><div class="spec-meta"><span class="spec-id">B1.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="chip chip-out">Artist Model</span></div><div class="spec-label">Outline</div></div>
+      <div class="spec" data-fav="B1.3"><div class="spec-meta"><span class="spec-id">B1.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="chip chip-accent">Live</span></div><div class="spec-label">Iris · selected</div></div>
+      <div class="spec" data-fav="B1.4"><div class="spec-meta"><span class="spec-id">B1.4</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="chip"><span class="chip-dot"></span>Active</span></div><div class="spec-label">With dot</div></div>
+      <div class="spec" data-fav="B1.5"><div class="spec-meta"><span class="spec-id">B1.5</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="chip">Filter<span class="chip-x">×</span></span></div><div class="spec-label">Removable</div></div>
+      <div class="spec" data-fav="B1.6"><div class="spec-meta"><span class="spec-id">B1.6</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="chip chip-mono">R&D · LAB</span></div><div class="spec-label">Mono caps</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">B2</span><span class="type-name">Tags · square</span></div>
+    <div class="specs specs-3">
+      <div class="spec" data-fav="B2.1"><div class="spec-meta"><span class="spec-id">B2.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="tag">internal</span></div><div class="spec-label">Default</div></div>
+      <div class="spec" data-fav="B2.2"><div class="spec-meta"><span class="spec-id">B2.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="tag tag-accent">v0.1</span></div><div class="spec-label">Iris · version</div></div>
+      <div class="spec" data-fav="B2.3"><div class="spec-meta"><span class="spec-id">B2.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body" style="gap:8px"><span class="tag tag-ok">shipped</span><span class="tag tag-warn">blocked</span></div><div class="spec-label">State tags</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- C — PILLS & BADGES -->
+<section class="cat" id="sec-C">
+  <div class="cat-head">
+    <div class="cat-id">C.</div>
+    <div class="cat-titles">
+      <div class="cat-name">Pills & Badges</div>
+      <div class="cat-desc">Pills round, press-scale on tap. Badges static.</div>
+    </div>
+    <div class="cat-counts"><b>2</b>types · <b>8</b>variants</div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">C1</span><span class="type-name">Pills</span></div>
+    <div class="specs specs-4">
+      <div class="spec" data-fav="C1.1"><div class="spec-meta"><span class="spec-id">C1.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="pill">Now playing</span></div><div class="spec-label">Default filled</div></div>
+      <div class="spec" data-fav="C1.2"><div class="spec-meta"><span class="spec-id">C1.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="pill pill-accent">In progress</span></div><div class="spec-label">Iris · status</div></div>
+      <div class="spec" data-fav="C1.3"><div class="spec-meta"><span class="spec-id">C1.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="pill pill-ghost">Optional</span></div><div class="spec-label">Ghost</div></div>
+      <div class="spec" data-fav="C1.4"><div class="spec-meta"><span class="spec-id">C1.4</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="pill pill-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="5"/></svg>Live</span></div><div class="spec-label">With icon</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">C2</span><span class="type-name">Badges</span></div>
+    <div class="specs specs-4">
+      <div class="spec" data-fav="C2.1"><div class="spec-meta"><span class="spec-id">C2.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="badge">12</span></div><div class="spec-label">Count · iris</div></div>
+      <div class="spec" data-fav="C2.2"><div class="spec-meta"><span class="spec-id">C2.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="badge badge-warn">3</span></div><div class="spec-label">Warning</div></div>
+      <div class="spec" data-fav="C2.3"><div class="spec-meta"><span class="spec-id">C2.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><span class="badge badge-mute">99+</span></div><div class="spec-label">Muted overflow</div></div>
+      <div class="spec" data-fav="C2.4"><div class="spec-meta"><span class="spec-id">C2.4</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><div class="badge-host"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="badge badge-dot"></span></div></div><div class="spec-label">Dot · on host</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- D — FORM FIELDS -->
+<section class="cat" id="sec-D">
+  <div class="cat-head">
+    <div class="cat-id">D.</div>
+    <div class="cat-titles">
+      <div class="cat-name">Form Fields</div>
+      <div class="cat-desc">Square. Iris focus glow.</div>
+    </div>
+    <div class="cat-counts"><b>4</b>types · <b>11</b>variants</div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">D1</span><span class="type-name">Text input</span></div>
+    <div class="specs specs-2">
+      <div class="spec" data-fav="D1.1"><div class="spec-meta"><span class="spec-id">D1.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><input class="field-input" placeholder="josh@exhale.studio"></div><div class="spec-label">Default · boxed</div></div>
+      <div class="spec" data-fav="D1.2"><div class="spec-meta"><span class="spec-id">D1.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="field"><label class="field-label">Email</label><input class="field-input" placeholder="josh@exhale.studio"><span class="field-helper">We'll never share it.</span></div></div><div class="spec-label">Label + helper</div></div>
+      <div class="spec" data-fav="D1.3"><div class="spec-meta"><span class="spec-id">D1.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="field"><label class="field-label">Email</label><input class="field-input error" value="not-an-email"><span class="field-helper error">Invalid email format.</span></div></div><div class="spec-label">Error state</div></div>
+      <div class="spec" data-fav="D1.4"><div class="spec-meta"><span class="spec-id">D1.4</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><input class="field-line" placeholder="Underlined input"></div><div class="spec-label">Minimal · line</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">D2</span><span class="type-name">Textarea</span></div>
+    <div class="specs specs-2">
+      <div class="spec" data-fav="D2.1"><div class="spec-meta"><span class="spec-id">D2.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><textarea class="field-input field-textarea" placeholder="Brief description…"></textarea></div><div class="spec-label">Default</div></div>
+      <div class="spec" data-fav="D2.2"><div class="spec-meta"><span class="spec-id">D2.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="field"><textarea class="field-input field-textarea" placeholder="Tell us more…">An R&D operation focused on internal tooling for studio production.</textarea><div class="field-counter">71 / 280</div></div></div><div class="spec-label">With counter</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">D3</span><span class="type-name">Search</span></div>
+    <div class="specs specs-3">
+      <div class="spec" data-fav="D3.1"><div class="spec-meta"><span class="spec-id">D3.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="field-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="field-input" placeholder="Search projects"></div></div><div class="spec-label">Default with icon</div></div>
+      <div class="spec" data-fav="D3.2"><div class="spec-meta"><span class="spec-id">D3.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="field-search" style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="field-input" placeholder="Search…" style="padding-right:48px"><span class="kbd">⌘K</span></div></div><div class="spec-label">With ⌘K hint</div></div>
+      <div class="spec" data-fav="D3.3"><div class="spec-meta"><span class="spec-id">D3.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><input class="field-line" placeholder="Search…"></div><div class="spec-label">Minimal · underline</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">D4</span><span class="type-name">Stepper / Number</span></div>
+    <div class="specs specs-2">
+      <div class="spec" data-fav="D4.1"><div class="spec-meta"><span class="spec-id">D4.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><div class="stepper"><button class="stepper-btn">−</button><div class="stepper-val">12</div><button class="stepper-btn">+</button></div></div><div class="spec-label">Default stepper</div></div>
+      <div class="spec" data-fav="D4.2"><div class="spec-meta"><span class="spec-id">D4.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><label class="field-label">Quantity</label><div class="stepper"><button class="stepper-btn">−</button><div class="stepper-val">1</div><button class="stepper-btn">+</button></div></div><div class="spec-label">With label</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- E — SELECTS -->
+<section class="cat" id="sec-E">
+  <div class="cat-head">
+    <div class="cat-id">E.</div>
+    <div class="cat-titles">
+      <div class="cat-name">Selects & Dropdowns</div>
+      <div class="cat-desc">Menu now fully solid. Tap to open and confirm — nothing bleeds through.</div>
+    </div>
+    <div class="cat-counts"><b>1</b>type · <b>3</b>variants</div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">E1</span><span class="type-name">Dropdown</span><span class="type-note">tap to open</span></div>
+    <div class="specs specs-3">
+      <div class="spec" data-fav="E1.1"><div class="spec-meta"><span class="spec-id">E1.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="dropdown" data-dd><button class="dropdown-btn"><span>Select project</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button><div class="dropdown-menu"><div class="dropdown-item">Artist Model</div><div class="dropdown-item">Visual Intelligence</div><div class="dropdown-item">Extensions</div></div></div></div><div class="spec-label">Closed · default</div></div>
+      <div class="spec" data-fav="E1.2"><div class="spec-meta"><span class="spec-id">E1.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col" style="min-height:200px"><div class="dropdown open"><button class="dropdown-btn"><span>Visual Intelligence</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button><div class="dropdown-menu"><div class="dropdown-item">Artist Model</div><div class="dropdown-item selected">Visual Intelligence<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5L20 7"/></svg></div><div class="dropdown-item">Extensions</div></div></div></div><div class="spec-label">Open · solid menu</div></div>
+      <div class="spec" data-fav="E1.3"><div class="spec-meta"><span class="spec-id">E1.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="field"><label class="field-label">Status</label><div class="dropdown" data-dd><button class="dropdown-btn" style="background:transparent;border-color:rgba(167,139,250,.4);color:var(--accent-dim)"><span>Active</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button><div class="dropdown-menu"><div class="dropdown-item">Active</div><div class="dropdown-item">Paused</div><div class="dropdown-item">Archived</div></div></div></div></div><div class="spec-label">Lavender outline</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Fc — CHECKS & RADIOS -->
+<section class="cat" id="sec-Fc">
+  <div class="cat-head">
+    <div class="cat-id">Fc.</div>
+    <div class="cat-titles">
+      <div class="cat-name">Checkboxes & Radios</div>
+      <div class="cat-desc">Iris fill on selection with subtle glow. Press-scale on label tap.</div>
+    </div>
+    <div class="cat-counts"><b>3</b>types · <b>5</b>variants</div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">Fc1</span><span class="type-name">Checkbox · square</span></div>
+    <div class="specs specs-2">
+      <div class="spec" data-fav="Fc1.1"><div class="spec-meta"><span class="spec-id">Fc1.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><label class="check"><input type="checkbox" checked><span class="check-box"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span>Notify Matthew</label><label class="check"><input type="checkbox"><span class="check-box"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span>Archive when shipped</label></div><div class="spec-label">With labels</div></div>
+      <div class="spec" data-fav="Fc1.2"><div class="spec-meta"><span class="spec-id">Fc1.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body" style="gap:18px"><label class="check"><input type="checkbox" checked><span class="check-box"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span></label><label class="check"><input type="checkbox"><span class="check-box"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span></label></div><div class="spec-label">Standalone · no label</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">Fc2</span><span class="type-name">Radio</span></div>
+    <div class="specs specs-2">
+      <div class="spec" data-fav="Fc2.1"><div class="spec-meta"><span class="spec-id">Fc2.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><label class="radio"><input type="radio" name="r1" checked><span class="radio-dot"></span>Studio team</label><label class="radio"><input type="radio" name="r1"><span class="radio-dot"></span>External</label><label class="radio"><input type="radio" name="r1"><span class="radio-dot"></span>Public</label></div><div class="spec-label">Vertical group</div></div>
+      <div class="spec" data-fav="Fc2.2"><div class="spec-meta"><span class="spec-id">Fc2.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body" style="gap:18px"><label class="radio"><input type="radio" name="r2" checked><span class="radio-dot"></span>S</label><label class="radio"><input type="radio" name="r2"><span class="radio-dot"></span>M</label><label class="radio"><input type="radio" name="r2"><span class="radio-dot"></span>L</label></div><div class="spec-label">Horizontal group</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">Fc3</span><span class="type-name">Radio cards</span></div>
+    <div class="specs">
+      <div class="spec" data-fav="Fc3.1"><div class="spec-meta"><span class="spec-id">Fc3.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col" style="gap:8px"><label class="radio-card"><input type="radio" name="r3" checked><span class="radio-card-indicator"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><span style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:600">Web only</span><span style="font-size:11px;color:var(--mute);font-family:var(--f-mono);letter-spacing:.04em">narrowest tier</span></span></label><label class="radio-card"><input type="radio" name="r3"><span class="radio-card-indicator"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><span style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:600">Web + Social</span><span style="font-size:11px;color:var(--mute);font-family:var(--f-mono);letter-spacing:.04em">+ content templates</span></span></label><label class="radio-card"><input type="radio" name="r3"><span class="radio-card-indicator"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><span style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:600">Full multi-surface</span><span style="font-size:11px;color:var(--mute);font-family:var(--f-mono);letter-spacing:.04em">widest tier</span></span></label></div><div class="spec-label">Selectable card group</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- G — TOGGLES -->
+<section class="cat" id="sec-G">
+  <div class="cat-head">
+    <div class="cat-id">G.</div>
+    <div class="cat-titles">
+      <div class="cat-name">Toggles</div>
+      <div class="cat-desc">Round only. Iris fill + glow when active.</div>
+    </div>
+    <div class="cat-counts"><b>1</b>type · <b>3</b>variants</div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">G1</span><span class="type-name">Toggle switch</span></div>
+    <div class="specs specs-3">
+      <div class="spec" data-fav="G1.1"><div class="spec-meta"><span class="spec-id">G1.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body" style="gap:14px"><label class="toggle"><input type="checkbox" checked><span class="toggle-track"></span></label><label class="toggle"><input type="checkbox"><span class="toggle-track"></span></label></div><div class="spec-label">Sm · default</div></div>
+      <div class="spec" data-fav="G1.2"><div class="spec-meta"><span class="spec-id">G1.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body" style="gap:14px"><label class="toggle toggle-lg"><input type="checkbox" checked><span class="toggle-track"></span></label><label class="toggle toggle-lg"><input type="checkbox"><span class="toggle-track"></span></label></div><div class="spec-label">Lg</div></div>
+      <div class="spec" data-fav="G1.3"><div class="spec-meta"><span class="spec-id">G1.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><label class="toggle"><input type="checkbox" checked><span class="toggle-track"></span>Email notifications</label><label class="toggle"><input type="checkbox"><span class="toggle-track"></span>Slack DMs</label></div><div class="spec-label">With labels</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- H — SLIDERS -->
+<section class="cat" id="sec-H">
+  <div class="cat-head">
+    <div class="cat-id">H.</div>
+    <div class="cat-titles">
+      <div class="cat-name">Sliders</div>
+      <div class="cat-desc">Range input. Track glow on fill, thumb scale on grab.</div>
+    </div>
+    <div class="cat-counts"><b>1</b>type · <b>4</b>variants</div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">H1</span><span class="type-name">Range slider</span></div>
+    <div class="specs specs-2">
+      <div class="spec" data-fav="H1.1"><div class="spec-meta"><span class="spec-id">H1.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col" style="padding:0 8px"><div class="slider"><div class="slider-track"><div class="slider-fill" style="width:60%"></div><div class="slider-thumb" style="left:60%"></div></div><div class="slider-vals"><span>0</span><span>60</span><span>100</span></div></div></div><div class="spec-label">Default · ink thumb</div></div>
+      <div class="spec" data-fav="H1.2"><div class="spec-meta"><span class="spec-id">H1.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col" style="padding:0 8px"><label class="field-label">Frame limit</label><div class="slider"><div class="slider-track"><div class="slider-fill" style="width:35%"></div><div class="slider-thumb slider-thumb-accent" style="left:35%"></div></div><div class="slider-vals"><span>1</span><span>35 frames</span><span>100</span></div></div></div><div class="spec-label">Iris thumb · labelled</div></div>
+      <div class="spec" data-fav="H1.3"><div class="spec-meta"><span class="spec-id">H1.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col" style="padding:0 8px"><div class="slider"><div class="slider-track"><div class="slider-fill" style="width:50%"></div><div class="slider-thumb slider-thumb-square" style="left:50%"></div></div></div></div><div class="spec-label">Square thumb · industrial</div></div>
+      <div class="spec" data-fav="H1.4"><div class="spec-meta"><span class="spec-id">H1.4</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col" style="padding:0 8px"><div class="slider"><div class="slider-track"><div class="slider-fill" style="width:75%"></div><div class="slider-thumb slider-thumb-accent" style="left:75%"></div></div><div class="slider-tick"><div></div><div></div><div></div><div></div><div></div></div><div class="slider-vals"><span>S</span><span>M</span><span>L</span><span>XL</span><span>XXL</span></div></div></div><div class="spec-label">Stepped · with ticks</div></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="export-bar hide" id="exportBar">
+  <div class="export-count"><b id="favCount">0</b>favourites</div>
+  <button class="btn btn-prim" id="showPicks">Show picks</button>
+  <button class="btn btn-sec" id="resetBtn" style="border-radius:var(--r-round)">Reset</button>
+</div>
+
+<div class="export-modal" id="exportModal">
+  <div class="export-card">
+    <h3>Round 1 v4 picks</h3>
+    <p>Tap "Select all", then copy. Or just tap "Copy" if it works on your device.</p>
+    <textarea class="export-output" id="exportOutput" readonly></textarea>
+    <div class="export-actions">
+      <button class="btn btn-ghost" id="closeModal">Close</button>
+      <button class="btn btn-sec" id="selectAllBtn">Select all</button>
+      <button class="btn btn-prim" id="copyBtn">Copy</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-msg" id="toast">Copied</div>
+
+<script>
+const favs = new Set();
+
+document.querySelectorAll('[data-fav]').forEach(el=>{
+  const id = el.dataset.fav;
+  const btn = el.querySelector('.fav-btn');
+  if(!btn) return;
+  btn.addEventListener('click', e=>{
+    e.stopPropagation();
+    if(favs.has(id)){ favs.delete(id); el.classList.remove('fav'); }
+    else { favs.add(id); el.classList.add('fav'); }
+    updateBar();
+  });
+});
+
+function updateBar(){
+  const bar = document.getElementById('exportBar');
+  document.getElementById('favCount').textContent = favs.size;
+  if(favs.size === 0) bar.classList.add('hide');
+  else bar.classList.remove('hide');
+}
+
+document.querySelectorAll('[data-dd]').forEach(dd=>{
+  const btn = dd.querySelector('.dropdown-btn');
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('[data-dd].open').forEach(d=>{ if(d!==dd) d.classList.remove('open'); });
+    dd.classList.toggle('open');
+  });
+  dd.querySelectorAll('.dropdown-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      btn.querySelector('span').textContent = item.textContent.trim();
+      dd.classList.remove('open');
+    });
+  });
+});
+document.addEventListener('click', e=>{
+  if(!e.target.closest('[data-dd]')) document.querySelectorAll('[data-dd].open').forEach(d=>d.classList.remove('open'));
+});
+
+document.getElementById('showPicks').addEventListener('click', ()=>{
+  const sorted = [...favs].sort((a,b)=>{
+    const re = /^([A-Za-z]+)(\d+)\.?(\d+)?$/;
+    const ma = a.match(re), mb = b.match(re);
+    if(!ma || !mb) return a.localeCompare(b);
+    if(ma[1] !== mb[1]) return ma[1].localeCompare(mb[1]);
+    if(+ma[2] !== +mb[2]) return +ma[2] - +mb[2];
+    return (+ma[3]||0) - (+mb[3]||0);
+  });
+  const grouped = {};
+  sorted.forEach(id=>{
+    const cat = id.match(/^([A-Za-z]+)/)[1];
+    if(!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(id);
+  });
+  const catNames = {F:'FOUNDATIONS', A:'BUTTONS', B:'CHIPS & TAGS', C:'PILLS & BADGES', D:'FORM FIELDS', E:'SELECTS', Fc:'CHECKS & RADIOS', G:'TOGGLES', H:'SLIDERS'};
+  let out = 'EXHALEJR / ROUND 1 v4 PICKS\n' + '='.repeat(30) + '\n\n';
+  out += 'PALETTE: Iris #7C5CFF (primary) + Lavender #A78BFA (dim)\n';
+  out += 'MOTION: 240ms locked · scale(.97) press · accent glow on hover\n\n';
+  Object.keys(grouped).forEach(cat=>{
+    out += `${cat} — ${catNames[cat]||cat}\n`;
+    grouped[cat].forEach(id=>{ out += `  · ${id}\n`; });
+    out += '\n';
+  });
+  out += `${favs.size} picks total`;
+  document.getElementById('exportOutput').value = out;
+  document.getElementById('exportModal').classList.add('show');
+});
+
+document.getElementById('closeModal').addEventListener('click', ()=>document.getElementById('exportModal').classList.remove('show'));
+document.getElementById('selectAllBtn').addEventListener('click', ()=>{
+  const ta = document.getElementById('exportOutput'); ta.focus(); ta.select();
+});
+document.getElementById('copyBtn').addEventListener('click', async ()=>{
+  const ta = document.getElementById('exportOutput'); ta.focus(); ta.select();
+  try { await navigator.clipboard.writeText(ta.value); showToast('Copied'); }
+  catch(e) {
+    try { document.execCommand('copy'); showToast('Copied'); }
+    catch(e2) { showToast('Select all + copy manually'); }
+  }
+});
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  favs.clear();
+  document.querySelectorAll('.fav').forEach(el=>el.classList.remove('fav'));
+  updateBar();
+});
+</script>
+</body>
+</html>

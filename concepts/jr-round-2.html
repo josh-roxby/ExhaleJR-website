@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXHALEJR / Round 2 / Surfaces + Nav</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;700;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0a;--bg-2:#0d0d0d;--surface:#111;--surface-2:#161616;--surface-3:#1c1c1c;
+  --line:#1f1f1f;--line-2:#2a2a2a;--line-3:#3a3a3a;
+  --mute-3:#5a5a5a;--mute-2:#7a7a7a;--mute:#a8a8a8;--ink-2:#cfcfcf;--ink:#fafafa;
+  --accent:#7c5cff;--accent-dim:#a78bfa;
+  --accent-glow:rgba(124,92,255,.22);--accent-glow-soft:rgba(167,139,250,.16);
+  --accent-on:#fff;
+  --warn:#ff5b3d;--ok:#4ade80;
+  --r-square-xs:3px;--r-square:5px;--r-square-md:6px;--r-square-lg:8px;
+  --r-round:999px;
+  --t:240ms;
+  --ease:cubic-bezier(.2,.6,.2,1);
+  --ease-press:cubic-bezier(.4,0,.6,1);
+  --f-display:'Big Shoulders Display',sans-serif;
+  --f-body:'DM Sans',sans-serif;
+  --f-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  background:var(--bg);color:var(--ink);font-family:var(--f-body);
+  -webkit-font-smoothing:antialiased;font-size:15px;line-height:1.5;
+  -webkit-tap-highlight-color:transparent;
+}
+body{
+  min-height:100vh;
+  background:radial-gradient(1200px 600px at 80% -10%,var(--accent-glow) 0%,transparent 60%),radial-gradient(800px 600px at 0% 100%,var(--accent-glow-soft) 0%,transparent 60%),var(--bg);
+  padding-bottom:140px;
+}
+
+button, .no-select, .spec, .card, .bento-cell, .carousel-slide,
+.nav-link, .topnav-link, .sidenav-item, .crumb-item,
+.tab, .tab-pill, .tab-seg,
+.fav-btn, .btn, .btn-icon,
+.chip, .pill, .tag,
+.cat-head, .type-head, .brand-mark, .round-badge{
+  -webkit-user-select:none;-moz-user-select:none;user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.field-input, textarea, .card-body, .cat-desc, .changelog, .intro p, .export-output, pre, code{
+  -webkit-user-select:text;user-select:text;
+}
+
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font:inherit;color:inherit;background:none;border:none;outline:none}
+a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
+::selection{background:var(--accent);color:var(--accent-on)}
+
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+
+/* HEADER */
+header.top{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:rgba(10,10,10,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{width:36px;height:36px;background:#fff;border-radius:var(--r-square-md);display:grid;place-items:center;font-family:var(--f-display);font-weight:900;color:#000;font-size:14px;letter-spacing:.04em}
+.brand-text{font-family:var(--f-display);font-weight:900;font-size:16px;letter-spacing:.04em}
+.brand-sub{font-family:var(--f-mono);font-size:9px;color:var(--mute-2);letter-spacing:.2em;text-transform:uppercase;margin-top:2px}
+.round-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;background:var(--accent);color:var(--accent-on);border-radius:var(--r-round);font-family:var(--f-mono);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+
+.intro{padding:48px 28px 32px;max-width:1200px;border-bottom:1px solid var(--line);position:relative;z-index:2}
+.intro h1{font-family:var(--f-display);font-weight:900;font-size:clamp(36px,6vw,72px);line-height:.95;letter-spacing:-.01em;margin-bottom:18px}
+.intro h1 .slash{color:var(--accent)}
+.intro p{font-size:14px;line-height:1.6;color:var(--mute);max-width:560px}
+.intro .nudge{font-family:var(--f-mono);font-size:10px;color:var(--mute-2);letter-spacing:.2em;text-transform:uppercase;margin-top:24px;display:flex;gap:24px;flex-wrap:wrap}
+.intro .nudge span b{color:var(--ink);font-weight:600}
+
+main{padding:48px 28px 80px;max-width:1200px;position:relative;z-index:2}
+
+.cat{margin-bottom:80px;scroll-margin-top:90px}
+.cat-head{display:flex;align-items:flex-end;gap:20px;margin-bottom:36px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.cat-id{font-family:var(--f-display);font-weight:900;font-size:72px;line-height:.85;color:var(--accent);letter-spacing:-.02em}
+.cat-titles{flex:1;padding-bottom:8px}
+.cat-name{font-family:var(--f-display);font-weight:700;font-size:32px;letter-spacing:.01em;text-transform:uppercase;line-height:1}
+.cat-desc{font-size:13px;color:var(--mute);margin-top:8px;max-width:480px;line-height:1.55}
+.cat-counts{font-family:var(--f-mono);font-size:9px;color:var(--mute-2);letter-spacing:.18em;text-transform:uppercase;text-align:right;padding-bottom:12px;flex-shrink:0}
+.cat-counts b{display:block;color:var(--ink);font-size:20px;font-weight:600;letter-spacing:.04em;margin-bottom:2px}
+
+@media(max-width:680px){
+  header.top{padding:14px 18px;flex-wrap:wrap;gap:10px}
+  .intro,main{padding-left:18px;padding-right:18px}
+  .cat-head{flex-direction:column;align-items:flex-start;gap:6px}
+  .cat-id{font-size:48px}
+  .cat-name{font-size:24px}
+  .cat-counts{text-align:left;padding-bottom:0}
+}
+
+.type-group{margin-bottom:48px}
+.type-head{display:flex;align-items:baseline;gap:14px;margin-bottom:18px}
+.type-id{font-family:var(--f-mono);font-size:11px;color:var(--mute-2);letter-spacing:.14em;font-weight:600}
+.type-name{font-family:var(--f-display);font-weight:700;font-size:18px;letter-spacing:.02em;text-transform:uppercase}
+.type-note{font-size:11px;color:var(--mute);margin-left:auto;font-style:italic}
+
+.specs{display:grid;gap:14px}
+.specs-2{grid-template-columns:1fr 1fr}
+.specs-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:1000px){.specs-3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.specs-2,.specs-3{grid-template-columns:1fr}}
+
+.spec{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-square-md);
+  padding:18px;position:relative;display:flex;flex-direction:column;gap:14px;min-height:160px;
+  transition:border-color var(--t) var(--ease);
+}
+.spec:hover{border-color:var(--line-2)}
+.spec.fav{border-color:var(--accent)}
+.spec.fav::before{content:'';position:absolute;inset:0;border-radius:var(--r-square-md);box-shadow:0 0 0 1px var(--accent) inset,0 0 24px var(--accent-glow);pointer-events:none}
+.spec-meta{display:flex;align-items:center;justify-content:space-between;gap:6px;position:relative;z-index:2}
+.spec-id{font-family:var(--f-mono);font-size:10px;color:var(--mute-2);letter-spacing:.14em;font-weight:600}
+.spec.fav .spec-id{color:var(--accent)}
+.fav-btn{width:24px;height:24px;border-radius:var(--r-round);display:grid;place-items:center;color:var(--mute-3);transition:all var(--t) var(--ease), transform var(--t) var(--ease-press);position:relative;z-index:3}
+.fav-btn:hover{color:var(--ink);background:var(--surface-2)}
+.fav-btn:active{transform:scale(.9)}
+.fav-btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.6}
+.spec.fav .fav-btn{color:var(--accent)}
+.spec.fav .fav-btn svg{fill:var(--accent)}
+.spec-body{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 0;position:relative;z-index:2}
+.spec-body.col{flex-direction:column;gap:10px;align-items:stretch;justify-content:flex-start}
+.spec-body.tall{min-height:200px}
+.spec-label{font-family:var(--f-mono);font-size:9px;color:var(--mute-3);letter-spacing:.16em;text-transform:uppercase;position:relative;z-index:2}
+
+/* SHARED — buttons, chips, tags carried from Round 1 */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:var(--r-square);font-family:var(--f-body);font-size:13px;font-weight:600;letter-spacing:.02em;cursor:pointer;white-space:nowrap;transition:all var(--t) var(--ease), transform var(--t) var(--ease-press)}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn-prim{background:var(--accent);color:var(--accent-on);font-weight:700}
+.btn-prim:hover:not(:disabled){background:#fff;color:#000;box-shadow:0 0 24px var(--accent-glow)}
+.btn-sec{background:transparent;color:var(--ink);border:1px solid var(--line-2)}
+.btn-sec:hover:not(:disabled){border-color:var(--line-3);background:var(--surface-2)}
+.btn-ghost{background:transparent;color:var(--mute);padding:8px 12px}
+.btn-ghost:hover:not(:disabled){color:var(--ink);background:var(--surface-2)}
+.btn-sm{padding:6px 12px;font-size:11px}
+.btn-icon{width:32px;height:32px;padding:0;border-radius:var(--r-square);display:grid;place-items:center;background:transparent;color:var(--mute);border:1px solid transparent;cursor:pointer;transition:all var(--t) var(--ease), transform var(--t) var(--ease-press)}
+.btn-icon:hover{background:var(--surface-2);color:var(--ink)}
+.btn-icon:active{transform:scale(.9)}
+
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:var(--r-round);font-family:var(--f-body);font-size:11px;font-weight:500;letter-spacing:.02em;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.chip-accent{background:var(--accent);color:var(--accent-on);border-color:var(--accent);font-weight:600}
+.chip-mono{font-family:var(--f-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;padding:4px 9px}
+.chip-dot{width:6px;height:6px;border-radius:var(--r-round);background:var(--accent)}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:var(--r-square-xs);font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.tag-accent{background:var(--accent);color:var(--accent-on);border-color:var(--accent)}
+.tag-ok{background:rgba(74,222,128,.12);color:var(--ok);border-color:rgba(74,222,128,.3)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--r-round);font-family:var(--f-body);font-size:12px;font-weight:600;letter-spacing:.01em;background:var(--surface-2);color:var(--ink);border:1px solid var(--line-2)}
+.pill-accent{background:var(--accent);color:var(--accent-on);border-color:var(--accent)}
+
+/* ============================================================ */
+/* J — CARDS                                                    */
+/* ============================================================ */
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-square-md);
+  padding:18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;
+  transition:background-color var(--t) var(--ease), border-color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t) var(--ease-press);
+  position:relative;overflow:hidden;
+}
+.card:active{transform:scale(.99)}
+.card-tag{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+.card-tag.accent{color:var(--accent)}
+.card-title{font-family:var(--f-display);font-weight:700;font-size:18px;letter-spacing:.02em;text-transform:uppercase;line-height:1.05}
+.card-body{font-size:12px;color:var(--mute);line-height:1.55}
+.card-meta{display:flex;align-items:center;justify-content:space-between;font-family:var(--f-mono);font-size:9px;color:var(--mute-2);letter-spacing:.12em;text-transform:uppercase;margin-top:auto;padding-top:10px;border-top:1px solid var(--line)}
+.card-meta b{color:var(--ink-2);font-weight:500}
+
+/* J1 — content card variants */
+.card-min{}
+.card-image{padding:0;overflow:hidden}
+.card-image .card-img{height:120px;background:linear-gradient(135deg,#1a1428 0%,#2d1f4a 50%,#0d0613 100%);position:relative;overflow:hidden}
+.card-image .card-img::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,var(--accent-glow) 0%,transparent 60%)}
+.card-image .card-img::after{content:'JR';position:absolute;bottom:14px;right:14px;font-family:var(--f-display);font-weight:900;font-size:32px;color:rgba(255,255,255,.15);letter-spacing:.04em}
+.card-image .card-content{padding:16px 18px}
+.card-image .card-content > * + *{margin-top:10px}
+
+.card-tags{}
+.card-tags-row{display:flex;gap:6px;flex-wrap:wrap}
+
+.card-hover-lift:hover{transform:translateY(-2px);border-color:var(--line-2);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.card-hover-glow:hover{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 32px var(--accent-glow)}
+.card-hover-fill{background:var(--surface)}
+.card-hover-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,var(--accent-glow) 100%);opacity:0;transition:opacity var(--t) var(--ease);pointer-events:none}
+.card-hover-fill:hover::after{opacity:1}
+.card-hover-fill:hover{border-color:var(--accent-dim)}
+
+/* J2 — stat card */
+.card-stat{padding:18px;display:flex;flex-direction:column;gap:6px;cursor:default}
+.card-stat:active{transform:none}
+.stat-label{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+.stat-num{font-family:var(--f-display);font-weight:900;font-size:42px;line-height:1;letter-spacing:-.01em;color:var(--ink)}
+.stat-num.accent{color:var(--accent)}
+.stat-delta{display:inline-flex;align-items:center;gap:4px;font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.06em;width:fit-content}
+.stat-delta.up{color:var(--ok)}
+.stat-delta.down{color:var(--warn)}
+.stat-spark{height:32px;display:flex;align-items:flex-end;gap:2px;margin-top:8px}
+.stat-spark div{flex:1;background:var(--accent-dim);border-radius:1px;opacity:.7;transition:opacity var(--t) var(--ease)}
+.stat-spark div:last-child{background:var(--accent);opacity:1}
+
+/* J3 — identity card */
+.card-identity{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer}
+.avatar{width:42px;height:42px;border-radius:var(--r-round);background:var(--surface-3);display:grid;place-items:center;font-family:var(--f-display);font-weight:900;font-size:16px;color:var(--ink);flex-shrink:0;border:1px solid var(--line-2)}
+.avatar-accent{background:var(--accent);color:var(--accent-on);border-color:var(--accent)}
+.avatar-ring{box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--accent)}
+.avatar-lg{width:64px;height:64px;font-size:22px}
+.identity-meta{display:flex;flex-direction:column;gap:2px;min-width:0}
+.identity-name{font-weight:600;font-size:13px;letter-spacing:.01em;color:var(--ink)}
+.identity-role{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.16em;text-transform:uppercase}
+
+.card-profile{align-items:center;text-align:center;padding:24px;gap:8px;cursor:pointer}
+.card-profile .identity-name{font-size:15px}
+
+/* ============================================================ */
+/* K — BENTO                                                    */
+/* ============================================================ */
+.bento{display:grid;gap:8px;width:100%}
+.bento-2x2{grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;height:280px}
+.bento-2x2 > :nth-child(1){grid-row:1/3}
+.bento-mosaic{grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;height:240px}
+.bento-mosaic > :nth-child(1){grid-column:1/3;grid-row:1/3}
+.bento-mosaic > :nth-child(2){grid-column:3/5;grid-row:1}
+.bento-mosaic > :nth-child(3){grid-column:3;grid-row:2}
+.bento-mosaic > :nth-child(4){grid-column:4;grid-row:2}
+.bento-12{grid-template-columns:repeat(12,1fr);grid-template-rows:120px 120px;height:auto}
+.bento-12 > :nth-child(1){grid-column:1/8;grid-row:1}
+.bento-12 > :nth-child(2){grid-column:8/13;grid-row:1/3}
+.bento-12 > :nth-child(3){grid-column:1/5;grid-row:2}
+.bento-12 > :nth-child(4){grid-column:5/8;grid-row:2}
+.bento-list{grid-template-columns:1fr 1fr 1fr 1fr;height:200px}
+
+.bento-cell{
+  background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-square-md);
+  padding:14px;display:flex;flex-direction:column;justify-content:space-between;
+  overflow:hidden;position:relative;cursor:pointer;
+  transition:background-color var(--t) var(--ease), border-color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t) var(--ease-press);
+}
+.bento-cell:active{transform:scale(.99)}
+.bento-cell:hover{border-color:var(--line-2)}
+.bento-cell.hero{background:var(--accent);color:var(--accent-on);border-color:var(--accent)}
+.bento-cell.hero:hover{box-shadow:0 0 32px var(--accent-glow)}
+.bento-cell.dark{background:#000;border-color:#1a1a1a}
+.bento-cell.outline{background:transparent;border-color:var(--accent-dim)}
+.bento-cell.outline:hover{background:rgba(167,139,250,.06)}
+.bc-label{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.16em;text-transform:uppercase;font-weight:600}
+.bento-cell.hero .bc-label{color:rgba(255,255,255,.7)}
+.bento-cell.outline .bc-label{color:var(--accent-dim)}
+.bc-num{font-family:var(--f-display);font-weight:900;font-size:32px;line-height:1;letter-spacing:-.01em;color:var(--ink)}
+.bento-cell.hero .bc-num{color:#fff}
+.bc-cap{font-family:var(--f-mono);font-size:9px;color:var(--mute);letter-spacing:.12em;line-height:1.4}
+.bento-cell.hero .bc-cap{color:rgba(255,255,255,.85)}
+
+@media(max-width:680px){
+  .bento-2x2,.bento-mosaic,.bento-12,.bento-list{
+    grid-template-columns:1fr;grid-template-rows:none;
+    height:auto;grid-auto-rows:80px;
+  }
+  .bento-2x2 > *,.bento-mosaic > *,.bento-12 > *,.bento-list > *{
+    grid-column:1!important;grid-row:auto!important;
+  }
+}
+
+/* ============================================================ */
+/* L — CAROUSEL                                                 */
+/* ============================================================ */
+.carousel{position:relative;border-radius:var(--r-square-md)}
+.carousel-track{display:flex;gap:12px;padding:4px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none}
+.carousel-track::-webkit-scrollbar{display:none}
+.carousel-slide{
+  flex:0 0 220px;height:140px;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r-square);scroll-snap-align:start;
+  display:flex;flex-direction:column;justify-content:space-between;padding:14px;
+  cursor:pointer;
+  transition:border-color var(--t) var(--ease), background-color var(--t) var(--ease), transform var(--t) var(--ease-press);
+}
+.carousel-slide:hover{border-color:var(--line-3);background:var(--surface-3)}
+.carousel-slide:active{transform:scale(.98)}
+.carousel-slide.feat{background:var(--accent);color:var(--accent-on);border-color:var(--accent)}
+.carousel-slide.feat .bc-label{color:rgba(255,255,255,.7)}
+.carousel-slide.feat .bc-cap{color:rgba(255,255,255,.85)}
+
+.carousel-dots{display:flex;gap:6px;justify-content:center;margin-top:14px}
+.carousel-dot{width:6px;height:6px;border-radius:var(--r-round);background:var(--line-3);transition:all var(--t) var(--ease);cursor:pointer}
+.carousel-dot.active{background:var(--accent);width:18px;border-radius:3px;box-shadow:0 0 8px var(--accent-glow)}
+
+.carousel-arrows{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.carousel-arrow{
+  width:36px;height:36px;border-radius:var(--r-square);
+  background:var(--surface-2);border:1px solid var(--line-2);
+  display:grid;place-items:center;color:var(--ink);cursor:pointer;
+  transition:all var(--t) var(--ease), transform var(--t) var(--ease-press);
+}
+.carousel-arrow:hover{border-color:var(--accent);color:var(--accent)}
+.carousel-arrow:active{transform:scale(.9)}
+
+.carousel-progress{height:2px;background:var(--surface-3);border-radius:var(--r-round);margin-top:14px;overflow:hidden}
+.carousel-progress-fill{height:100%;background:var(--accent);border-radius:var(--r-round);transition:width var(--t) var(--ease);box-shadow:0 0 8px var(--accent-glow)}
+
+/* ============================================================ */
+/* I — TOP NAV                                                  */
+/* ============================================================ */
+.topnav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-square-md);
+  width:100%;
+}
+.topnav-brand{display:flex;align-items:center;gap:12px}
+.topnav-mark{width:28px;height:28px;background:#fff;border-radius:var(--r-square-xs);display:grid;place-items:center;font-family:var(--f-display);font-weight:900;color:#000;font-size:11px}
+.topnav-name{font-family:var(--f-display);font-weight:900;font-size:14px;letter-spacing:.06em}
+.topnav-links{display:flex;gap:2px}
+.topnav-link{
+  font-family:var(--f-mono);font-size:10px;color:var(--mute);
+  letter-spacing:.16em;text-transform:uppercase;font-weight:600;
+  padding:8px 12px;border-radius:var(--r-square-xs);cursor:pointer;
+  transition:all var(--t) var(--ease), transform var(--t) var(--ease-press);
+}
+.topnav-link:hover{color:var(--ink);background:var(--surface-2)}
+.topnav-link:active{transform:scale(.95)}
+.topnav-link.active{color:var(--accent);background:rgba(124,92,255,.08)}
+.topnav-meta{display:flex;align-items:center;gap:10px}
+.topnav-search{
+  display:flex;align-items:center;gap:8px;padding:6px 12px;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-square);
+  font-family:var(--f-mono);font-size:10px;color:var(--mute);letter-spacing:.1em;
+  cursor:pointer;transition:all var(--t) var(--ease)
+}
+.topnav-search:hover{border-color:var(--line-3);color:var(--ink)}
+.topnav-search svg{width:11px;height:11px}
+.topnav-search .kbd{padding:1px 5px;background:var(--surface-3);border-radius:var(--r-square-xs);font-size:9px;border:1px solid var(--line)}
+
+/* ============================================================ */
+/* I2 — BREADCRUMB                                              */
+/* ============================================================ */
+.crumb{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.crumb-item{color:var(--mute);cursor:pointer;padding:4px 6px;border-radius:var(--r-square-xs);transition:all var(--t) var(--ease)}
+.crumb-item:hover{color:var(--ink);background:var(--surface-2)}
+.crumb-item.current{color:var(--accent);cursor:default}
+.crumb-item.current:hover{background:transparent}
+.crumb-sep{color:var(--mute-3);font-weight:400}
+
+/* ============================================================ */
+/* I3 — TABS                                                    */
+/* ============================================================ */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);position:relative;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:12px 16px;font-family:var(--f-mono);font-size:11px;color:var(--mute);
+  letter-spacing:.12em;text-transform:uppercase;font-weight:600;
+  position:relative;cursor:pointer;white-space:nowrap;
+  transition:color var(--t) var(--ease), transform var(--t) var(--ease-press);
+}
+.tab:hover{color:var(--ink-2)}
+.tab:active{transform:scale(.97)}
+.tab.active{color:var(--ink)}
+.tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
+.tab .tab-count{margin-left:6px;font-size:9px;color:var(--mute-2);font-weight:500}
+.tab.active .tab-count{color:var(--accent-dim)}
+
+.tabs-pill{display:inline-flex;gap:4px;padding:4px;background:var(--surface-2);border-radius:var(--r-round);border:1px solid var(--line);width:fit-content}
+.tab-pill{
+  padding:6px 14px;border-radius:var(--r-round);
+  font-family:var(--f-mono);font-size:10px;font-weight:600;color:var(--mute);
+  letter-spacing:.14em;text-transform:uppercase;cursor:pointer;
+  transition:all var(--t) var(--ease), transform var(--t) var(--ease-press);
+}
+.tab-pill:hover{color:var(--ink)}
+.tab-pill:active{transform:scale(.95)}
+.tab-pill.active{background:var(--accent);color:var(--accent-on);box-shadow:0 0 12px var(--accent-glow)}
+
+.tabs-seg{display:inline-flex;border:1px solid var(--line-2);border-radius:var(--r-square);overflow:hidden;width:fit-content}
+.tab-seg{
+  padding:8px 14px;font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:600;color:var(--mute);
+  background:var(--surface);cursor:pointer;border-right:1px solid var(--line-2);
+  transition:all var(--t) var(--ease), transform var(--t) var(--ease-press);
+}
+.tab-seg:last-child{border-right:none}
+.tab-seg:hover{color:var(--ink);background:var(--surface-2)}
+.tab-seg:active{transform:scale(.97)}
+.tab-seg.active{background:var(--accent);color:var(--accent-on)}
+
+.tabs-vert{display:flex;flex-direction:column;gap:2px;border-left:1px solid var(--line);padding-left:0;width:200px}
+.tab-vert{
+  padding:10px 14px;font-family:var(--f-mono);font-size:11px;color:var(--mute);
+  letter-spacing:.1em;font-weight:600;cursor:pointer;
+  border-left:2px solid transparent;margin-left:-1px;
+  transition:all var(--t) var(--ease), transform var(--t) var(--ease-press);
+  display:flex;align-items:center;gap:10px;
+}
+.tab-vert:hover{color:var(--ink);background:var(--surface-2)}
+.tab-vert:active{transform:scale(.98)}
+.tab-vert.active{color:var(--accent);border-left-color:var(--accent);background:rgba(124,92,255,.06)}
+.tab-vert .tab-count{margin-left:auto;font-size:10px;color:var(--mute-3)}
+.tab-vert.active .tab-count{color:var(--accent)}
+
+/* ============================================================ */
+/* I4 — SIDEBAR                                                 */
+/* ============================================================ */
+.sidenav{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-square-md);
+  padding:12px;width:100%;max-width:240px;
+}
+.sidenav-section{font-family:var(--f-mono);font-size:8px;color:var(--mute-3);letter-spacing:.22em;text-transform:uppercase;padding:10px 12px 4px;font-weight:700}
+.sidenav-section:first-child{padding-top:4px}
+.sidenav-item{
+  display:flex;align-items:center;gap:10px;padding:8px 12px;
+  border-radius:var(--r-square-xs);font-size:12px;color:var(--mute);
+  font-family:var(--f-body);font-weight:500;letter-spacing:.01em;cursor:pointer;
+  transition:all var(--t) var(--ease), transform var(--t) var(--ease-press);
+  position:relative;
+}
+.sidenav-item:hover{background:var(--surface-2);color:var(--ink)}
+.sidenav-item:active{transform:scale(.98)}
+.sidenav-item.active{color:var(--accent);background:rgba(124,92,255,.08)}
+.sidenav-item.active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:2px;background:var(--accent);border-radius:0 2px 2px 0;box-shadow:0 0 8px var(--accent-glow)}
+.sidenav-item svg{width:13px;height:13px;flex-shrink:0}
+.sidenav-item .sn-count{margin-left:auto;font-family:var(--f-mono);font-size:9px;color:var(--mute-2);background:var(--surface-2);padding:2px 6px;border-radius:var(--r-round);min-width:18px;text-align:center}
+.sidenav-item.active .sn-count{color:var(--accent);background:rgba(124,92,255,.12)}
+
+.sidenav-collapsed{max-width:56px;padding:12px 0}
+.sidenav-collapsed .sidenav-item{justify-content:center;padding:10px;margin:2px 8px;border-radius:var(--r-square)}
+.sidenav-collapsed .sidenav-item.active::before{display:none}
+.sidenav-collapsed .sidenav-item.active{background:var(--accent);color:var(--accent-on)}
+
+/* EXPORT */
+.export-bar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0d0d0d;border:1px solid var(--line-2);border-radius:var(--r-round);padding:8px 8px 8px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 12px 32px rgba(0,0,0,.7);z-index:60;transition:all var(--t) var(--ease);max-width:calc(100vw - 32px)}
+.export-bar.hide{transform:translateX(-50%) translateY(120px);opacity:0;pointer-events:none}
+.export-count{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;color:var(--mute);text-transform:uppercase;white-space:nowrap}
+.export-count b{color:var(--accent);font-size:14px;margin-right:4px}
+.export-bar .btn{padding:8px 14px;font-size:11px;border-radius:var(--r-round)}
+.export-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:200;padding:18px}
+.export-modal.show{display:flex}
+.export-card{background:rgba(17,17,17,.98);backdrop-filter:blur(24px);border:1px solid var(--line-2);border-radius:var(--r-square-md);padding:22px;width:100%;max-width:520px;box-shadow:0 24px 48px rgba(0,0,0,.7);max-height:90vh;display:flex;flex-direction:column}
+.export-card h3{font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:.02em;text-transform:uppercase;margin-bottom:6px}
+.export-card p{font-size:12px;color:var(--mute);margin-bottom:14px;line-height:1.5}
+.export-output{width:100%;flex:1;min-height:200px;background:#050505;border:1px solid var(--line);border-radius:var(--r-square);padding:14px;font-family:var(--f-mono);font-size:11px;line-height:1.6;color:var(--accent-dim);resize:none;-webkit-user-select:text;user-select:text}
+.export-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.toast-msg{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--accent);color:var(--accent-on);padding:10px 18px;border-radius:var(--r-round);font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;z-index:300;opacity:0;transition:all var(--t) var(--ease);pointer-events:none;box-shadow:0 0 24px var(--accent-glow)}
+.toast-msg.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <div class="brand-mark">JR</div>
+    <div>
+      <div class="brand-text">EXHALEJR //</div>
+      <div class="brand-sub">round 2 / surfaces + nav</div>
+    </div>
+  </div>
+  <div class="round-badge">Round 2 / 3</div>
+</header>
+
+<div class="intro">
+  <h1>Round 2 <span class="slash">/</span><br>Surfaces + Nav.</h1>
+  <p>Cards, bento layouts, carousels, and all four navigation types. Same conventions as Round 1 — tap the star to favourite, system carries Iris primary, Lavender dim, 240ms motion, glow + scale press.</p>
+  <div class="nudge">
+    <span><b>4</b> categories</span>
+    <span><b>~25</b> specimens</span>
+    <span><b>J · K · L · I</b></span>
+  </div>
+</div>
+
+<main>
+
+<!-- ============================================================ -->
+<!-- J — CARDS                                                    -->
+<!-- ============================================================ -->
+<section class="cat" id="sec-J">
+  <div class="cat-head">
+    <div class="cat-id">J.</div>
+    <div class="cat-titles">
+      <div class="cat-name">Cards</div>
+      <div class="cat-desc">Content surface. Pick the hover language and card flavours you want canonical.</div>
+    </div>
+    <div class="cat-counts"><b>3</b>types · <b>9</b>variants</div>
+  </div>
+
+  <!-- J1 Content cards -->
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">J1</span><span class="type-name">Content cards</span><span class="type-note">hover to test</span></div>
+    <div class="specs specs-3">
+      <div class="spec" data-fav="J1.1"><div class="spec-meta"><span class="spec-id">J1.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="card card-min card-hover-lift"><div class="card-tag accent">// Lab</div><div class="card-title">Visual Intelligence</div><div class="card-body">A Gemini-powered video analysis API with a flexible parameter system.</div><div class="card-meta"><span>v0.3</span><span>→</span></div></div></div><div class="spec-label">Minimal · lift on hover</div></div>
+      <div class="spec" data-fav="J1.2"><div class="spec-meta"><span class="spec-id">J1.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="card card-image card-hover-glow"><div class="card-img"></div><div class="card-content"><div class="card-tag accent">// Project</div><div class="card-title">Artist Model</div><div class="card-body">Agent-driven research and archiving tool.</div></div></div></div><div class="spec-label">Media header · glow on hover</div></div>
+      <div class="spec" data-fav="J1.3"><div class="spec-meta"><span class="spec-id">J1.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="card card-tags card-hover-fill"><div class="card-tags-row"><span class="tag tag-accent">v0.1</span><span class="tag tag-ok">live</span></div><div class="card-title">Extensions</div><div class="card-body">Demand-led browser and system tools.</div><div class="card-meta"><span><b>3</b> active</span><span>updated 2d</span></div></div></div><div class="spec-label">Status tags · gradient fill</div></div>
+    </div>
+  </div>
+
+  <!-- J2 Stat cards -->
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">J2</span><span class="type-name">Stat cards</span></div>
+    <div class="specs specs-3">
+      <div class="spec" data-fav="J2.1"><div class="spec-meta"><span class="spec-id">J2.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="card card-stat"><div class="stat-label">Total runs</div><div class="stat-num">8,432</div></div></div><div class="spec-label">Plain number</div></div>
+      <div class="spec" data-fav="J2.2"><div class="spec-meta"><span class="spec-id">J2.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="card card-stat"><div class="stat-label">Active sessions</div><div class="stat-num accent">142</div><div class="stat-delta up">▲ 12% wk</div></div></div><div class="spec-label">Iris num + delta</div></div>
+      <div class="spec" data-fav="J2.3"><div class="spec-meta"><span class="spec-id">J2.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="card card-stat"><div class="stat-label">Tokens / day</div><div class="stat-num">2.1M</div><div class="stat-spark"><div style="height:30%"></div><div style="height:50%"></div><div style="height:35%"></div><div style="height:60%"></div><div style="height:80%"></div><div style="height:55%"></div><div style="height:90%"></div></div></div></div><div class="spec-label">With sparkline</div></div>
+    </div>
+  </div>
+
+  <!-- J3 Identity cards -->
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">J3</span><span class="type-name">Identity cards</span></div>
+    <div class="specs specs-3">
+      <div class="spec" data-fav="J3.1"><div class="spec-meta"><span class="spec-id">J3.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="card card-identity card-hover-lift"><div class="avatar">JR</div><div class="identity-meta"><div class="identity-name">Josh Roxby</div><div class="identity-role">Lab · Lead</div></div></div><div class="card card-identity card-hover-lift"><div class="avatar avatar-accent">M</div><div class="identity-meta"><div class="identity-name">Matthew</div><div class="identity-role">Engineer</div></div></div></div><div class="spec-label">Horizontal · two stacked</div></div>
+      <div class="spec" data-fav="J3.2"><div class="spec-meta"><span class="spec-id">J3.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="card card-profile card-hover-glow"><div class="avatar avatar-lg avatar-ring">JR</div><div class="identity-name">Josh Roxby</div><div class="identity-role">Full-Stack Creative</div><div class="card-tags-row" style="justify-content:center"><span class="tag tag-accent">Lab</span><span class="tag">Studio</span></div></div></div><div class="spec-label">Profile · with ring + tags</div></div>
+      <div class="spec" data-fav="J3.3"><div class="spec-meta"><span class="spec-id">J3.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="card card-identity"><div class="avatar">JR</div><div class="identity-meta" style="flex:1"><div class="identity-name">Josh Roxby</div><div class="identity-role">josh@exhale.studio</div></div><button class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></div></div><div class="spec-label">List row · with action</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- K — BENTO                                                    -->
+<!-- ============================================================ -->
+<section class="cat" id="sec-K">
+  <div class="cat-head">
+    <div class="cat-id">K.</div>
+    <div class="cat-titles">
+      <div class="cat-name">Bento layouts</div>
+      <div class="cat-desc">Asymmetric grid compositions. Each shape sets a different rhythm — pick the layouts you want available as templates.</div>
+    </div>
+    <div class="cat-counts"><b>4</b>types · <b>4</b>variants</div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">K1</span><span class="type-name">2x2 hero</span></div>
+    <div class="specs">
+      <div class="spec" data-fav="K1.1"><div class="spec-meta"><span class="spec-id">K1.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="bento bento-2x2"><div class="bento-cell hero"><div class="bc-label">// Featured</div><div><div class="bc-num" style="font-size:42px">VI.</div><div class="bc-cap">Visual Intelligence v0.3</div></div></div><div class="bento-cell"><div class="bc-label">// Side A</div><div class="bc-cap">Artist Model</div></div><div class="bento-cell dark"><div class="bc-label">// Side B</div><div class="bc-cap">Extensions</div></div></div></div><div class="spec-label">Hero left · stack right</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">K2</span><span class="type-name">4-cell mosaic</span></div>
+    <div class="specs">
+      <div class="spec" data-fav="K2.1"><div class="spec-meta"><span class="spec-id">K2.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="bento bento-mosaic"><div class="bento-cell hero"><div class="bc-label">// Lab</div><div class="bc-num">3</div></div><div class="bento-cell"><div class="bc-label">// Now</div><div class="bc-cap">Building VI v0.3</div></div><div class="bento-cell dark"><div class="bc-label">// Stack</div><div class="bc-cap">Next · Vercel</div></div><div class="bento-cell outline"><div class="bc-label">// Reading</div><div class="bc-cap">Agentic patterns</div></div></div></div><div class="spec-label">Hero + 3 satellites</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">K3</span><span class="type-name">12-col adaptive</span></div>
+    <div class="specs">
+      <div class="spec" data-fav="K3.1"><div class="spec-meta"><span class="spec-id">K3.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="bento bento-12"><div class="bento-cell"><div class="bc-label">// Wide band</div><div class="bc-cap">Hero text · 7-col</div></div><div class="bento-cell hero"><div class="bc-label">// Tall</div><div><div class="bc-num">142</div><div class="bc-cap">active sessions</div></div></div><div class="bento-cell dark"><div class="bc-label">// 4-col</div></div><div class="bento-cell outline"><div class="bc-label">// 3-col</div></div></div></div><div class="spec-label">Mixed widths · editorial</div></div>
+    </div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">K4</span><span class="type-name">Equal grid</span></div>
+    <div class="specs">
+      <div class="spec" data-fav="K4.1"><div class="spec-meta"><span class="spec-id">K4.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="bento bento-list"><div class="bento-cell"><div class="bc-label">// 01</div><div class="bc-cap">Cell one</div></div><div class="bento-cell"><div class="bc-label">// 02</div><div class="bc-cap">Cell two</div></div><div class="bento-cell"><div class="bc-label">// 03</div><div class="bc-cap">Cell three</div></div><div class="bento-cell"><div class="bc-label">// 04</div><div class="bc-cap">Cell four</div></div></div></div><div class="spec-label">4-up · uniform</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- L — CAROUSEL                                                 -->
+<!-- ============================================================ -->
+<section class="cat" id="sec-L">
+  <div class="cat-head">
+    <div class="cat-id">L.</div>
+    <div class="cat-titles">
+      <div class="cat-name">Carousel</div>
+      <div class="cat-desc">Horizontal scroll rail. Three control schemes — pick which feels right.</div>
+    </div>
+    <div class="cat-counts"><b>1</b>type · <b>3</b>variants</div>
+  </div>
+
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">L1</span><span class="type-name">Carousel</span><span class="type-note">drag to scroll →</span></div>
+    <div class="specs">
+      <div class="spec" data-fav="L1.1"><div class="spec-meta"><span class="spec-id">L1.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="carousel"><div class="carousel-track"><div class="carousel-slide feat"><div class="bc-label">// 01 · Featured</div><div><div class="card-title" style="font-size:16px">Visual Intelligence</div><div class="bc-cap" style="margin-top:6px">Video analysis API</div></div></div><div class="carousel-slide"><div class="bc-label">// 02</div><div><div class="card-title" style="font-size:16px">Artist Model</div><div class="bc-cap" style="margin-top:6px">Agent archive tool</div></div></div><div class="carousel-slide"><div class="bc-label">// 03</div><div><div class="card-title" style="font-size:16px">Extensions</div><div class="bc-cap" style="margin-top:6px">Browser tools</div></div></div><div class="carousel-slide"><div class="bc-label">// 04</div><div><div class="card-title" style="font-size:16px">Internal docs</div><div class="bc-cap" style="margin-top:6px">Lab knowledge base</div></div></div></div></div><div class="carousel-dots"><div class="carousel-dot active"></div><div class="carousel-dot"></div><div class="carousel-dot"></div><div class="carousel-dot"></div></div></div><div class="spec-label">Dot indicator</div></div>
+      <div class="spec" data-fav="L1.2"><div class="spec-meta"><span class="spec-id">L1.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="carousel"><div class="carousel-track"><div class="carousel-slide"><div class="bc-label">// 01</div><div class="bc-cap">Slide one content</div></div><div class="carousel-slide"><div class="bc-label">// 02</div><div class="bc-cap">Slide two content</div></div><div class="carousel-slide"><div class="bc-label">// 03</div><div class="bc-cap">Slide three content</div></div><div class="carousel-slide"><div class="bc-label">// 04</div><div class="bc-cap">Slide four content</div></div></div></div><div class="carousel-arrows"><button class="carousel-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><button class="carousel-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button></div></div><div class="spec-label">Arrow controls</div></div>
+      <div class="spec" data-fav="L1.3"><div class="spec-meta"><span class="spec-id">L1.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="carousel"><div class="carousel-track"><div class="carousel-slide"><div class="bc-label">// 01</div><div class="bc-cap">First slide</div></div><div class="carousel-slide"><div class="bc-label">// 02</div><div class="bc-cap">Second slide</div></div><div class="carousel-slide"><div class="bc-label">// 03</div><div class="bc-cap">Third slide</div></div><div class="carousel-slide"><div class="bc-label">// 04</div><div class="bc-cap">Fourth slide</div></div></div></div><div class="carousel-progress"><div class="carousel-progress-fill" style="width:25%"></div></div></div><div class="spec-label">Progress bar</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- I — NAVIGATION                                               -->
+<!-- ============================================================ -->
+<section class="cat" id="sec-I">
+  <div class="cat-head">
+    <div class="cat-id">I.</div>
+    <div class="cat-titles">
+      <div class="cat-name">Navigation</div>
+      <div class="cat-desc">Top nav, breadcrumb, tabs (four flavours), sidebar. Pick the structure for each.</div>
+    </div>
+    <div class="cat-counts"><b>4</b>types · <b>11</b>variants</div>
+  </div>
+
+  <!-- I1 Top nav -->
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">I1</span><span class="type-name">Top nav</span></div>
+    <div class="specs">
+      <div class="spec" data-fav="I1.1"><div class="spec-meta"><span class="spec-id">I1.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><nav class="topnav"><div class="topnav-brand"><div class="topnav-mark">JR</div><div class="topnav-name">EXHALEJR //</div></div><div class="topnav-links"><a class="topnav-link active">Work</a><a class="topnav-link">Lab</a><a class="topnav-link">Notes</a><a class="topnav-link">Contact</a></div></nav></div><div class="spec-label">Brand left · links right</div></div>
+      <div class="spec" data-fav="I1.2"><div class="spec-meta"><span class="spec-id">I1.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><nav class="topnav"><div style="display:flex;gap:18px;align-items:center"><div class="topnav-brand"><div class="topnav-mark">JR</div><div class="topnav-name">EXHALEJR //</div></div><div class="topnav-links"><a class="topnav-link active">Work</a><a class="topnav-link">Lab</a><a class="topnav-link">Notes</a></div></div><button class="btn btn-prim btn-sm">Get in touch</button></nav></div><div class="spec-label">With CTA</div></div>
+      <div class="spec" data-fav="I1.3"><div class="spec-meta"><span class="spec-id">I1.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><nav class="topnav"><div class="topnav-brand"><div class="topnav-mark">JR</div><div class="topnav-name">EXHALEJR //</div></div><div class="topnav-meta"><div class="topnav-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>Search<span class="kbd">⌘K</span></div><button class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button><div class="avatar" style="width:30px;height:30px;font-size:12px">JR</div></div></nav></div><div class="spec-label">App-style · search + avatar</div></div>
+    </div>
+  </div>
+
+  <!-- I2 Breadcrumb -->
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">I2</span><span class="type-name">Breadcrumb</span></div>
+    <div class="specs specs-2">
+      <div class="spec" data-fav="I2.1"><div class="spec-meta"><span class="spec-id">I2.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body" style="justify-content:flex-start"><div class="crumb"><a class="crumb-item">Lab</a><span class="crumb-sep">›</span><a class="crumb-item">Visual Intelligence</a><span class="crumb-sep">›</span><span class="crumb-item current">v0.3</span></div></div><div class="spec-label">Chevron separator</div></div>
+      <div class="spec" data-fav="I2.2"><div class="spec-meta"><span class="spec-id">I2.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body" style="justify-content:flex-start"><div class="crumb"><a class="crumb-item">Lab</a><span class="crumb-sep">/</span><a class="crumb-item">Visual Intelligence</a><span class="crumb-sep">/</span><span class="crumb-item current">v0.3</span></div></div><div class="spec-label">Slash · brand-style</div></div>
+    </div>
+  </div>
+
+  <!-- I3 Tabs -->
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">I3</span><span class="type-name">Tabs</span></div>
+    <div class="specs specs-2">
+      <div class="spec" data-fav="I3.1"><div class="spec-meta"><span class="spec-id">I3.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body col"><div class="tabs"><a class="tab active">Overview</a><a class="tab">Logs <span class="tab-count">142</span></a><a class="tab">Settings</a></div></div><div class="spec-label">Underline · with count</div></div>
+      <div class="spec" data-fav="I3.2"><div class="spec-meta"><span class="spec-id">I3.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><div class="tabs-pill"><a class="tab-pill active">All</a><a class="tab-pill">Active</a><a class="tab-pill">Done</a></div></div><div class="spec-label">Pill</div></div>
+      <div class="spec" data-fav="I3.3"><div class="spec-meta"><span class="spec-id">I3.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><div class="tabs-seg"><a class="tab-seg active">Day</a><a class="tab-seg">Week</a><a class="tab-seg">Month</a></div></div><div class="spec-label">Segmented</div></div>
+      <div class="spec" data-fav="I3.4"><div class="spec-meta"><span class="spec-id">I3.4</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body"><div class="tabs-vert"><a class="tab-vert active">Overview</a><a class="tab-vert">Logs<span class="tab-count">142</span></a><a class="tab-vert">Team<span class="tab-count">3</span></a><a class="tab-vert">Settings</a></div></div><div class="spec-label">Vertical · with counts</div></div>
+    </div>
+  </div>
+
+  <!-- I4 Sidebar -->
+  <div class="type-group">
+    <div class="type-head"><span class="type-id">I4</span><span class="type-name">Sidebar</span></div>
+    <div class="specs specs-2">
+      <div class="spec" data-fav="I4.1"><div class="spec-meta"><span class="spec-id">I4.1</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body" style="justify-content:flex-start"><div class="sidenav"><div class="sidenav-section">Lab</div><a class="sidenav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 10v6m11-11h-6m-10 0H1"/></svg>Visual Intelligence</a><a class="sidenav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>Artist Model</a><a class="sidenav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/></svg>Extensions</a><div class="sidenav-section">Personal</div><a class="sidenav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2h-4"/><path d="M12 2v13"/></svg>Travel</a><a class="sidenav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg>Music</a></div></div><div class="spec-label">Sectioned · with icons</div></div>
+      <div class="spec" data-fav="I4.2"><div class="spec-meta"><span class="spec-id">I4.2</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body" style="justify-content:flex-start"><div class="sidenav"><div class="sidenav-section">Inbox</div><a class="sidenav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>All<span class="sn-count">12</span></a><a class="sidenav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Starred<span class="sn-count">3</span></a><a class="sidenav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Threads<span class="sn-count">8</span></a><a class="sidenav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>Archive</a></div></div><div class="spec-label">With counts</div></div>
+      <div class="spec" data-fav="I4.3"><div class="spec-meta"><span class="spec-id">I4.3</span><button class="fav-btn"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button></div><div class="spec-body" style="justify-content:flex-start"><div class="sidenav sidenav-collapsed"><a class="sidenav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 10v6m11-11h-6m-10 0H1"/></svg></a><a class="sidenav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg></a><a class="sidenav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/></svg></a><a class="sidenav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg></a></div></div><div class="spec-label">Collapsed · icon only</div></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="export-bar hide" id="exportBar">
+  <div class="export-count"><b id="favCount">0</b>favourites</div>
+  <button class="btn btn-prim" id="showPicks">Show picks</button>
+  <button class="btn btn-sec" id="resetBtn" style="border-radius:var(--r-round)">Reset</button>
+</div>
+
+<div class="export-modal" id="exportModal">
+  <div class="export-card">
+    <h3>Round 2 picks</h3>
+    <p>Tap "Select all", then copy. Or just tap "Copy" if it works on your device.</p>
+    <textarea class="export-output" id="exportOutput" readonly></textarea>
+    <div class="export-actions">
+      <button class="btn btn-ghost" id="closeModal">Close</button>
+      <button class="btn btn-sec" id="selectAllBtn">Select all</button>
+      <button class="btn btn-prim" id="copyBtn">Copy</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-msg" id="toast">Copied</div>
+
+<script>
+const favs = new Set();
+
+document.querySelectorAll('[data-fav]').forEach(el=>{
+  const id = el.dataset.fav;
+  const btn = el.querySelector('.fav-btn');
+  if(!btn) return;
+  btn.addEventListener('click', e=>{
+    e.stopPropagation();
+    if(favs.has(id)){ favs.delete(id); el.classList.remove('fav'); }
+    else { favs.add(id); el.classList.add('fav'); }
+    updateBar();
+  });
+});
+
+function updateBar(){
+  const bar = document.getElementById('exportBar');
+  document.getElementById('favCount').textContent = favs.size;
+  if(favs.size === 0) bar.classList.add('hide');
+  else bar.classList.remove('hide');
+}
+
+document.getElementById('showPicks').addEventListener('click', ()=>{
+  const sorted = [...favs].sort((a,b)=>{
+    const re = /^([A-Za-z]+)(\d+)\.?(\d+)?$/;
+    const ma = a.match(re), mb = b.match(re);
+    if(!ma || !mb) return a.localeCompare(b);
+    if(ma[1] !== mb[1]) return ma[1].localeCompare(mb[1]);
+    if(+ma[2] !== +mb[2]) return +ma[2] - +mb[2];
+    return (+ma[3]||0) - (+mb[3]||0);
+  });
+  const grouped = {};
+  sorted.forEach(id=>{
+    const cat = id.match(/^([A-Za-z]+)/)[1];
+    if(!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(id);
+  });
+  const catNames = {J:'CARDS', K:'BENTO', L:'CAROUSEL', I:'NAVIGATION'};
+  let out = 'EXHALEJR / ROUND 2 PICKS\n' + '='.repeat(28) + '\n\n';
+  Object.keys(grouped).forEach(cat=>{
+    out += `${cat} — ${catNames[cat]||cat}\n`;
+    grouped[cat].forEach(id=>{ out += `  · ${id}\n`; });
+    out += '\n';
+  });
+  out += `${favs.size} picks total`;
+  document.getElementById('exportOutput').value = out;
+  document.getElementById('exportModal').classList.add('show');
+});
+
+document.getElementById('closeModal').addEventListener('click', ()=>document.getElementById('exportModal').classList.remove('show'));
+document.getElementById('selectAllBtn').addEventListener('click', ()=>{
+  const ta = document.getElementById('exportOutput'); ta.focus(); ta.select();
+});
+document.getElementById('copyBtn').addEventListener('click', async ()=>{
+  const ta = document.getElementById('exportOutput'); ta.focus(); ta.select();
+  try { await navigator.clipboard.writeText(ta.value); showToast('Copied'); }
+  catch(e) {
+    try { document.execCommand('copy'); showToast('Copied'); }
+    catch(e2) { showToast('Select all + copy manually'); }
+  }
+});
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  favs.clear();
+  document.querySelectorAll('.fav').forEach(el=>el.classList.remove('fav'));
+  updateBar();
+});
+</script>
+</body>
+</html>
