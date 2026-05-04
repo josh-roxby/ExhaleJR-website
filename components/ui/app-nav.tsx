@@ -59,7 +59,7 @@ export function AppNav() {
               <AccountSubCta
                 label="About Josh"
                 icon={icons.question}
-                onClick={() => goAnchor("about")}
+                onClick={() => go("/about")}
               />
               <AccountSubCta
                 label="Instagram @josh_roxby"
@@ -139,7 +139,8 @@ export function AppNav() {
           </NavItem>
           <NavItem
             aria-label="About"
-            onClick={() => goAnchor("about")}
+            active={pathname === "/about"}
+            onClick={() => go("/about")}
           >
             {icons.user}
           </NavItem>

@@ -14,12 +14,7 @@ Sprint focus, in suggested order. See chat for the spec behind each item.
    - Remove the **Search** cell.
    - Replace the **Design** cell with **Gallery** (route `/gallery`).
    - Make the Josh **Account** card "long" (taller, more breathing space) with three square sub-CTA icon buttons inside it: `?` linking to `/about`, an Instagram icon linking to `https://instagram.com/josh_roxby`, an email icon linking to `mailto:josh@exhale.studio`.
-4. **/about as a separate route** (`app/about/page.tsx` + remove the `/about → /#about` redirect in `next.config.ts`). Sections:
-   - About me.
-   - Background.
-   - What I like / I'm interested in.
-   - Why I build.
-   - Addicted to learning.
+4. ~~**/about as a separate route.**~~ Done. `app/about/page.tsx` with hero plus five sections (About me, Background, What I like, Why I build, Addicted to learning). Redirect removed from `next.config.ts`. Both About nav slots route to `/about`.
 5. **/contact route** (`app/contact/page.tsx`). Clean layout with:
    - Instagram: `@josh_roxby` (link out).
    - Email: `josh@exhale.studio` (mailto, with copy-to-clipboard affordance).
