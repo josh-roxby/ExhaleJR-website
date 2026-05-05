@@ -90,6 +90,16 @@ npm run typecheck  # tsc --noEmit
 
 Tests/lint intentionally not configured yet — add when needed.
 
+## User-store and per-project localStorage
+
+Any project that wants to persist data on the user's device goes through one shared store. Single localStorage key `exhalejr.user` with shape `{ v, settings, projects: { [slug]: { v, data } } }`. Schema-versioned at the root and per-project so partial migrations don't trash sibling project data.
+
+- **Read/write helpers:** `lib/user-store.ts` exposes `getProjectData`, `setProjectData`, `clearProjectData`, plus `getSettings` / `patchSettings` for global settings.
+- **React hook:** `hooks/use-project-storage.ts` returns `[data, setData, hydrated]`. Loads on mount only (no SSR mismatch), writes only this project's slot, leaves the rest of the user's data untouched.
+- **Rule:** projects only ever read or write their own slot via `useProjectStorage` (or the underlying helpers with their own slug). Touching another project's slot or the global settings from a project is a code smell. The single `exhalejr.user` key keeps the user's whole device state in one inspectable JSON object.
+
+When changing a project's data shape, bump its `version` argument so older data is treated as missing and replaced with the project's `defaultData` instead of being misread.
+
 ## Project lifecycle: WIP and versioning
 
 - **Every new project starts `wip: true`.** While WIP, the drawing board renders a `WIP` Tag on its tile and the project page. No `version` is published.
