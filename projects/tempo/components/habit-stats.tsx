@@ -6,7 +6,7 @@ import { Card, Eyebrow, Tag } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
 import { isLogged, type Habit, type HabitEntry } from "../data/types";
-import { addDaysIso, dayOfWeek, todayISO } from "../lib/dates";
+import { addDaysIso, todayISO } from "../lib/dates";
 
 interface HabitStatsProps {
   habits: Habit[];
@@ -61,9 +61,10 @@ function HabitHeatmap({ habit, entries }: HabitHeatmapProps) {
     return m;
   }, [habit.type, valueByDate]);
 
-  // Build the grid. Sunday-aligned columns. Pad start back to Sunday and end
-  // forward to Saturday so every column is a full 7 cells.
-  const grid = useMemo(() => buildGrid(WINDOW_DAYS), []);
+  // Build a flat, chronological list of dates ending today. The grid then
+  // renders these row-major so the user reads them like text: top-left is
+  // the oldest day, bottom-right is today.
+  const cells = useMemo(() => buildLinearCells(WINDOW_DAYS), []);
 
   const isBuild = habit.kind === "build";
   const colorClass = isBuild ? "bg-ok" : "bg-warn";
@@ -111,11 +112,8 @@ function HabitHeatmap({ habit, entries }: HabitHeatmapProps) {
       </header>
 
       <div className="-mx-5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="grid auto-cols-[12px] grid-flow-col grid-rows-7 gap-1">
-          {grid.flat().map((date, i) => {
-            if (date === null) {
-              return <span key={`pad-${i}`} aria-hidden className="h-3 w-3" />;
-            }
+        <div className="grid w-fit auto-rows-[12px] grid-cols-[repeat(13,12px)] gap-1">
+          {cells.map((date) => {
             const v = valueByDate.get(date);
             const intensity = computeIntensity(habit, v, max);
             const empty = intensity === 0;
@@ -171,34 +169,18 @@ function Stat({
 
 /* ─── helpers ─── */
 
-/** Returns a 7-row × N-col grid. Each cell is either a YYYY-MM-DD date or
- *  null (padding). Column-major: cells flatten to fill grid-flow-col. */
-function buildGrid(days: number): (string | null)[][] {
+/** Flat chronological list of dates ending today. The grid renders these
+ *  row-major (default `grid-flow-row`), so oldest day is top-left and today
+ *  is bottom-right. With WINDOW_DAYS = 91 and 13 columns, the grid is
+ *  exactly 7 rows tall. */
+function buildLinearCells(days: number): string[] {
   const today = todayISO();
   const start = addDaysIso(today, -(days - 1));
-
-  // Pad start back to Sunday.
-  const startPad = dayOfWeek(start);
-  const paddedStart = addDaysIso(start, -startPad);
-
-  // Pad end forward to Saturday.
-  const todayDow = dayOfWeek(today);
-  const endPad = 6 - todayDow;
-
-  const totalCells = (startPad + days + endPad);
-  const cells: (string | null)[] = [];
-  for (let i = 0; i < totalCells; i++) {
-    const d = addDaysIso(paddedStart, i);
-    if (d < start || d > today) cells.push(null);
-    else cells.push(d);
+  const out: string[] = [];
+  for (let i = 0; i < days; i++) {
+    out.push(addDaysIso(start, i));
   }
-
-  // Group into weeks of 7.
-  const weeks: (string | null)[][] = [];
-  for (let i = 0; i < cells.length; i += 7) {
-    weeks.push(cells.slice(i, i + 7));
-  }
-  return weeks;
+  return out;
 }
 
 function computeIntensity(

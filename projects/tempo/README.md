@@ -32,10 +32,10 @@ projects/tempo/
                              # number turns green/red when > 0.
     habit-stats.tsx          # Stats-tab heatmap. One Card per habit:
                              # heading + tags + streak/total stats above,
-                             # a 7-row × 13-col contribution grid below.
-                             # Sunday-aligned, padded so every column is a
-                             # full week. Grid scrolls horizontally if it
-                             # overflows.
+                             # a 13-col × 7-row grid below. Cells are laid
+                             # out row-major (chronological text-flow):
+                             # oldest day top-left, today bottom-right.
+                             # Grid scrolls horizontally on narrow viewports.
 ```
 
 ## Data model
@@ -74,8 +74,9 @@ Capped at 366 iterations so the loop can never run away.
 
 ## Heatmap
 
-Last 91 days, Sunday-aligned columns of 7 cells. Build cells are green
-(`--ok`), break cells are red (`--warn`). Value-to-opacity is bucketed into
-4 steps (0.3 / 0.55 / 0.8 / 1.0) so the grid reads clearly even when
-underlying values vary widely. Counter scaling uses the habit's all-time
-max so intensity is stable across viewing windows.
+Last 91 days, rendered as a 13-column × 7-row grid in chronological reading
+order (top-left is the oldest day, today is the bottom-right cell). Build
+cells are green (`--ok`), break cells are red (`--warn`). Value-to-opacity
+is bucketed into 4 steps (0.3 / 0.55 / 0.8 / 1.0) so the grid reads
+clearly even when underlying values vary widely. Counter scaling uses the
+habit's all-time max so intensity is stable across viewing windows.

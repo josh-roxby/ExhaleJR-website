@@ -5,7 +5,7 @@ A daily habit tracker with a stats heatmap. Two habit types (yes/no toggle, nume
 Two tabs:
 
 - **Tracking.** A list of habits with today's input control per habit. Yes/no habits show a toggle, counter habits show -/+ buttons around a tabular number. The row title turns green when a build habit is logged today, red when a break habit was slipped today. A small Tag near each habit name shows the kind (build/break) and type (yes/no/count).
-- **Stats.** A GitHub-style contribution heatmap per habit, last 91 days (13 weeks, Sunday-aligned). Cell intensity scales with the day's value. Build cells are green; break cells are red. A streak counter and total-days summary sit above each heatmap. For build habits the streak is consecutive days with a logged value; for break habits it's consecutive clean days.
+- **Stats.** A heatmap per habit, last 91 days, laid out as a 13-column × 7-row grid in chronological reading order (top-left is the oldest day, today is the bottom-right cell). Cell intensity scales with the day's value. Build cells are green; break cells are red. A streak counter and total-days summary sit above each heatmap. For build habits the streak is consecutive days with a logged value; for break habits it's consecutive clean days.
 
 Add habits via a form below the list. Each habit is added with a name, a kind (build/break), and a type (yes/no/count). Delete affordance per row.
 
