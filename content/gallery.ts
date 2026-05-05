@@ -1,49 +1,67 @@
+import "server-only";
+
+import { readdir } from "node:fs/promises";
+import { join } from "node:path";
+
 /**
- * Gallery content. One module, one array. The /gallery page reads from this.
+ * Gallery surface.
  *
- * To add a new entry:
- *   1. Drop the image file under /public/gallery/<slug>.<ext>
- *   2. Append a new object to `galleryItems` below.
- *   3. (Optional) git commit and push.
+ * Each collection maps to a folder under `/public/gallery/<slug>/`. Drop
+ * portrait images into a folder and they show up automatically. No registry
+ * to update, no JSON to maintain.
  *
- * Fields:
- *   slug     unique kebab-case id, used as React key.
- *   title    display title shown on the tile.
- *   date     YYYY-MM or YYYY-MM-DD. Sorted newest first when rendered.
- *   image    public path to the image, or null to render a placeholder.
- *   caption  short caption shown under the title.
- *   tags     freeform tags, used for future filtering.
+ *   /public/gallery/favourites/        the headline carousel
+ *   /public/gallery/collection-1/      additional collections
+ *   /public/gallery/collection-2/
+ *   /public/gallery/collection-3/
+ *
+ * Edit `collections` below to rename a collection or add a description.
+ * Add a new collection by creating its folder under /public/gallery and
+ * appending an entry here.
  */
 
-export interface GalleryItem {
+export interface CollectionMeta {
   slug: string;
-  title: string;
-  date: string;
-  image: string | null;
-  caption?: string;
-  tags: string[];
+  name: string;
+  description?: string;
 }
 
-export const galleryItems: GalleryItem[] = [
+export interface CollectionWithImages extends CollectionMeta {
+  /** Public paths like "/gallery/<slug>/<file>". */
+  images: string[];
+}
+
+export const collections: CollectionMeta[] = [
   {
-    slug: "morning-light",
-    title: "Morning light",
-    date: "2026-05",
-    image: null,
-    caption: "Window at sunrise.",
-    tags: ["photography"],
+    slug: "favourites",
+    name: "Favourites",
+    description: "A loose pile of shots I keep coming back to.",
   },
-  {
-    slug: "sketches",
-    title: "Sketches",
-    date: "2026-04",
-    image: null,
-    caption: "Notebook studies.",
-    tags: ["sketches", "creative"],
-  },
+  { slug: "collection-1", name: "Collection 1" },
+  { slug: "collection-2", name: "Collection 2" },
+  { slug: "collection-3", name: "Collection 3" },
 ];
 
-/** Items sorted newest first by date string (YYYY-MM[-DD] sorts correctly). */
-export function sortedGalleryItems(): GalleryItem[] {
-  return [...galleryItems].sort((a, b) => b.date.localeCompare(a.date));
+const IMAGE_EXT = /\.(jpg|jpeg|png|webp|avif|gif)$/i;
+
+async function listCollectionImages(slug: string): Promise<string[]> {
+  const dir = join(process.cwd(), "public", "gallery", slug);
+  try {
+    const files = await readdir(dir);
+    return files
+      .filter((f) => IMAGE_EXT.test(f) && !f.startsWith("."))
+      .sort()
+      .map((f) => `/gallery/${slug}/${f}`);
+  } catch {
+    return [];
+  }
+}
+
+export async function loadAllCollections(): Promise<CollectionWithImages[]> {
+  return Promise.all(
+    collections.map(async (c) => ({
+      ...c,
+      images: await listCollectionImages(c.slug),
+    })),
+  );
 }
