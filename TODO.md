@@ -4,33 +4,37 @@ This is the master todo. Sub-project todos live next to their code and are linke
 
 ## Repo / shared infra
 
-### Now
-Sprint focus, in suggested order. See chat for the spec behind each item.
+### Now (current sprint, ordered)
 
-1. **Writing-style sweep.** Apply the no-em-dash, no-AI-tell rule (CLAUDE.md `Writing style`) to existing user-facing copy: `app/page.tsx`, `app/drawingboard/_drawing-board-client.tsx`, `app/drawingboard/page.tsx`, `app/designsystem/page.tsx` headers, `components/ui/rip-modal.tsx`, `components/pwa/install-prompt.tsx`, project READMEs, this file, and CLAUDE.md.
-2. **PWA bottom bar dark on Android.** When installed (standalone), the body / safe-area should fill in `--bg`, not white. Check `themeColor`, `<meta name="theme-color">`, body min-height-dvh + `viewportFit: cover`, and any `env(safe-area-inset-*)` padding.
-3. **Nav popover edits** (`components/ui/app-nav.tsx`):
-   - Remove the **Theme** cell.
-   - Remove the **Search** cell.
-   - Replace the **Design** cell with **Gallery** (route `/gallery`).
-   - Make the Josh **Account** card "long" (taller, more breathing space) with three square sub-CTA icon buttons inside it: `?` linking to `/about`, an Instagram icon linking to `https://instagram.com/josh_roxby`, an email icon linking to `mailto:josh@exhale.studio`.
-4. ~~**/about as a separate route.**~~ Done. `app/about/page.tsx` with hero plus five sections (About me, Background, What I like, Why I build, Addicted to learning). Redirect removed from `next.config.ts`. Both About nav slots route to `/about`.
-5. ~~**/contact route.**~~ Done. Two cards, IG opens in new tab, email opens mail client, plus a `CopyButton` for the address. Side note about studio enquiries pointing to exhale.studio.
-6. ~~**/gallery real content.**~~ Done. Tile grid pulling from `content/gallery.ts` (single TS array, easy to append). Aspect 4:5 tiles, placeholder gradient when no image, lazy-loaded `<img>`, tags rendered as Tag chips, sorted newest first, EmptyState for zero items. Workflow doc in `content/README.md`. The thoughts/found surfaces will follow the same `content/<surface>.ts` pattern when built.
-7. ~~**Help cell content.**~~ Done. `/help` route with hero, TOC, and five sections (Drawing board, GitHub, Claude, Vercel, Putting it together). Friendly non-technical voice, doc links per section. Help cell in popover routes here.
-8. ~~**Rip feature revision.**~~ Done.
-   - `lib/rip-prompt.ts` assembles the full prompt at click-time: attribution header, mode preamble (chat vs code), project content from `RIP.md`, shared design-language reference, mode-specific output instructions.
-   - Mode toggle in the modal (two cards: Claude chat / Claude Code). Active card glows accent.
-   - Modal restructured into three numbered steps (Where, Copy, What next). Big copy button. Body copy aimed at non-technical readers.
-   - `projects/hello/RIP.md` slimmed to project-specific content only (~15 lines). Future projects follow this short template.
-   - Attribution baked in: prompts instruct Claude to print "Designed by Josh Roxby. exhalejr.com · josh@exhale.studio" into generated code (HTML comment in chat mode, page.tsx top comment in code mode).
-   - Footer link from modal to `/help` for the full GitHub / Claude / Vercel walkthrough.
+A1. **Cleanup pass.** Small mechanical changes, ship together.
+   - Remove the `hello` project (folder, registry entry, master TODO link).
+   - Rename the `cooking` project's display name to `What's cookin` (slug stays `cooking`).
+
+A2. **Local-storage architecture.** Foundation for any project that wants to persist data on the user's device.
+   - `lib/user-store.ts` with a single localStorage key `exhalejr.user`. Shape: `{ v, settings, projects: { [slug]: { v, data } } }`. Schema-versioned at root and per-project so partial migrations don't trash sibling project data.
+   - `hooks/use-project-storage.ts` returning `[data, setData, hydrated]`. Loads on mount only (no SSR mismatch), writes only this project's slot, leaves the rest of the user's stored data untouched.
+   - Document the rule in `CLAUDE.md`: projects only ever read/write their own slot via this hook.
+
+A3. **Tempo project.** New drawing-board entry. Habit tracker MVP using A2.
+   - Project under `/projects/tempo` with the standard folder layout (index, meta, page, components/, data/, TODO, README, RIP).
+   - Two habit types: `boolean` (yes/no toggle) and `counter` (numeric +/-).
+   - Today's view: list of habits with the input control per type. Add-habit form (name + type select).
+   - Persist via `useProjectStorage("tempo", 1, ...)`.
+   - Description on the home page tile mentions data lives on the device only.
+   - WIP true; tags `["habits", "tools", "personal"]`.
+
+A4. **Gallery rebuild.** Replaces the flat tile grid with collections + carousels + lightbox.
+   - Folders under `/public/gallery/` for `favourites`, `collection-1`, `collection-2`, `collection-3` (with `.gitkeep` so empty ones are tracked).
+   - Server-side reader (`content/gallery.ts`) that lists image files in each subfolder.
+   - Page: hero, then four sections each rendering a 200px-tall horizontal carousel with snap. Portrait images.
+   - Click any image to open it in the existing `<Modal>` as a lightbox (max-h-[80vh]).
+   - Empty-collection state per section so dropping new images is the only setup needed.
+   - Names + descriptions for collection-1/2/3 are placeholders for now; user names them later.
 
 ### Standing
-- [x] ~~Phase 2 atomic components from `DESIGN-SYSTEM.md` §4: selects (E), checkboxes/radios (Fc), toggles (G), sliders (H), tabs (I3), carousel (L). Add to `/designsystem` as built.~~ Done. All seven primitives wired into the showcase.
 - [ ] Replace placeholder PWA icons in `/public/icons` and `/app/{icon,apple-icon}.png` with real branding.
 - [ ] Real copy on the home page. Replace `// COPY:` markers in `app/page.tsx`.
-- [ ] Decide content source for `/thoughts`, `/found`, `/creative`, `/gallery`. Markdown entries committed, or admin UI.
+- [ ] Decide content source for `/thoughts`, `/found`, `/creative`. Markdown entries committed, or admin UI.
 - [ ] iOS install-prompt fallback. No `beforeinstallprompt` event on iOS, so render "Add to Home Screen" instructions instead.
 - [ ] Offline page + SW caching once routes stabilise.
 
@@ -40,11 +44,18 @@ Sprint focus, in suggested order. See chat for the spec behind each item.
 - [ ] CI: typecheck + build on PR.
 - [ ] Open Graph images, sitemap, robots.
 
+## Recently shipped
+
+- Phase 2 component library: selects, checkboxes/radios, toggles, sliders, tabs, carousel.
+- Cooking project full-bleed layout, monochrome step cards, ← / → nav arrows across the cook flow, two new recipes (soft-boiled eggs + pancakes).
+- Floating-nav timer slot + counter pill above the bottom nav for cook step view.
+- `/public/logo` as single source of truth, real logo wired through icons / favicon / OG.
+- `/about`, `/contact`, `/gallery`, `/help` routes.
+
 ## Projects
 
 Each project links to its own TODO. Add new projects under `/projects/<slug>` and register them in `projects/registry.ts`.
 
-- [`hello`](./projects/hello/TODO.md). Reference project demonstrating the isolation pattern.
 - [`cooking`](./projects/cooking/TODO.md). Recipe player with step-by-step timers and an audio ding.
 
 <!--
