@@ -7,14 +7,13 @@
 import type { ComponentType } from "react";
 
 import * as cooking from "./cooking";
-import * as hello from "./hello";
 
 export interface ProjectEntry {
   slug: string;
   name: string;
   description: string;
   Page: ComponentType;
-  /** True until I explicitly clear it — no version is published while WIP. */
+  /** True until I explicitly clear it. No version is published while WIP. */
   wip: boolean;
   /** Only meaningful once `wip` is false. Tracked in the project's TODO.md. */
   version?: string;
@@ -26,15 +25,6 @@ export interface ProjectEntry {
 export type ProjectSummary = Omit<ProjectEntry, "Page">;
 
 export const projects: ProjectEntry[] = [
-  {
-    slug: "hello",
-    name: hello.meta.name,
-    description: hello.meta.description,
-    Page: hello.Page,
-    wip: hello.meta.wip,
-    version: hello.meta.version,
-    tags: [...hello.meta.tags],
-  },
   {
     slug: "cooking",
     name: cooking.meta.name,
