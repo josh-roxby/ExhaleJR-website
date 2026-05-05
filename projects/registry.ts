@@ -7,6 +7,7 @@
 import type { ComponentType } from "react";
 
 import * as cooking from "./cooking";
+import * as tempo from "./tempo";
 
 export interface ProjectEntry {
   slug: string;
@@ -33,6 +34,15 @@ export const projects: ProjectEntry[] = [
     wip: cooking.meta.wip,
     version: cooking.meta.version,
     tags: [...cooking.meta.tags],
+  },
+  {
+    slug: "tempo",
+    name: tempo.meta.name,
+    description: tempo.meta.description,
+    Page: tempo.Page,
+    wip: tempo.meta.wip,
+    version: tempo.meta.version,
+    tags: [...tempo.meta.tags],
   },
 ];
 
