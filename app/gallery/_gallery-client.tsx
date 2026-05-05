@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Eyebrow, Modal } from "@/components/ui";
 import { useDisclosure } from "@/hooks/use-disclosure";
+import { cn } from "@/lib/cn";
 import type { CollectionWithImages, GalleryImage } from "@/content/gallery";
 
 interface GalleryClientProps {
@@ -50,15 +51,55 @@ export function GalleryClient({ collections, total }: GalleryClientProps) {
         className="max-w-4xl"
       >
         {active && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={active.full}
-            alt=""
-            className="mx-auto max-h-[75dvh] w-auto rounded-sq-md"
-          />
+          // `key` forces a fresh mount when the user opens a different photo,
+          // so the loading state resets properly instead of flashing the
+          // previous full image while the new one decodes.
+          <div className="flex justify-center">
+            <LightboxImage key={active.full} image={active} />
+          </div>
         )}
       </Modal>
     </>
+  );
+}
+
+interface LightboxImageProps {
+  image: GalleryImage;
+}
+
+/** Progressive lightbox image. Renders the cached thumbnail upscaled and
+ *  blurred while the full version downloads, with a subtle pulse so the
+ *  loading state is obvious. Once the full image fires `onLoad`, it fades
+ *  in over 500 ms and the thumb fades out. */
+function LightboxImage({ image }: LightboxImageProps) {
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+    <div className="relative inline-block overflow-hidden rounded-sq-md">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={image.thumb}
+        alt=""
+        aria-hidden
+        decoding="async"
+        className={cn(
+          "block max-h-[75dvh] w-auto select-none transition-opacity duration-500",
+          loaded ? "opacity-0" : "opacity-100 animate-pulse",
+        )}
+        style={{ filter: "blur(20px)", transform: "scale(1.04)" }}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={image.full}
+        alt=""
+        onLoad={() => setLoaded(true)}
+        decoding="async"
+        className={cn(
+          "absolute inset-0 h-full w-full object-cover transition-opacity duration-500",
+          loaded ? "opacity-100" : "opacity-0",
+        )}
+      />
+    </div>
   );
 }
 
