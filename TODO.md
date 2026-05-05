@@ -27,7 +27,7 @@ Sprint focus, in suggested order. See chat for the spec behind each item.
    - Footer link from modal to `/help` for the full GitHub / Claude / Vercel walkthrough.
 
 ### Standing
-- [ ] Phase 2 atomic components from `DESIGN-SYSTEM.md` §4: selects (E), checkboxes/radios (Fc), toggles (G), sliders (H), tabs (I3), carousel (L). Add to `/designsystem` as built.
+- [x] ~~Phase 2 atomic components from `DESIGN-SYSTEM.md` §4: selects (E), checkboxes/radios (Fc), toggles (G), sliders (H), tabs (I3), carousel (L). Add to `/designsystem` as built.~~ Done. All seven primitives wired into the showcase.
 - [ ] Replace placeholder PWA icons in `/public/icons` and `/app/{icon,apple-icon}.png` with real branding.
 - [ ] Real copy on the home page. Replace `// COPY:` markers in `app/page.tsx`.
 - [ ] Decide content source for `/thoughts`, `/found`, `/creative`, `/gallery`. Markdown entries committed, or admin UI.

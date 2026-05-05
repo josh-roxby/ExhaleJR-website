@@ -10,6 +10,8 @@ import {
   Badge,
   Button,
   Card,
+  Carousel,
+  Checkbox,
   Chip,
   Eyebrow,
   FieldLabel,
@@ -23,11 +25,18 @@ import {
   NavSecondary,
   Pill,
   PopoverBackdrop,
+  Radio,
+  RadioGroup,
   RipButton,
+  Select,
+  Slider,
   Sparkline,
   StatCard,
+  Tab,
+  Tabs,
   Tag,
   TextInput,
+  Toggle,
 } from "@/components/ui";
 
 export default function DesignSystemPage() {
@@ -74,8 +83,14 @@ export default function DesignSystemPage() {
         <ChipsTagsSection />
         <PillsBadgesSection />
         <FormFieldsSection />
+        <SelectsSection />
+        <ChecksRadiosSection />
+        <TogglesSection />
+        <SlidersSection />
+        <TabsSection />
         <CardsSection />
         <StatCardsSection />
+        <CarouselSection />
         <FloatNavSection />
         <PopoverSection />
         <ModalSection />
@@ -311,6 +326,134 @@ function FormFieldsSection() {
   );
 }
 
+function SelectsSection() {
+  const opts = [
+    { value: "small", label: "Small" },
+    { value: "medium", label: "Medium" },
+    { value: "large", label: "Large" },
+    { value: "xl", label: "Extra large" },
+  ];
+  return (
+    <Section id="selects" title="Selects" code="4.6 (E)" description="Opaque dropdown menu with slide-down animation. Esc and click-outside close.">
+      <Row label="// DEFAULT">
+        <div className="w-full max-w-sm">
+          <Select options={opts} placeholder="Pick a size…" aria-label="Size" />
+        </div>
+      </Row>
+      <Row label="// WITH DEFAULT VALUE">
+        <div className="w-full max-w-sm">
+          <Select options={opts} defaultValue="medium" aria-label="Size with default" />
+        </div>
+      </Row>
+      <Row label="// DISABLED">
+        <div className="w-full max-w-sm">
+          <Select options={opts} placeholder="Disabled" disabled aria-label="Disabled" />
+        </div>
+      </Row>
+    </Section>
+  );
+}
+
+function ChecksRadiosSection() {
+  return (
+    <Section
+      id="checks-radios"
+      title="Checkboxes & Radios"
+      code="4.7 (Fc)"
+      description="Square checkbox (Fc1) for multi-select. Round radio (Fc2) for single-select."
+    >
+      <Row label="// CHECKBOX">
+        <div className="flex flex-col gap-2">
+          <Checkbox label="Default unchecked" />
+          <Checkbox label="Default checked" defaultChecked />
+          <Checkbox label="Disabled" disabled />
+          <Checkbox label="Disabled, checked" disabled defaultChecked />
+        </div>
+      </Row>
+      <Row label="// RADIO GROUP">
+        <RadioGroup name="ds-radio" defaultValue="b">
+          <Radio value="a" label="Option A" />
+          <Radio value="b" label="Option B" />
+          <Radio value="c" label="Option C" />
+          <Radio value="d" label="Option D (disabled)" disabled />
+        </RadioGroup>
+      </Row>
+    </Section>
+  );
+}
+
+function TogglesSection() {
+  return (
+    <Section id="toggles" title="Toggles" code="4.8 (G)" description="Round only. Iris fill when on, mute thumb when off.">
+      <Row label="// VARIANTS">
+        <div className="flex flex-col gap-2">
+          <Toggle label="Off" />
+          <Toggle label="On" defaultChecked />
+          <Toggle label="Disabled, off" disabled />
+          <Toggle label="Disabled, on" disabled defaultChecked />
+        </div>
+      </Row>
+    </Section>
+  );
+}
+
+function SlidersSection() {
+  return (
+    <Section id="sliders" title="Sliders" code="4.9 (H)" description="Iris fill with soft glow. Thumb scales 1.2x while grabbing.">
+      <Row label="// DEFAULT">
+        <div className="w-full max-w-md">
+          <Slider defaultValue={40} showValue />
+        </div>
+      </Row>
+      <Row label="// WITH STEP + FORMATTER">
+        <div className="w-full max-w-md">
+          <Slider
+            defaultValue={50}
+            min={0}
+            max={100}
+            step={5}
+            showValue
+            formatValue={(v) => `${v}%`}
+          />
+        </div>
+      </Row>
+      <Row label="// DISABLED">
+        <div className="w-full max-w-md">
+          <Slider defaultValue={25} disabled showValue />
+        </div>
+      </Row>
+    </Section>
+  );
+}
+
+function TabsSection() {
+  return (
+    <Section id="tabs" title="Tabs" code="4.13 (I3)" description="Three sub-types: pill (I3.2), underline (I3.1), segmented (I3.3).">
+      <Row label="// I3.2 — PILL">
+        <Tabs defaultValue="design" variant="pill">
+          <Tab value="design">Design</Tab>
+          <Tab value="code">Code</Tab>
+          <Tab value="ship">Ship</Tab>
+        </Tabs>
+      </Row>
+      <Row label="// I3.1 — UNDERLINE">
+        <Tabs defaultValue="now" variant="underline">
+          <Tab value="now">Now</Tab>
+          <Tab value="next">Next</Tab>
+          <Tab value="later">Later</Tab>
+        </Tabs>
+      </Row>
+      <Row label="// I3.3 — SEGMENTED">
+        <Tabs defaultValue="day" variant="segmented">
+          <Tab value="day">Day</Tab>
+          <Tab value="week">Week</Tab>
+          <Tab value="month">Month</Tab>
+        </Tabs>
+      </Row>
+    </Section>
+  );
+}
+
 function CardsSection() {
   return (
     <Section id="cards" title="Cards" code="4.10 (J)" description="Square (sq-md). Pick one hover language per surface.">
@@ -332,6 +475,28 @@ function CardsSection() {
           <p className="text-sm text-white/80">Iris-gradient surface.</p>
         </Card>
       </div>
+    </Section>
+  );
+}
+
+function CarouselSection() {
+  return (
+    <Section
+      id="carousel"
+      title="Carousel"
+      code="4.12 (L)"
+      description="Horizontal scroll with snap. Active dot stretches and glows."
+    >
+      <Carousel slideWidth="240px">
+        {[1, 2, 3, 4, 5, 6].map((n) => (
+          <Card key={n} hover="lift" className="h-40 flex-col justify-between">
+            <Eyebrow size="xs">// SLIDE {String(n).padStart(2, "0")}</Eyebrow>
+            <div className="font-display text-3xl font-black tracking-tight">
+              {n}
+            </div>
+          </Card>
+        ))}
+      </Carousel>
     </Section>
   );
 }

@@ -25,6 +25,27 @@ export type { BadgeProps } from "./badge";
 export { TextInput, FieldLabel } from "./text-input";
 export type { TextInputProps, FieldLabelProps } from "./text-input";
 
+export { Checkbox } from "./checkbox";
+export type { CheckboxProps } from "./checkbox";
+
+export { Radio, RadioGroup } from "./radio";
+export type { RadioProps, RadioGroupProps } from "./radio";
+
+export { Toggle } from "./toggle";
+export type { ToggleProps } from "./toggle";
+
+export { Slider } from "./slider";
+export type { SliderProps } from "./slider";
+
+export { Select } from "./select";
+export type { SelectProps, SelectOption } from "./select";
+
+export { Tabs, Tab } from "./tabs";
+export type { TabsProps, TabProps, TabsVariant } from "./tabs";
+
+export { Carousel } from "./carousel";
+export type { CarouselProps } from "./carousel";
+
 export { Modal } from "./modal";
 export type { ModalProps } from "./modal";
 
