@@ -32,7 +32,7 @@ export { Radio, RadioGroup } from "./radio";
 export type { RadioProps, RadioGroupProps } from "./radio";
 
 export { Toggle } from "./toggle";
-export type { ToggleProps } from "./toggle";
+export type { ToggleProps, ToggleTone } from "./toggle";
 
 export { Slider } from "./slider";
 export type { SliderProps } from "./slider";

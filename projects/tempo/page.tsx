@@ -1,33 +1,28 @@
 "use client";
 
 // Tempo. Daily habit tracker. Two habit types (boolean toggle, numeric
-// counter). Persists to localStorage via the shared user-store so other
-// projects' data is never touched.
+// counter) and two habit kinds (build = green, break = red). Persists to
+// localStorage via the shared user-store so other projects' data is never
+// touched.
 
 import { useState } from "react";
 
-import { Button, Eyebrow } from "@/components/ui";
+import { Button, Eyebrow, Tab, Tabs } from "@/components/ui";
 import { useProjectStorage } from "@/hooks/use-project-storage";
 
 import { HabitForm } from "./components/habit-form";
 import { HabitList } from "./components/habit-list";
+import { HabitStats } from "./components/habit-stats";
 import {
   emptyTempoData,
   TEMPO_DATA_VERSION,
-  todayISO,
   type Habit,
   type TempoData,
 } from "./data/types";
+import { formatLong, todayISO } from "./lib/dates";
 import { meta } from "./meta";
 
-function formatToday(isoDate: string): string {
-  const d = new Date(`${isoDate}T00:00:00`);
-  return d.toLocaleDateString(undefined, {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
-}
+type TempoTab = "tracking" | "stats";
 
 export function Page() {
   const [data, setData, hydrated] = useProjectStorage<TempoData>(
@@ -35,6 +30,7 @@ export function Page() {
     TEMPO_DATA_VERSION,
     emptyTempoData,
   );
+  const [tab, setTab] = useState<TempoTab>("tracking");
   const [showForm, setShowForm] = useState(false);
 
   const today = todayISO();
@@ -76,41 +72,50 @@ export function Page() {
           Daily <span className="text-accent">habits</span>.
         </h1>
         <p className="mt-3 max-w-xl text-ink-2">
-          Add a habit, tap it once a day. Track yes/no things or count things.
-          Data lives on this device only, never leaves your browser.
+          Add a habit, tap it once a day. Build a habit (green) or break one
+          (red). Counter or yes/no. Data lives on this device only.
         </p>
         <p className="mt-4 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-mute-2">
-          // TODAY · {formatToday(today).toUpperCase()}
+          // TODAY · {formatLong(today).toUpperCase()}
         </p>
       </header>
 
-      {hydrated ? (
-        <HabitList
-          habits={data.habits}
-          entries={data.entries}
-          today={today}
-          onSet={setEntry}
-          onDelete={deleteHabit}
-        />
-      ) : (
+      <Tabs
+        value={tab}
+        onChange={(v) => setTab(v as TempoTab)}
+        variant="pill"
+      >
+        <Tab value="tracking">Tracking</Tab>
+        <Tab value="stats">Stats</Tab>
+      </Tabs>
+
+      {!hydrated ? (
         <div className="rounded-sq-md border border-dashed border-line-2 bg-surface/40 p-8 text-center">
           <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-mute-3">
             // LOADING
           </p>
         </div>
-      )}
-
-      {showForm ? (
-        <HabitForm
-          onAdd={addHabit}
-          onCancel={() => setShowForm(false)}
-        />
-      ) : (
-        <div className="flex justify-end">
-          <Button variant="primary" onClick={() => setShowForm(true)}>
-            + New habit
-          </Button>
+      ) : tab === "tracking" ? (
+        <div className="space-y-6">
+          <HabitList
+            habits={data.habits}
+            entries={data.entries}
+            today={today}
+            onSet={setEntry}
+            onDelete={deleteHabit}
+          />
+          {showForm ? (
+            <HabitForm onAdd={addHabit} onCancel={() => setShowForm(false)} />
+          ) : (
+            <div className="flex justify-end">
+              <Button variant="primary" onClick={() => setShowForm(true)}>
+                + New habit
+              </Button>
+            </div>
+          )}
         </div>
+      ) : (
+        <HabitStats habits={data.habits} entries={data.entries} />
       )}
     </main>
   );

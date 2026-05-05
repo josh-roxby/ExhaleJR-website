@@ -3,7 +3,7 @@
 import { Card, IconButton, Tag, Toggle } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
-import type { Habit, HabitEntry } from "../data/types";
+import { isLogged, type Habit, type HabitEntry } from "../data/types";
 
 interface HabitListProps {
   habits: Habit[];
@@ -56,42 +56,63 @@ interface HabitRowProps {
 }
 
 function HabitRow({ habit, value, onSet, onDelete }: HabitRowProps) {
-  const isLogged =
-    habit.type === "boolean"
-      ? value === true
-      : typeof value === "number" && value > 0;
+  const logged = isLogged(habit, value);
+  const isBuild = habit.kind === "build";
+  const tone = isBuild ? "ok" : "warn";
+
+  // For build: logged = success (green title). For break: logged = slipped
+  // (red title). Untouched = neutral ink.
+  const titleTone = logged ? (isBuild ? "text-ok" : "text-warn") : "text-ink";
 
   return (
     <Card hover="none" className="flex items-center justify-between gap-4 p-4">
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <h3
             className={cn(
               "truncate font-display text-lg font-bold uppercase tracking-tight",
-              isLogged ? "text-accent" : "text-ink",
+              titleTone,
             )}
           >
             {habit.name}
           </h3>
+          <Tag variant={isBuild ? "ok" : "warn"}>{habit.kind}</Tag>
           <Tag>{habit.type === "boolean" ? "yes / no" : "count"}</Tag>
         </div>
-        <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-mute-2">
-          {isLogged ? "// LOGGED TODAY" : "// NOT LOGGED YET"}
+        <p
+          className={cn(
+            "mt-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em]",
+            logged
+              ? isBuild
+                ? "text-ok"
+                : "text-warn"
+              : "text-mute-2",
+          )}
+        >
+          {logged
+            ? isBuild
+              ? "// LOGGED TODAY"
+              : "// SLIPPED TODAY"
+            : isBuild
+              ? "// NOT YET TODAY"
+              : "// CLEAN SO FAR TODAY"}
         </p>
       </div>
 
       <div className="flex shrink-0 items-center gap-3">
         {habit.type === "boolean" ? (
           <Toggle
-            aria-label={`Mark ${habit.name} done today`}
+            aria-label={`Mark ${habit.name} ${isBuild ? "done" : "slipped"} today`}
             checked={value === true}
             onChange={(e) => onSet(e.target.checked)}
+            tone={tone}
           />
         ) : (
           <CounterControl
             value={typeof value === "number" ? value : 0}
             onChange={onSet}
             label={habit.name}
+            tone={tone}
           />
         )}
         <DeleteButton onClick={onDelete} />
@@ -104,9 +125,12 @@ interface CounterControlProps {
   value: number;
   onChange: (value: number) => void;
   label: string;
+  tone: "ok" | "warn";
 }
 
-function CounterControl({ value, onChange, label }: CounterControlProps) {
+function CounterControl({ value, onChange, label, tone }: CounterControlProps) {
+  const numberTone =
+    value > 0 ? (tone === "ok" ? "text-ok" : "text-warn") : "text-ink";
   return (
     <div className="flex items-center gap-2">
       <IconButton
@@ -119,7 +143,12 @@ function CounterControl({ value, onChange, label }: CounterControlProps) {
           <path d="M5 12h14" />
         </svg>
       </IconButton>
-      <span className="min-w-[2.5ch] text-center font-display text-2xl font-black tabular-nums text-ink">
+      <span
+        className={cn(
+          "min-w-[2.5ch] text-center font-display text-2xl font-black tabular-nums",
+          numberTone,
+        )}
+      >
         {value}
       </span>
       <IconButton
