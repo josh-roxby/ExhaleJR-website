@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Eyebrow, Tag } from "@/components/ui";
+import { Button, Eyebrow, NavItem, NavSecondary, Tag } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import type { Recipe } from "../data/recipes";
 
@@ -27,6 +27,15 @@ export function CookPrep({ recipe, onStart, onBack }: CookPrepProps) {
 
   return (
     <main className="mx-auto max-w-4xl space-y-10">
+      <NavSecondary>
+        <NavItem aria-label="Back to recipe" onClick={onBack}>
+          <ChevronLeftIcon />
+        </NavItem>
+        <NavItem aria-label="Start cooking" onClick={onStart}>
+          <ChevronRightIcon />
+        </NavItem>
+      </NavSecondary>
+
       <button
         type="button"
         onClick={onBack}
@@ -107,5 +116,21 @@ export function CookPrep({ recipe, onStart, onBack }: CookPrepProps) {
         </Button>
       </div>
     </main>
+  );
+}
+
+function ChevronLeftIcon() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+      <path d="M9 18l6-6-6-6" />
+    </svg>
   );
 }

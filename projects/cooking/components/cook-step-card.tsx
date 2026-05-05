@@ -45,9 +45,8 @@ export function CookStepCard({
       {/* Secondary nav slot: prev / timer / next while in step view. */}
       <NavSecondary>
         <NavItem
-          aria-label="Previous step"
+          aria-label={stepIndex === 0 ? "Back to prep" : "Previous step"}
           onClick={onPrev}
-          disabled={stepIndex === 0}
         >
           <ChevronLeftIcon />
         </NavItem>
@@ -175,8 +174,8 @@ export function CookStepCard({
       </article>
 
       <div className="flex items-center justify-between gap-3">
-        <Button variant="ghost" onClick={onPrev} disabled={stepIndex === 0}>
-          ← Previous
+        <Button variant="ghost" onClick={onPrev}>
+          {stepIndex === 0 ? "← Back to prep" : "← Previous"}
         </Button>
         <Button variant="primary" onClick={onNext}>
           {isLast ? "Finish" : "Next →"}

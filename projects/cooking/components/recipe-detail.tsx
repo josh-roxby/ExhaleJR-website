@@ -1,6 +1,13 @@
 "use client";
 
-import { Button, Card, Eyebrow, Tag } from "@/components/ui";
+import {
+  Button,
+  Card,
+  Eyebrow,
+  NavItem,
+  NavSecondary,
+  Tag,
+} from "@/components/ui";
 import type { Recipe } from "../data/recipes";
 import { formatDuration } from "../hooks/use-timer";
 
@@ -13,6 +20,15 @@ interface RecipeDetailProps {
 export function RecipeDetail({ recipe, onCook, onBack }: RecipeDetailProps) {
   return (
     <main className="mx-auto max-w-4xl space-y-10">
+      <NavSecondary>
+        <NavItem aria-label="Back to all recipes" onClick={onBack}>
+          <ChevronLeftIcon />
+        </NavItem>
+        <NavItem aria-label="Cook this recipe" onClick={onCook}>
+          <ChevronRightIcon />
+        </NavItem>
+      </NavSecondary>
+
       <button
         type="button"
         onClick={onBack}
@@ -88,5 +104,21 @@ export function RecipeDetail({ recipe, onCook, onBack }: RecipeDetailProps) {
         </Button>
       </div>
     </main>
+  );
+}
+
+function ChevronLeftIcon() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+      <path d="M9 18l6-6-6-6" />
+    </svg>
   );
 }

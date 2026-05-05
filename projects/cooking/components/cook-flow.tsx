@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Eyebrow } from "@/components/ui";
+import { Button, Eyebrow, NavItem, NavSecondary } from "@/components/ui";
 import type { Recipe } from "../data/recipes";
 import { CookPrep } from "./cook-prep";
 import { CookStepCard } from "./cook-step-card";
@@ -35,7 +35,14 @@ export function CookFlow({ recipe, onExit }: CookFlowProps) {
       <CookStepCard
         recipe={recipe}
         stepIndex={stepIndex}
-        onPrev={() => setStepIndex((i) => Math.max(0, i - 1))}
+        // At step 0, "prev" rewinds to the prep view rather than locking up.
+        onPrev={() => {
+          if (stepIndex === 0) {
+            setPhase("prep");
+          } else {
+            setStepIndex((i) => i - 1);
+          }
+        }}
         onNext={() => {
           if (stepIndex >= recipe.steps.length - 1) {
             setPhase("done");
@@ -54,6 +61,12 @@ export function CookFlow({ recipe, onExit }: CookFlowProps) {
 function Done({ recipe, onExit }: { recipe: Recipe; onExit: () => void }) {
   return (
     <main className="space-y-8 py-12 text-center sm:py-20">
+      <NavSecondary>
+        <NavItem aria-label="Back to recipe" onClick={onExit}>
+          <ChevronLeftIcon />
+        </NavItem>
+      </NavSecondary>
+
       <Eyebrow tone="accent" withPulseDot className="justify-center">
         // DONE
       </Eyebrow>
@@ -65,9 +78,17 @@ function Done({ recipe, onExit }: { recipe: Recipe; onExit: () => void }) {
       </p>
       <div className="flex justify-center">
         <Button variant="primary" onClick={onExit}>
-          Back to recipes
+          Back to recipe
         </Button>
       </div>
     </main>
+  );
+}
+
+function ChevronLeftIcon() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
   );
 }

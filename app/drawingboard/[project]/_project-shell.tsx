@@ -1,8 +1,10 @@
 "use client";
 
 // Wraps every project page with a top-right action cluster: WIP / version
-// status tags + the rip button. Project pages don't need to render these
-// themselves — the shell handles meta consistently.
+// status tags + the rip button. The cluster is absolute-positioned so
+// content underneath can fill the full shell width. Projects should keep
+// the very top-right corner of their first row free of meaningful content
+// so it doesn't visually conflict with the cluster.
 
 import type { ReactNode } from "react";
 import { RipButton, Tag } from "@/components/ui";
@@ -26,7 +28,7 @@ export function ProjectShell({ summary, ripContent, children }: ProjectShellProp
           promptContent={ripContent}
         />
       </div>
-      <div className="pr-12 sm:pr-16">{children}</div>
+      {children}
     </div>
   );
 }
