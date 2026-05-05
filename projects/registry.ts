@@ -7,6 +7,7 @@
 import type { ComponentType } from "react";
 
 import * as cooking from "./cooking";
+import * as decisionWheel from "./decision-wheel";
 import * as flip from "./flip";
 import * as tempo from "./tempo";
 
@@ -53,6 +54,15 @@ export const projects: ProjectEntry[] = [
     wip: flip.meta.wip,
     version: flip.meta.version,
     tags: [...flip.meta.tags],
+  },
+  {
+    slug: "decision-wheel",
+    name: decisionWheel.meta.name,
+    description: decisionWheel.meta.description,
+    Page: decisionWheel.Page,
+    wip: decisionWheel.meta.wip,
+    version: decisionWheel.meta.version,
+    tags: [...decisionWheel.meta.tags],
   },
 ];
 
