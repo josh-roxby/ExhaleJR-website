@@ -58,6 +58,7 @@ Each project links to its own TODO. Add new projects under `/projects/<slug>` an
 
 - [`cooking`](./projects/cooking/TODO.md). Recipe player with step-by-step timers and an audio ding.
 - [`tempo`](./projects/tempo/TODO.md). Daily habit tracker. Boolean or counter habits, persisted on device.
+- [`flip`](./projects/flip/TODO.md). Coin flip with single / best of 3 / best of 5 modes.
 
 <!--
 When adding a new project:

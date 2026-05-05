@@ -7,6 +7,7 @@
 import type { ComponentType } from "react";
 
 import * as cooking from "./cooking";
+import * as flip from "./flip";
 import * as tempo from "./tempo";
 
 export interface ProjectEntry {
@@ -43,6 +44,15 @@ export const projects: ProjectEntry[] = [
     wip: tempo.meta.wip,
     version: tempo.meta.version,
     tags: [...tempo.meta.tags],
+  },
+  {
+    slug: "flip",
+    name: flip.meta.name,
+    description: flip.meta.description,
+    Page: flip.Page,
+    wip: flip.meta.wip,
+    version: flip.meta.version,
+    tags: [...flip.meta.tags],
   },
 ];
 
