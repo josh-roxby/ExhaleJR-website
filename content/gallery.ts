@@ -6,18 +6,16 @@ import { join } from "node:path";
 /**
  * Gallery surface.
  *
- * Each collection maps to a folder under `/public/gallery/<slug>/`. Drop
- * portrait images into a folder and they show up automatically. No registry
- * to update, no JSON to maintain.
+ * Each collection maps to a folder under `/public/gallery/<slug>/`.
+ * Optimised images live in:
  *
- *   /public/gallery/favourites/        the headline carousel
- *   /public/gallery/collection-1/      additional collections
- *   /public/gallery/collection-2/
- *   /public/gallery/collection-3/
+ *   /public/gallery/<slug>/<name>.jpg          full version (lightbox)
+ *   /public/gallery/<slug>/thumbs/<name>.jpg   thumbnail (carousel)
  *
- * Edit `collections` below to rename a collection or add a description.
- * Add a new collection by creating its folder under /public/gallery and
- * appending an entry here.
+ * `scripts/import-gallery.py <slug> <path>` produces both sizes and
+ * standardises filenames to zero-padded sequentials. If a thumbnail is
+ * missing for a given file, the loader falls back to the full image so the
+ * carousel still renders.
  */
 
 export interface CollectionMeta {
@@ -26,9 +24,15 @@ export interface CollectionMeta {
   description?: string;
 }
 
+export interface GalleryImage {
+  /** Full-size URL, used in the lightbox. */
+  full: string;
+  /** Thumbnail URL, used in the carousel. Falls back to `full` if missing. */
+  thumb: string;
+}
+
 export interface CollectionWithImages extends CollectionMeta {
-  /** Public paths like "/gallery/<slug>/<file>". */
-  images: string[];
+  images: GalleryImage[];
 }
 
 export const collections: CollectionMeta[] = [
@@ -44,17 +48,36 @@ export const collections: CollectionMeta[] = [
 
 const IMAGE_EXT = /\.(jpg|jpeg|png|webp|avif|gif)$/i;
 
-async function listCollectionImages(slug: string): Promise<string[]> {
-  const dir = join(process.cwd(), "public", "gallery", slug);
+async function safeReaddir(dir: string): Promise<string[]> {
   try {
-    const files = await readdir(dir);
-    return files
-      .filter((f) => IMAGE_EXT.test(f) && !f.startsWith("."))
-      .sort()
-      .map((f) => `/gallery/${slug}/${f}`);
+    return await readdir(dir);
   } catch {
     return [];
   }
+}
+
+async function listCollectionImages(slug: string): Promise<GalleryImage[]> {
+  const dir = join(process.cwd(), "public", "gallery", slug);
+  const thumbsDir = join(dir, "thumbs");
+
+  const [files, thumbs] = await Promise.all([
+    safeReaddir(dir),
+    safeReaddir(thumbsDir),
+  ]);
+
+  const thumbSet = new Set(
+    thumbs.filter((f) => IMAGE_EXT.test(f) && !f.startsWith(".")),
+  );
+
+  return files
+    .filter((f) => IMAGE_EXT.test(f) && !f.startsWith("."))
+    .sort()
+    .map((f) => ({
+      full: `/gallery/${slug}/${f}`,
+      thumb: thumbSet.has(f)
+        ? `/gallery/${slug}/thumbs/${f}`
+        : `/gallery/${slug}/${f}`,
+    }));
 }
 
 export async function loadAllCollections(): Promise<CollectionWithImages[]> {
