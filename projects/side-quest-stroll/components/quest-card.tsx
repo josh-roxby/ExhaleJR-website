@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 
-import { Button, Card, Eyebrow, Tag } from "@/components/ui";
+import { Card, Eyebrow, Tag } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
 import type { Quest } from "../data/types";
@@ -11,25 +11,16 @@ import { formatWalkingTime } from "../lib/walking";
 
 interface ActiveQuestViewProps {
   quest: Quest;
-  onComplete: () => void;
-  onAbandon: () => void;
-  onReroll: () => void;
-  /** The map slot. Rendered absolutely behind the overlay panels. */
+  /** The map slot. Rendered absolutely behind the overlay panel. */
   map: ReactNode;
 }
 
 /**
- * Fullscreen takeover for an active quest. Map fills the viewport, with
- * a top panel showing the prompt + loop info and a bottom action bar
- * (re-roll / abandon / mark done) sitting above the floating nav.
+ * Fullscreen takeover for an active quest. Map fills the viewport with a
+ * top panel showing the prompt + loop info. Re-roll / abandon / complete
+ * live in the floating nav.
  */
-export function ActiveQuestView({
-  quest,
-  onComplete,
-  onAbandon,
-  onReroll,
-  map,
-}: ActiveQuestViewProps) {
+export function ActiveQuestView({ quest, map }: ActiveQuestViewProps) {
   const loopDistanceM =
     quest.distanceM + (quest.returnDistanceM ?? quest.distanceM);
 
@@ -37,7 +28,8 @@ export function ActiveQuestView({
     <div className="fixed inset-0 z-30 bg-bg">
       <div className="absolute inset-0">{map}</div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 px-3 pt-[calc(0.75rem+env(safe-area-inset-top))]">
+      {/* z-[1000] clears Leaflet's pane stack (markers/popups peak ~z700). */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-[1000] px-3 pt-[calc(0.75rem+env(safe-area-inset-top))]">
         <Card hover="none" className="pointer-events-auto space-y-3 p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <Eyebrow tone="accent" withPulseDot>// SIDE QUEST · ACTIVE</Eyebrow>
@@ -68,48 +60,7 @@ export function ActiveQuestView({
           )}
         </Card>
       </div>
-
-      <div className="pointer-events-none absolute inset-x-0 bottom-[calc(112px+env(safe-area-inset-bottom))] px-3">
-        <Card
-          hover="none"
-          className="pointer-events-auto flex flex-wrap items-center justify-end gap-2 p-3"
-        >
-          <Button
-            variant="ghost"
-            onClick={onReroll}
-            leadingIcon={<RerollIcon />}
-            aria-label="Re-roll quest prompt"
-          >
-            Re-roll
-          </Button>
-          <Button variant="ghost" onClick={onAbandon}>
-            Abandon
-          </Button>
-          <Button variant="primary" onClick={onComplete}>
-            Mark done
-          </Button>
-        </Card>
-      </div>
     </div>
-  );
-}
-
-function RerollIcon() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M21 12a9 9 0 1 1-3.5-7.1" />
-      <polyline points="21 4 21 10 15 10" />
-    </svg>
   );
 }
 

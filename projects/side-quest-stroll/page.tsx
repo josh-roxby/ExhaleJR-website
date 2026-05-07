@@ -170,29 +170,31 @@ export function Page() {
 
   const lastQuest = data.history[0] ?? null;
 
-  // Secondary nav item — visible whenever a pin is set, in any state.
-  // Tapping clears the pin (and any active quest) and returns to setup.
-  const navSlot = hydrated && data.pin && (
-    <NavSecondary>
-      <NavItem
-        aria-label="Change start position"
-        onClick={clearPin}
-      >
-        <PinResetIcon />
-      </NavItem>
-    </NavSecondary>
-  );
-
-  // Active quest takes over the viewport.
+  // Active quest takes over the viewport. The floating nav swaps to the
+  // three quest actions (re-roll / abandon / complete) instead of the
+  // change-start pin reset.
   if (hydrated && data.pin && data.activeQuest) {
     return (
       <>
-        {navSlot}
+        <NavSecondary>
+          <NavItem aria-label="Re-roll quest prompt" onClick={rerollQuest}>
+            <RerollIcon />
+          </NavItem>
+          <NavItem
+            aria-label="Abandon quest"
+            onClick={() => finishQuest("abandoned")}
+          >
+            <AbandonIcon />
+          </NavItem>
+          <NavItem
+            aria-label="Mark quest done"
+            onClick={() => finishQuest("completed")}
+          >
+            <CompleteIcon />
+          </NavItem>
+        </NavSecondary>
         <ActiveQuestView
           quest={data.activeQuest}
-          onComplete={() => finishQuest("completed")}
-          onAbandon={() => finishQuest("abandoned")}
-          onReroll={rerollQuest}
           map={
             <QuestMap
               pin={data.pin}
@@ -209,6 +211,18 @@ export function Page() {
       </>
     );
   }
+
+  // Pre-quest secondary nav — change-start pin reset when a pin is set.
+  const navSlot = hydrated && data.pin && (
+    <NavSecondary>
+      <NavItem
+        aria-label="Change start position"
+        onClick={clearPin}
+      >
+        <PinResetIcon />
+      </NavItem>
+    </NavSecondary>
+  );
 
   return (
     <main className="mx-auto max-w-3xl space-y-8 pb-12">
@@ -355,6 +369,63 @@ function PinResetIcon() {
       <path d="M21 12a9 9 0 1 1-3.5-7.1" />
       <polyline points="21 4 21 10 15 10" />
       <circle cx="12" cy="12" r="2" />
+    </svg>
+  );
+}
+
+function RerollIcon() {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21 12a9 9 0 1 1-3.5-7.1" />
+      <polyline points="21 4 21 10 15 10" />
+    </svg>
+  );
+}
+
+function AbandonIcon() {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="var(--warn)"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
+function CompleteIcon() {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="var(--ok)"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="m9 12 2 2 4-4" />
     </svg>
   );
 }
