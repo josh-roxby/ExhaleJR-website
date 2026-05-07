@@ -4,7 +4,7 @@
  *
  *   "Photograph a red door"
  *   "Identify a mossy stone"
- *   "Sketch an unusual cloud"
+ *   "Discuss an unusual cloud"
  */
 
 import { ACTIONS, DESCRIPTORS, ITEMS, pool } from "../data/word-banks";

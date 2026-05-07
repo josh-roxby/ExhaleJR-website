@@ -123,6 +123,23 @@ export function Page() {
     setPending(false);
   };
 
+  const rerollQuest = () => {
+    setData((prev) => {
+      if (!prev.activeQuest) return prev;
+      const parts = generateQuestParts(prev.activeQuest.mode);
+      return {
+        ...prev,
+        activeQuest: {
+          ...prev.activeQuest,
+          action: parts.action,
+          item: parts.item,
+          descriptor: parts.descriptor,
+          text: parts.text,
+        },
+      };
+    });
+  };
+
   const finishQuest = (status: "completed" | "abandoned") => {
     setData((prev) => {
       if (!prev.activeQuest) return prev;
@@ -204,6 +221,7 @@ export function Page() {
               quest={data.activeQuest}
               onComplete={() => finishQuest("completed")}
               onAbandon={() => finishQuest("abandoned")}
+              onReroll={rerollQuest}
             />
           )}
 

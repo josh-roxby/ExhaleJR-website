@@ -15,22 +15,22 @@
 
 import type { QuestMode } from "./types";
 
+// Actions stay passive on purpose — anything you can do without breaking
+// stride. No sketch / draw / map / trace, since those pull you off the walk.
 export const ACTIONS = {
   common: [
     "photograph",
     "find",
-    "sketch",
-    "draw",
     "count",
     "observe",
     "describe",
     "name",
     "spot",
+    "discuss",
   ],
   city: [
     "research",
     "ask about",
-    "map",
     "compare",
   ],
   countryside: [
@@ -38,7 +38,6 @@ export const ACTIONS = {
     "listen for",
     "smell",
     "follow",
-    "trace",
     "watch",
   ],
 } as const;
