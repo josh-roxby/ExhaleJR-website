@@ -50,49 +50,6 @@ export function randomPointInRadius(center: LatLng, radiusKm: number): LatLng {
   };
 }
 
-/**
- * Try to parse a Google Maps URL and return the lat / lng if it has one.
- * Supports the `@LAT,LNG[,ZOOM]` form (most common, in /maps/place URLs)
- * and the `?q=LAT,LNG` form. Short links (goo.gl, maps.app.goo.gl) need
- * to be expanded server-side first; not handled here.
- */
-export function parseGoogleMapsUrl(input: string): LatLng | null {
-  const at = input.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
-  if (at) {
-    const lat = parseFloat(at[1]);
-    const lng = parseFloat(at[2]);
-    if (validLatLng(lat, lng)) return { lat, lng };
-  }
-  const q = input.match(/[?&]q=(-?\d+\.?\d*),\s*(-?\d+\.?\d*)/);
-  if (q) {
-    const lat = parseFloat(q[1]);
-    const lng = parseFloat(q[2]);
-    if (validLatLng(lat, lng)) return { lat, lng };
-  }
-  return null;
-}
-
-/** Parse a "LAT,LNG" pair (with optional whitespace). */
-export function parseLatLng(input: string): LatLng | null {
-  const m = input.trim().match(/^(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)$/);
-  if (!m) return null;
-  const lat = parseFloat(m[1]);
-  const lng = parseFloat(m[2]);
-  if (!validLatLng(lat, lng)) return null;
-  return { lat, lng };
-}
-
-function validLatLng(lat: number, lng: number): boolean {
-  return (
-    Number.isFinite(lat) &&
-    Number.isFinite(lng) &&
-    lat >= -90 &&
-    lat <= 90 &&
-    lng >= -180 &&
-    lng <= 180
-  );
-}
-
 /** Format a coordinate in a friendly way, with sign + 4 decimal places. */
 export function formatLatLng(p: LatLng): string {
   return `${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}`;

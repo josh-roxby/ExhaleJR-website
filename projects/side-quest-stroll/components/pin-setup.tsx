@@ -1,20 +1,11 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import dynamic from "next/dynamic";
 
-import {
-  Button,
-  Eyebrow,
-  FieldLabel,
-  Tab,
-  Tabs,
-  TextInput,
-} from "@/components/ui";
-import { cn } from "@/lib/cn";
+import { Button, Eyebrow, Tab, Tabs } from "@/components/ui";
 
 import type { LatLng } from "../data/types";
-import { parseGoogleMapsUrl, parseLatLng } from "../lib/geo";
 
 // Lazy map for the tap-to-place tab.
 const QuestMap = dynamic(() => import("./map"), { ssr: false });
@@ -23,7 +14,7 @@ interface PinSetupProps {
   onPinSet: (p: LatLng) => void;
 }
 
-type Method = "tap" | "geolocate" | "url" | "coords";
+type Method = "tap" | "geolocate";
 
 export function PinSetup({ onPinSet }: PinSetupProps) {
   const [method, setMethod] = useState<Method>("geolocate");
@@ -52,8 +43,6 @@ export function PinSetup({ onPinSet }: PinSetupProps) {
       >
         <Tab value="geolocate">My location</Tab>
         <Tab value="tap">Tap on map</Tab>
-        <Tab value="url">Maps URL</Tab>
-        <Tab value="coords">Coords</Tab>
       </Tabs>
 
       <div>
@@ -61,12 +50,6 @@ export function PinSetup({ onPinSet }: PinSetupProps) {
           <GeolocateMethod onPinSet={onPinSet} setError={setError} />
         )}
         {method === "tap" && <TapMethod onPinSet={onPinSet} />}
-        {method === "url" && (
-          <UrlMethod onPinSet={onPinSet} setError={setError} />
-        )}
-        {method === "coords" && (
-          <CoordsMethod onPinSet={onPinSet} setError={setError} />
-        )}
       </div>
 
       {error && (
@@ -162,92 +145,3 @@ function TapMethod({ onPinSet }: { onPinSet: (p: LatLng) => void }) {
     </div>
   );
 }
-
-function UrlMethod({
-  onPinSet,
-  setError,
-}: {
-  onPinSet: (p: LatLng) => void;
-  setError: (s: string | null) => void;
-}) {
-  const [value, setValue] = useState("");
-
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    const parsed = parseGoogleMapsUrl(value);
-    if (!parsed) {
-      setError(
-        "Couldn't read coordinates from that URL. Try a long-form Google Maps link with `@lat,lng` in the path.",
-      );
-      return;
-    }
-    onPinSet(parsed);
-  };
-
-  return (
-    <form onSubmit={submit} className="space-y-3">
-      <FieldLabel htmlFor="sqs-url">// PASTE GOOGLE MAPS URL</FieldLabel>
-      <TextInput
-        id="sqs-url"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="https://www.google.com/maps/place/…"
-      />
-      <p className="text-xs text-mute">
-        Long-form links with the `@lat,lng` segment work. Short links
-        (goo.gl, maps.app.goo.gl) need to be expanded first; paste the
-        long URL after the redirect.
-      </p>
-      <div className="flex justify-end">
-        <Button type="submit" variant="primary" disabled={!value.trim()}>
-          Set start
-        </Button>
-      </div>
-    </form>
-  );
-}
-
-function CoordsMethod({
-  onPinSet,
-  setError,
-}: {
-  onPinSet: (p: LatLng) => void;
-  setError: (s: string | null) => void;
-}) {
-  const [value, setValue] = useState("");
-
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    const parsed = parseLatLng(value);
-    if (!parsed) {
-      setError("Format: lat,lng. e.g. 51.5074,-0.1278");
-      return;
-    }
-    onPinSet(parsed);
-  };
-
-  return (
-    <form onSubmit={submit} className="space-y-3">
-      <FieldLabel htmlFor="sqs-coords">// LATITUDE, LONGITUDE</FieldLabel>
-      <TextInput
-        id="sqs-coords"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="51.5074, -0.1278"
-        inputMode="text"
-        autoComplete="off"
-        spellCheck={false}
-      />
-      <div className="flex justify-end">
-        <Button type="submit" variant="primary" disabled={!value.trim()}>
-          Set start
-        </Button>
-      </div>
-    </form>
-  );
-}
-
-// suppress unused-imports lint for cn (kept available for future tweaks)
-void cn;
