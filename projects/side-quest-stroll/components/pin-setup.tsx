@@ -95,7 +95,21 @@ function GeolocateMethod({
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setPending(false);
-        onPinSet({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        // Guard against NaN / Infinity readings before they ever hit the
+        // map. iOS very occasionally hands back non-finite values.
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+          setError("Got an invalid location reading. Try again.");
+          return;
+        }
+        // Defer the pin-set by one animation frame so iOS finishes
+        // dismissing the permission UI before we tear down this component
+        // and mount the map. Helps avoid a watchdog kill on memory-tight
+        // PWAs.
+        requestAnimationFrame(() => {
+          onPinSet({ lat, lng });
+        });
       },
       (err) => {
         setPending(false);

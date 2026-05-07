@@ -9,7 +9,7 @@
 //   - active quest     → map (with target + route) + <QuestCard>
 // History stays visible under the active surface in all states.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
 import { Button, Eyebrow, Slider, Tab, Tabs } from "@/components/ui";
@@ -49,6 +49,15 @@ export function Page() {
     emptySideQuestData,
   );
   const [pending, setPending] = useState(false);
+
+  // Pre-load the heavy Leaflet chunk as soon as the page mounts. This way
+  // when geolocation succeeds and we transition pin-setup → map, the chunk
+  // is already in memory. Avoids a network fetch + parse happening
+  // immediately after the iOS permission dialog dismisses, which has been
+  // observed to OOM-kill PWAs on tight devices.
+  useEffect(() => {
+    void import("./components/map");
+  }, []);
 
   const setPin = (p: LatLng) => {
     const pin: Pin = { ...p, setAt: new Date().toISOString() };

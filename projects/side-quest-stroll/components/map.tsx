@@ -144,6 +144,11 @@ export default function QuestMap({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           subdomains={["a", "b", "c", "d"]}
+          maxZoom={19}
+          maxNativeZoom={19}
+          keepBuffer={4}
+          updateWhenZooming={false}
+          updateWhenIdle={true}
         />
         {onTap && <TapHandler onTap={onTap} />}
         <FitTo pin={pin} target={target} radiusKm={radiusKm} />
