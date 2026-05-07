@@ -19,12 +19,17 @@ export interface Quest {
 
   origin: LatLng;
   target: LatLng;
-  /** Walking distance in metres if the router returned one, otherwise the
-   *  great-circle distance and `routed: false`. */
+  /** Outbound walking distance in metres if the router returned one,
+   *  otherwise the great-circle distance and `routed: false`. */
   distanceM: number;
   routed: boolean;
-  /** Polyline as a flat array of [lat, lng] points. */
+  /** Outbound polyline as a flat array of [lat, lng] points. */
   route: [number, number][];
+  /** Return-leg polyline (target → origin). Optional for back-compat
+   *  with quests created before the round-trip change. */
+  returnRoute?: [number, number][];
+  /** Return-leg distance in metres. */
+  returnDistanceM?: number;
 
   mode: QuestMode;
   action: string;

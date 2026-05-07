@@ -6,19 +6,19 @@
 // State machine in a single page component:
 //   - no pin           → <PinSetup>
 //   - pin + no quest   → map + radius slider + mode tabs + Begin Quest
-//   - active quest     → map (with target + route) + <QuestCard>
+//   - active quest     → fullscreen map (out + back routes) + ActiveQuestView
 // History stays visible under the active surface in all states.
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
-import { Button, Eyebrow, Slider, Tab, Tabs } from "@/components/ui";
+import { Button, Eyebrow, NavItem, NavSecondary, Slider, Tab, Tabs } from "@/components/ui";
 import { useProjectStorage } from "@/hooks/use-project-storage";
 
 import { History } from "./components/history";
 import { PinSetup } from "./components/pin-setup";
 import { PrivacyModal } from "./components/privacy-modal";
-import { LastQuestSummary, QuestCard } from "./components/quest-card";
+import { ActiveQuestView, LastQuestSummary } from "./components/quest-card";
 import {
   emptySideQuestData,
   generateId,
@@ -86,20 +86,33 @@ export function Page() {
     const target = randomPointInRadius(data.pin, data.radiusKm);
     const parts = generateQuestParts(data.mode);
 
+    const straightDistance = distanceM(data.pin, target);
     let route: [number, number][] = [
       [data.pin.lat, data.pin.lng],
       [target.lat, target.lng],
     ];
-    let routedDistanceM = distanceM(data.pin, target);
+    let returnRoute: [number, number][] = [
+      [target.lat, target.lng],
+      [data.pin.lat, data.pin.lng],
+    ];
+    let outDistanceM = straightDistance;
+    let returnDistanceM = straightDistance;
     let routed = false;
+
     try {
-      const r = await fetchWalkingRoute(data.pin, target);
-      route = r.route;
-      routedDistanceM = r.distanceM;
-      routed = r.routed;
+      // Both legs in parallel. Either may fall back to straight-line
+      // internally; we treat `routed` as true only if BOTH succeed.
+      const [out, back] = await Promise.all([
+        fetchWalkingRoute(data.pin, target),
+        fetchWalkingRoute(target, data.pin),
+      ]);
+      route = out.route;
+      returnRoute = back.route;
+      outDistanceM = out.distanceM;
+      returnDistanceM = back.distanceM;
+      routed = out.routed && back.routed;
     } catch {
-      // fetchWalkingRoute already falls back internally; this catch is
-      // defensive in case of unexpected throws.
+      // fetchWalkingRoute already falls back internally; defensive only.
     }
 
     const quest: Quest = {
@@ -109,9 +122,11 @@ export function Page() {
       status: "active",
       origin: { lat: data.pin.lat, lng: data.pin.lng },
       target,
-      distanceM: routedDistanceM,
+      distanceM: outDistanceM,
+      returnDistanceM,
       routed,
       route,
+      returnRoute,
       mode: data.mode,
       action: parts.action,
       item: parts.item,
@@ -155,8 +170,50 @@ export function Page() {
 
   const lastQuest = data.history[0] ?? null;
 
+  // Secondary nav item — visible whenever a pin is set, in any state.
+  // Tapping clears the pin (and any active quest) and returns to setup.
+  const navSlot = hydrated && data.pin && (
+    <NavSecondary>
+      <NavItem
+        aria-label="Change start position"
+        onClick={clearPin}
+      >
+        <PinResetIcon />
+      </NavItem>
+    </NavSecondary>
+  );
+
+  // Active quest takes over the viewport.
+  if (hydrated && data.pin && data.activeQuest) {
+    return (
+      <>
+        {navSlot}
+        <ActiveQuestView
+          quest={data.activeQuest}
+          onComplete={() => finishQuest("completed")}
+          onAbandon={() => finishQuest("abandoned")}
+          onReroll={rerollQuest}
+          map={
+            <QuestMap
+              pin={data.pin}
+              radiusKm={data.radiusKm}
+              target={data.activeQuest.target}
+              route={data.activeQuest.route}
+              routeDashed={!data.activeQuest.routed}
+              returnRoute={data.activeQuest.returnRoute}
+              returnRouteDashed={!data.activeQuest.routed}
+              chromeless
+            />
+          }
+        />
+      </>
+    );
+  }
+
   return (
     <main className="mx-auto max-w-3xl space-y-8 pb-12">
+      {navSlot}
+
       <header>
         <Eyebrow tone="accent" withPulseDot>// SIDE QUEST STROLL · v0.0</Eyebrow>
         <h1 className="mt-2 font-display text-5xl font-black leading-[0.95] tracking-tight">
@@ -186,46 +243,30 @@ export function Page() {
           <QuestMap
             pin={data.pin}
             radiusKm={data.radiusKm}
-            target={data.activeQuest?.target ?? null}
-            route={data.activeQuest?.route}
-            routeDashed={data.activeQuest ? !data.activeQuest.routed : false}
-            height={data.activeQuest ? 380 : 320}
+            height={320}
           />
 
           <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-mute-2">
             <span>{`// PIN · ${formatLatLng(data.pin)}`}</span>
-            {!data.activeQuest && (
-              <button
-                type="button"
-                onClick={clearPin}
-                className="text-mute hover:text-warn"
-              >
-                Reset pin
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={clearPin}
+              className="text-mute hover:text-warn"
+            >
+              Reset pin
+            </button>
           </div>
 
-          {!data.activeQuest && (
-            <ReadySection
-              radiusKm={data.radiusKm}
-              mode={data.mode}
-              onRadius={setRadiusKm}
-              onMode={setMode}
-              onBegin={beginQuest}
-              pending={pending}
-            />
-          )}
+          <ReadySection
+            radiusKm={data.radiusKm}
+            mode={data.mode}
+            onRadius={setRadiusKm}
+            onMode={setMode}
+            onBegin={beginQuest}
+            pending={pending}
+          />
 
-          {data.activeQuest && (
-            <QuestCard
-              quest={data.activeQuest}
-              onComplete={() => finishQuest("completed")}
-              onAbandon={() => finishQuest("abandoned")}
-              onReroll={rerollQuest}
-            />
-          )}
-
-          {!data.activeQuest && lastQuest && <LastQuestSummary quest={lastQuest} />}
+          {lastQuest && <LastQuestSummary quest={lastQuest} />}
         </>
       )}
 
@@ -295,5 +336,25 @@ function ReadySection({
         </Button>
       </div>
     </section>
+  );
+}
+
+function PinResetIcon() {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21 12a9 9 0 1 1-3.5-7.1" />
+      <polyline points="21 4 21 10 15 10" />
+      <circle cx="12" cy="12" r="2" />
+    </svg>
   );
 }

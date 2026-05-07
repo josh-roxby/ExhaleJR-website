@@ -22,6 +22,8 @@ import L from "leaflet";
 
 import "leaflet/dist/leaflet.css";
 
+import { cn } from "@/lib/cn";
+
 import type { LatLng } from "../data/types";
 
 interface QuestMapProps {
@@ -31,13 +33,21 @@ interface QuestMapProps {
   radiusKm: number;
   /** Active quest target; renders a target marker. */
   target?: LatLng | null;
-  /** Walking route as [lat, lng] points; renders a polyline. */
+  /** Outbound walking route as [lat, lng] points; renders a polyline. */
   route?: [number, number][];
-  /** Whether to use a solid or dashed polyline (dashed = straight-line fallback). */
+  /** Whether to use a solid or dashed outbound polyline (dashed =
+   *  straight-line fallback). */
   routeDashed?: boolean;
+  /** Return-leg walking route. Rendered in a different colour. */
+  returnRoute?: [number, number][];
+  /** Whether the return-leg polyline should render dashed. */
+  returnRouteDashed?: boolean;
   /** Tap handler. When provided, taps anywhere on the map fire this. */
   onTap?: (latLng: LatLng) => void;
   height?: number | string;
+  /** When true, drops the inline border + rounded corners so the map can
+   *  fill a fullscreen container without visible chrome. */
+  chromeless?: boolean;
 }
 
 const DEFAULT_CENTER: [number, number] = [51.5074, -0.1278]; // London. Used as fallback.
@@ -89,20 +99,27 @@ const TAP_PREVIEW_ICON = divIcon(tapPreviewHtml, 14);
 function FitTo({
   pin,
   target,
+  route,
+  returnRoute,
   radiusKm,
 }: {
   pin: LatLng | null;
   target?: LatLng | null;
+  route?: [number, number][];
+  returnRoute?: [number, number][];
   radiusKm: number;
 }) {
   const map = useMap();
   useEffect(() => {
     if (!pin) return;
     if (target) {
-      const bounds = L.latLngBounds([
+      const points: [number, number][] = [
         [pin.lat, pin.lng],
         [target.lat, target.lng],
-      ]).pad(0.3);
+      ];
+      if (route) points.push(...route);
+      if (returnRoute) points.push(...returnRoute);
+      const bounds = L.latLngBounds(points).pad(0.15);
       map.fitBounds(bounds);
       return;
     }
@@ -120,7 +137,7 @@ function FitTo({
       [pin.lat + latDelta, pin.lng + lngDelta],
     );
     map.fitBounds(bounds, { padding: [24, 24] });
-  }, [map, pin, target, radiusKm]);
+  }, [map, pin, target, route, returnRoute, radiusKm]);
   return null;
 }
 
@@ -139,8 +156,11 @@ export default function QuestMap({
   target,
   route,
   routeDashed,
+  returnRoute,
+  returnRouteDashed,
   onTap,
   height = 320,
+  chromeless = false,
 }: QuestMapProps) {
   const center: [number, number] = pin
     ? [pin.lat, pin.lng]
@@ -148,8 +168,11 @@ export default function QuestMap({
 
   return (
     <div
-      className="overflow-hidden rounded-sq-md border border-line-2 bg-surface"
-      style={{ height }}
+      className={cn(
+        "h-full overflow-hidden bg-surface",
+        !chromeless && "rounded-sq-md border border-line-2",
+      )}
+      style={chromeless ? undefined : { height }}
     >
       <MapContainer
         center={center}
@@ -168,7 +191,13 @@ export default function QuestMap({
           updateWhenIdle={true}
         />
         {onTap && <TapHandler onTap={onTap} />}
-        <FitTo pin={pin} target={target} radiusKm={radiusKm} />
+        <FitTo
+          pin={pin}
+          target={target}
+          route={route}
+          returnRoute={returnRoute}
+          radiusKm={radiusKm}
+        />
 
         {pin && (
           <>
@@ -199,6 +228,18 @@ export default function QuestMap({
               weight: 4,
               opacity: 0.9,
               dashArray: routeDashed ? "6 6" : undefined,
+            }}
+          />
+        )}
+
+        {returnRoute && returnRoute.length > 1 && (
+          <Polyline
+            positions={returnRoute}
+            pathOptions={{
+              color: returnRouteDashed ? "var(--mute)" : "var(--accent)",
+              weight: 4,
+              opacity: 0.9,
+              dashArray: returnRouteDashed ? "6 6" : "2 6",
             }}
           />
         )}
