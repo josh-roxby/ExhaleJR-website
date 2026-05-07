@@ -1,0 +1,5 @@
+/* Override Leaflet's default `#ddd` container bg so map gaps and the
+ * pre-tile-load surface inherit our dark palette instead of flashing white. */
+.leaflet-container {
+  background: var(--bg);
+}

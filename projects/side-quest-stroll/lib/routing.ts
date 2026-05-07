@@ -1,10 +1,11 @@
 /**
  * Walking-route helpers. Uses the public OSRM demo server. If the call
  * fails (network, rate limit, no route found), falls back to a straight
- * great-circle line and flags `routed: false` so the UI can hint at it.
+ * polyline through the supplied waypoints and flags `routed: false` so
+ * the UI can hint at it.
  *
  * OSRM endpoint:
- *   /route/v1/foot/{lng1},{lat1};{lng2},{lat2}?overview=full&geometries=geojson
+ *   /route/v1/foot/{lng,lat};{lng,lat};...?overview=full&geometries=geojson
  *
  * Heads up: the public demo at router.project-osrm.org is rate-limited and
  * intended for development. For real scale, switch to Mapbox Directions
@@ -35,12 +36,20 @@ interface OsrmResponse {
   }>;
 }
 
+/**
+ * Plan a walking route through the supplied waypoints in order. At least
+ * two waypoints are required (origin + target). Extra waypoints between
+ * them act as via-points that the router will pass through.
+ */
 export async function fetchWalkingRoute(
-  origin: LatLng,
-  target: LatLng,
+  waypoints: LatLng[],
   signal?: AbortSignal,
 ): Promise<RouteResult> {
-  const url = `${OSRM_BASE}/${origin.lng},${origin.lat};${target.lng},${target.lat}?overview=full&geometries=geojson`;
+  if (waypoints.length < 2) {
+    throw new Error("fetchWalkingRoute needs at least two waypoints");
+  }
+  const path = waypoints.map((p) => `${p.lng},${p.lat}`).join(";");
+  const url = `${OSRM_BASE}/${path}?overview=full&geometries=geojson`;
 
   try {
     const res = await fetch(url, {
@@ -62,17 +71,18 @@ export async function fetchWalkingRoute(
       routed: true,
     };
   } catch {
-    return straightLineFallback(origin, target);
+    return straightLineFallback(waypoints);
   }
 }
 
-function straightLineFallback(origin: LatLng, target: LatLng): RouteResult {
+function straightLineFallback(waypoints: LatLng[]): RouteResult {
+  let total = 0;
+  for (let i = 1; i < waypoints.length; i++) {
+    total += greatCircleDistanceM(waypoints[i - 1], waypoints[i]);
+  }
   return {
-    route: [
-      [origin.lat, origin.lng],
-      [target.lat, target.lng],
-    ],
-    distanceM: greatCircleDistanceM(origin, target),
+    route: waypoints.map((p) => [p.lat, p.lng] as [number, number]),
+    distanceM: total,
     routed: false,
   };
 }

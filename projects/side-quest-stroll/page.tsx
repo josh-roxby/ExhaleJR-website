@@ -30,7 +30,12 @@ import {
   type QuestMode,
   type SideQuestData,
 } from "./data/types";
-import { distanceM, formatLatLng, randomPointInRadius } from "./lib/geo";
+import {
+  distanceM,
+  formatLatLng,
+  midpointWaypoints,
+  randomPointInRadius,
+} from "./lib/geo";
 import { generateQuestParts } from "./lib/quest";
 import { fetchWalkingRoute } from "./lib/routing";
 import { meta } from "./meta";
@@ -85,35 +90,7 @@ export function Page() {
     setPending(true);
     const target = randomPointInRadius(data.pin, data.radiusKm);
     const parts = generateQuestParts(data.mode);
-
-    const straightDistance = distanceM(data.pin, target);
-    let route: [number, number][] = [
-      [data.pin.lat, data.pin.lng],
-      [target.lat, target.lng],
-    ];
-    let returnRoute: [number, number][] = [
-      [target.lat, target.lng],
-      [data.pin.lat, data.pin.lng],
-    ];
-    let outDistanceM = straightDistance;
-    let returnDistanceM = straightDistance;
-    let routed = false;
-
-    try {
-      // Both legs in parallel. Either may fall back to straight-line
-      // internally; we treat `routed` as true only if BOTH succeed.
-      const [out, back] = await Promise.all([
-        fetchWalkingRoute(data.pin, target),
-        fetchWalkingRoute(target, data.pin),
-      ]);
-      route = out.route;
-      returnRoute = back.route;
-      outDistanceM = out.distanceM;
-      returnDistanceM = back.distanceM;
-      routed = out.routed && back.routed;
-    } catch {
-      // fetchWalkingRoute already falls back internally; defensive only.
-    }
+    const plan = await planRoundTrip(data.pin, target);
 
     const quest: Quest = {
       id: generateId(),
@@ -122,11 +99,11 @@ export function Page() {
       status: "active",
       origin: { lat: data.pin.lat, lng: data.pin.lng },
       target,
-      distanceM: outDistanceM,
-      returnDistanceM,
-      routed,
-      route,
-      returnRoute,
+      distanceM: plan.distanceM,
+      returnDistanceM: plan.returnDistanceM,
+      routed: plan.routed,
+      route: plan.route,
+      returnRoute: plan.returnRoute,
       mode: data.mode,
       action: parts.action,
       item: parts.item,
@@ -155,6 +132,30 @@ export function Page() {
     });
   };
 
+  const rerollRoute = async () => {
+    if (!data.pin || !data.activeQuest || pending) return;
+    setPending(true);
+    const target = randomPointInRadius(data.pin, data.radiusKm);
+    const plan = await planRoundTrip(data.pin, target);
+
+    setData((prev) => {
+      if (!prev.activeQuest) return prev;
+      return {
+        ...prev,
+        activeQuest: {
+          ...prev.activeQuest,
+          target,
+          route: plan.route,
+          returnRoute: plan.returnRoute,
+          distanceM: plan.distanceM,
+          returnDistanceM: plan.returnDistanceM,
+          routed: plan.routed,
+        },
+      };
+    });
+    setPending(false);
+  };
+
   const finishQuest = (status: "completed" | "abandoned") => {
     setData((prev) => {
       if (!prev.activeQuest) return prev;
@@ -177,8 +178,19 @@ export function Page() {
     return (
       <>
         <NavSecondary>
-          <NavItem aria-label="Re-roll quest prompt" onClick={rerollQuest}>
-            <RerollIcon />
+          <NavItem
+            aria-label="Re-roll quest prompt"
+            onClick={rerollQuest}
+            disabled={pending}
+          >
+            <QuestRerollIcon />
+          </NavItem>
+          <NavItem
+            aria-label="Re-roll route and target"
+            onClick={rerollRoute}
+            disabled={pending}
+          >
+            <RouteRerollIcon />
           </NavItem>
           <NavItem
             aria-label="Abandon quest"
@@ -353,6 +365,51 @@ function ReadySection({
   );
 }
 
+// Round-trip planner. Builds two via-pointed legs (origin → midpoint+offset →
+// target, target → midpoint-offset → origin) so OSRM doesn't return the
+// same path twice. Falls back internally; routed only when both legs route.
+async function planRoundTrip(
+  origin: LatLng,
+  target: LatLng,
+): Promise<{
+  route: [number, number][];
+  returnRoute: [number, number][];
+  distanceM: number;
+  returnDistanceM: number;
+  routed: boolean;
+}> {
+  const { outward, back: returnVia } = midpointWaypoints(origin, target);
+  const straightDistance = distanceM(origin, target);
+
+  let route: [number, number][] = [
+    [origin.lat, origin.lng],
+    [target.lat, target.lng],
+  ];
+  let returnRoute: [number, number][] = [
+    [target.lat, target.lng],
+    [origin.lat, origin.lng],
+  ];
+  let outDistanceM = straightDistance;
+  let returnDistanceM = straightDistance;
+  let routed = false;
+
+  try {
+    const [out, back] = await Promise.all([
+      fetchWalkingRoute([origin, outward, target]),
+      fetchWalkingRoute([target, returnVia, origin]),
+    ]);
+    route = out.route;
+    returnRoute = back.route;
+    outDistanceM = out.distanceM;
+    returnDistanceM = back.distanceM;
+    routed = out.routed && back.routed;
+  } catch {
+    // fetchWalkingRoute already falls back internally; defensive only.
+  }
+
+  return { route, returnRoute, distanceM: outDistanceM, returnDistanceM, routed };
+}
+
 function PinResetIcon() {
   return (
     <svg
@@ -373,14 +430,16 @@ function PinResetIcon() {
   );
 }
 
-function RerollIcon() {
+// Refresh arc with a Q glyph (circle + small tail) sat in the centre.
+// Re-rolls just the prompt text — keeps the target and route as-is.
+function QuestRerollIcon() {
   return (
     <svg
       width="17"
       height="17"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="currentColor"
+      stroke="var(--accent)"
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -388,6 +447,31 @@ function RerollIcon() {
     >
       <path d="M21 12a9 9 0 1 1-3.5-7.1" />
       <polyline points="21 4 21 10 15 10" />
+      <circle cx="11" cy="13.5" r="2.5" />
+      <path d="m12.7 15.2 1.5 1.5" />
+    </svg>
+  );
+}
+
+// Refresh arc with a teardrop pin in the centre. Re-rolls the target
+// and re-fetches both walking legs.
+function RouteRerollIcon() {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="var(--accent)"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21 12a9 9 0 1 1-3.5-7.1" />
+      <polyline points="21 4 21 10 15 10" />
+      <path d="M11 17s2.4-2.2 2.4-3.8a2.4 2.4 0 0 0-4.8 0c0 1.6 2.4 3.8 2.4 3.8z" />
+      <circle cx="11" cy="13.4" r="0.8" fill="var(--accent)" stroke="none" />
     </svg>
   );
 }
