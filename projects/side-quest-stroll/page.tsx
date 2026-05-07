@@ -19,6 +19,7 @@ import { History } from "./components/history";
 import { PinSetup } from "./components/pin-setup";
 import { PrivacyModal } from "./components/privacy-modal";
 import { ActiveQuestView, LastQuestSummary } from "./components/quest-card";
+import { useLiveLocation } from "./hooks/use-live-location";
 import {
   emptySideQuestData,
   generateId,
@@ -54,6 +55,9 @@ export function Page() {
     emptySideQuestData,
   );
   const [pending, setPending] = useState(false);
+
+  // Live location tracking — only watches while a quest is active.
+  const live = useLiveLocation(hydrated && !!data.activeQuest);
 
   // Pre-load the heavy Leaflet chunk as soon as the page mounts. This way
   // when geolocation succeeds and we transition pin-setup → map, the chunk
@@ -216,6 +220,8 @@ export function Page() {
               routeDashed={!data.activeQuest.routed}
               returnRoute={data.activeQuest.returnRoute}
               returnRouteDashed={!data.activeQuest.routed}
+              liveLocation={live.position}
+              liveHeading={live.heading}
               chromeless
             />
           }

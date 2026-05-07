@@ -49,6 +49,10 @@ interface QuestMapProps {
   /** When true, drops the inline border + rounded corners so the map can
    *  fill a fullscreen container without visible chrome. */
   chromeless?: boolean;
+  /** Live "you are here" position (e.g. from `watchPosition`). */
+  liveLocation?: LatLng | null;
+  /** Live heading in degrees clockwise from north. Null hides the cone. */
+  liveHeading?: number | null;
 }
 
 const DEFAULT_CENTER: [number, number] = [51.5074, -0.1278]; // London. Used as fallback.
@@ -95,6 +99,23 @@ function divIcon(html: string, size = 18): L.DivIcon {
 const PIN_ICON = divIcon(pinIconHtml, 18);
 const TARGET_ICON = divIcon(targetIconHtml, 26);
 const TAP_PREVIEW_ICON = divIcon(tapPreviewHtml, 14);
+
+// Live position marker. Optional heading rotates a cone-shaped SVG that
+// fans out from the user position in the direction of travel. The icon
+// is rebuilt on each heading change but the underlying Leaflet marker is
+// reused (react-leaflet swaps the icon, doesn't recreate the marker).
+function makeLiveIcon(heading: number | null): L.DivIcon {
+  const cone =
+    heading != null
+      ? `<svg class="sqs-live-cone" width="40" height="40" viewBox="-20 -20 40 40" style="transform: rotate(${heading}deg)" aria-hidden="true"><polygon points="0,0 -12,-22 12,-22" fill="rgba(79,170,255,0.55)" /></svg>`
+      : "";
+  return L.divIcon({
+    html: `${cone}<div class="sqs-live-dot"></div>`,
+    className: "sqs-live-marker",
+    iconSize: [40, 40],
+    iconAnchor: [20, 20],
+  });
+}
 
 /** Refits the map view whenever the relevant geometry changes. */
 function FitTo({
@@ -162,6 +183,8 @@ export default function QuestMap({
   onTap,
   height = 320,
   chromeless = false,
+  liveLocation,
+  liveHeading,
 }: QuestMapProps) {
   const center: [number, number] = pin
     ? [pin.lat, pin.lng]
@@ -251,6 +274,15 @@ export default function QuestMap({
             icon={TAP_PREVIEW_ICON}
             interactive={false}
             opacity={0.4}
+          />
+        )}
+
+        {liveLocation && (
+          <Marker
+            position={[liveLocation.lat, liveLocation.lng]}
+            icon={makeLiveIcon(liveHeading ?? null)}
+            interactive={false}
+            zIndexOffset={1000}
           />
         )}
       </MapContainer>
