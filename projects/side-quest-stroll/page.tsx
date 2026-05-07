@@ -160,6 +160,10 @@ export function Page() {
     setPending(false);
   };
 
+  const clearHistory = () => {
+    setData((prev) => ({ ...prev, history: [] }));
+  };
+
   const finishQuest = (status: "completed" | "abandoned") => {
     setData((prev) => {
       if (!prev.activeQuest) return prev;
@@ -302,7 +306,7 @@ export function Page() {
       )}
 
       {hydrated && data.history.length > 0 && (
-        <History quests={data.history} />
+        <History quests={data.history} onClear={clearHistory} />
       )}
     </main>
   );

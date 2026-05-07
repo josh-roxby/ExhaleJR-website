@@ -7,14 +7,26 @@ import { formatDistance } from "../lib/geo";
 
 interface HistoryProps {
   quests: Quest[];
+  onClear?: () => void;
 }
 
-export function History({ quests }: HistoryProps) {
+export function History({ quests, onClear }: HistoryProps) {
   if (quests.length === 0) return null;
 
   return (
     <section className="space-y-3">
-      <Eyebrow tone="mute" size="sm">{`// HISTORY · ${quests.length}`}</Eyebrow>
+      <div className="flex items-baseline justify-between gap-3">
+        <Eyebrow tone="mute" size="sm">{`// HISTORY · ${quests.length}`}</Eyebrow>
+        {onClear && (
+          <button
+            type="button"
+            onClick={onClear}
+            className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-mute hover:text-warn"
+          >
+            Clear
+          </button>
+        )}
+      </div>
       <ul className="space-y-2">
         {quests.map((q) => (
           <li key={q.id}>
