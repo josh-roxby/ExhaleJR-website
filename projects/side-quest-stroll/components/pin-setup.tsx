@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
 import { Button, Eyebrow, Tab, Tabs } from "@/components/ui";
+import { cn } from "@/lib/cn";
 
 import type { LatLng } from "../data/types";
 
@@ -110,7 +111,115 @@ function GeolocateMethod({
       <Button onClick={request} variant="primary" disabled={pending}>
         {pending ? "Getting location…" : "Use my location"}
       </Button>
+      <Diagnostics />
     </div>
+  );
+}
+
+// Surfaces the four things that decide whether the prompt will appear at
+// all on iOS: Permissions API state, secure-context flag, geolocation API
+// presence, and PWA display mode. If permission shows `denied` here the
+// browser will fire code 1 instantly with no prompt.
+function Diagnostics() {
+  type Perm = PermissionState | "unsupported" | "checking";
+  const [perm, setPerm] = useState<Perm>("checking");
+  const [secure, setSecure] = useState<boolean | null>(null);
+  const [geoPresent, setGeoPresent] = useState<boolean | null>(null);
+  const [pwa, setPwa] = useState<boolean | null>(null);
+  const [origin, setOrigin] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setSecure(window.isSecureContext);
+    setGeoPresent("geolocation" in navigator);
+    setPwa(window.matchMedia("(display-mode: standalone)").matches);
+    setOrigin(window.location.origin);
+
+    let cancelled = false;
+    let status: PermissionStatus | null = null;
+    if (navigator.permissions?.query) {
+      navigator.permissions
+        .query({ name: "geolocation" })
+        .then((s) => {
+          if (cancelled) return;
+          status = s;
+          setPerm(s.state);
+          s.onchange = () => setPerm(s.state);
+        })
+        .catch(() => {
+          if (!cancelled) setPerm("unsupported");
+        });
+    } else {
+      setPerm("unsupported");
+    }
+
+    return () => {
+      cancelled = true;
+      if (status) status.onchange = null;
+    };
+  }, []);
+
+  return (
+    <div className="w-full rounded-sq-xs border border-line-2 bg-bg-2 p-3 font-mono text-[10px] uppercase tracking-[0.18em]">
+      <div className="text-mute-3">// DIAGNOSTICS</div>
+      <ul className="mt-2 space-y-1">
+        <DiagRow
+          label="Permission"
+          value={perm}
+          tone={
+            perm === "granted" || perm === "prompt"
+              ? "ok"
+              : perm === "denied"
+                ? "warn"
+                : "mute"
+          }
+        />
+        <DiagRow
+          label="Secure"
+          value={secure == null ? "…" : secure ? "yes" : "no"}
+          tone={secure ? "ok" : secure === false ? "warn" : "mute"}
+        />
+        <DiagRow
+          label="Geo API"
+          value={geoPresent == null ? "…" : geoPresent ? "yes" : "no"}
+          tone={geoPresent ? "ok" : geoPresent === false ? "warn" : "mute"}
+        />
+        <DiagRow
+          label="Display"
+          value={pwa == null ? "…" : pwa ? "PWA" : "browser"}
+          tone="mute"
+        />
+        <DiagRow label="Origin" value={origin || "…"} tone="mute" />
+      </ul>
+      {perm === "denied" && (
+        <p className="mt-2 normal-case tracking-normal text-warn">
+          Permission is denied at the browser/OS level. Open Settings →
+          Privacy &amp; Security → Location Services → Safari Websites,
+          set to While Using or Ask. Then tap Use my location again.
+        </p>
+      )}
+    </div>
+  );
+}
+
+type DiagTone = "ok" | "warn" | "mute";
+
+function DiagRow({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone: DiagTone;
+}) {
+  const toneClass =
+    tone === "ok" ? "text-ok" : tone === "warn" ? "text-warn" : "text-mute-2";
+  return (
+    <li className="flex items-baseline justify-between gap-3">
+      <span className="text-mute-3">{label}</span>
+      <span className={cn("truncate", toneClass)}>{value}</span>
+    </li>
   );
 }
 
