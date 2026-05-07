@@ -60,6 +60,7 @@ Each project links to its own TODO. Add new projects under `/projects/<slug>` an
 - [`tempo`](./projects/tempo/TODO.md). Daily habit tracker. Boolean or counter habits, persisted on device.
 - [`flip`](./projects/flip/TODO.md). Coin flip with single / best of 3 / best of 5 modes.
 - [`decision-wheel`](./projects/decision-wheel/TODO.md). Spin-the-wheel random picker with a saved list of items.
+- [`side-quest-stroll`](./projects/side-quest-stroll/TODO.md). Drop a pin, pick a radius, get a walk + a small game.
 
 <!--
 When adding a new project:

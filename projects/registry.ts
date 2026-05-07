@@ -9,6 +9,7 @@ import type { ComponentType } from "react";
 import * as cooking from "./cooking";
 import * as decisionWheel from "./decision-wheel";
 import * as flip from "./flip";
+import * as sideQuestStroll from "./side-quest-stroll";
 import * as tempo from "./tempo";
 
 export interface ProjectEntry {
@@ -63,6 +64,15 @@ export const projects: ProjectEntry[] = [
     wip: decisionWheel.meta.wip,
     version: decisionWheel.meta.version,
     tags: [...decisionWheel.meta.tags],
+  },
+  {
+    slug: "side-quest-stroll",
+    name: sideQuestStroll.meta.name,
+    description: sideQuestStroll.meta.description,
+    Page: sideQuestStroll.Page,
+    wip: sideQuestStroll.meta.wip,
+    version: sideQuestStroll.meta.version,
+    tags: [...sideQuestStroll.meta.tags],
   },
 ];
 
