@@ -18,7 +18,7 @@ import {
   useMap,
   useMapEvents,
 } from "react-leaflet";
-import L, { type LatLngBoundsExpression } from "leaflet";
+import L from "leaflet";
 
 import "leaflet/dist/leaflet.css";
 
@@ -78,6 +78,13 @@ function divIcon(html: string, size = 18): L.DivIcon {
   });
 }
 
+// Hoisted to module scope so the same icon instances are reused across renders.
+// Cheaper, and avoids any chance of Leaflet holding stale references to icons
+// that React just swapped out underneath it.
+const PIN_ICON = divIcon(pinIconHtml, 18);
+const TARGET_ICON = divIcon(targetIconHtml, 26);
+const TAP_PREVIEW_ICON = divIcon(tapPreviewHtml, 14);
+
 /** Refits the map view whenever the relevant geometry changes. */
 function FitTo({
   pin,
@@ -99,10 +106,20 @@ function FitTo({
       map.fitBounds(bounds);
       return;
     }
-    const circle = L.circle([pin.lat, pin.lng], { radius: radiusKm * 1000 });
-    map.fitBounds(circle.getBounds() as LatLngBoundsExpression, {
-      padding: [24, 24],
-    });
+    // Compute bounds for the radius circle by hand. We can't use
+    // `L.circle(...).getBounds()` here because that goes through
+    // `_map.layerPointToLatLng`, which throws if the circle isn't yet
+    // attached to a map. (Was the source of a `layerPointToLatLng`
+    // crash on first render after a pin was set.)
+    const radiusM = radiusKm * 1000;
+    const latDelta = radiusM / 111320;
+    const lngDelta =
+      radiusM / (111320 * Math.cos((pin.lat * Math.PI) / 180));
+    const bounds = L.latLngBounds(
+      [pin.lat - latDelta, pin.lng - lngDelta],
+      [pin.lat + latDelta, pin.lng + lngDelta],
+    );
+    map.fitBounds(bounds, { padding: [24, 24] });
   }, [map, pin, target, radiusKm]);
   return null;
 }
@@ -166,18 +183,12 @@ export default function QuestMap({
                 dashArray: "6 4",
               }}
             />
-            <Marker
-              position={[pin.lat, pin.lng]}
-              icon={divIcon(pinIconHtml, 18)}
-            />
+            <Marker position={[pin.lat, pin.lng]} icon={PIN_ICON} />
           </>
         )}
 
         {target && (
-          <Marker
-            position={[target.lat, target.lng]}
-            icon={divIcon(targetIconHtml, 26)}
-          />
+          <Marker position={[target.lat, target.lng]} icon={TARGET_ICON} />
         )}
 
         {route && route.length > 1 && (
@@ -195,7 +206,7 @@ export default function QuestMap({
         {!pin && onTap && (
           <Marker
             position={DEFAULT_CENTER}
-            icon={divIcon(tapPreviewHtml, 14)}
+            icon={TAP_PREVIEW_ICON}
             interactive={false}
             opacity={0.4}
           />
