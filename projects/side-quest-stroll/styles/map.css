@@ -11,16 +11,9 @@
   isolation: isolate;
 }
 
-/* Live "you are here" marker — sky-blue dot with optional heading cone.
- * Distinct hue from the start pin (accent purple) and target (ok green). */
+/* Live "you are here" marker — sky-blue dot, distinct hue from the start
+ * pin (accent purple) and target (ok green). */
 .sqs-live-marker {
-  pointer-events: none;
-}
-.sqs-live-cone {
-  position: absolute;
-  left: 0;
-  top: 0;
-  transform-origin: 50% 50%;
   pointer-events: none;
 }
 .sqs-live-dot {

@@ -221,7 +221,6 @@ export function Page() {
               returnRoute={data.activeQuest.returnRoute}
               returnRouteDashed={!data.activeQuest.routed}
               liveLocation={live.position}
-              liveHeading={live.heading}
               chromeless
             />
           }
