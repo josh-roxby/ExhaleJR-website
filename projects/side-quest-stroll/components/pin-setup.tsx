@@ -96,7 +96,7 @@ function GeolocateMethod({
       },
       (err) => {
         setPending(false);
-        setError(`Couldn't get location. ${err.message}`);
+        setError(messageForGeoError(err));
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 60_000 },
     );
@@ -112,6 +112,22 @@ function GeolocateMethod({
       </Button>
     </div>
   );
+}
+
+// iOS in particular caches a permission denial and won't re-prompt — the
+// error fires instantly with code 1. Map known codes to actionable text
+// rather than the raw browser message.
+function messageForGeoError(err: GeolocationPositionError): string {
+  switch (err.code) {
+    case 1:
+      return "Location is blocked for this site. Use Tap on map above, or re-enable in your browser settings (iPhone: tap AA in Safari's address bar → Website Settings → Location → Ask. PWA installed to home screen: remove the app, clear Safari's site data, then re-add).";
+    case 2:
+      return "Couldn't get a position fix. Try outdoors, or use Tap on map above.";
+    case 3:
+      return "Location took too long. Try again, or use Tap on map above.";
+    default:
+      return `Couldn't get location. ${err.message}`;
+  }
 }
 
 function TapMethod({ onPinSet }: { onPinSet: (p: LatLng) => void }) {
